@@ -1,4 +1,4 @@
-package com.azadevs.deepfocus.ui.theme
+package com.azadevs.deepfocus.core.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

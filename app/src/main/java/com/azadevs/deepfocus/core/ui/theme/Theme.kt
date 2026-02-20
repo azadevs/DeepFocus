@@ -1,4 +1,4 @@
-package com.azadevs.deepfocus.ui.theme
+package com.azadevs.deepfocus.core.ui.theme
 
 import android.app.Activity
 import android.os.Build
