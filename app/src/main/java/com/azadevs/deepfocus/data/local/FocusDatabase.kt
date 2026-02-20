@@ -16,6 +16,6 @@ import com.azadevs.deepfocus.data.local.entity.FocusSessionEntity
 )
 abstract class FocusDatabase : RoomDatabase() {
 
-    abstract val focusSessionDao: FocusSessionDao
+    abstract fun focusSessionDao(): FocusSessionDao
 
 }
