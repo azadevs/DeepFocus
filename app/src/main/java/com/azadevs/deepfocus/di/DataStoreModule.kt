@@ -2,6 +2,7 @@ package com.azadevs.deepfocus.di
 
 import android.content.Context
 import com.azadevs.deepfocus.data.datastore.SettingsDataStore
+import com.azadevs.deepfocus.data.datastore.TimerPersistenceDataStore
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,5 +24,13 @@ object DataStoreModule {
         @ApplicationContext context: Context
     ): SettingsDataStore {
         return SettingsDataStore(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideTimerDataStore(
+        @ApplicationContext context: Context
+    ): TimerPersistenceDataStore {
+        return TimerPersistenceDataStore(context)
     }
 }
