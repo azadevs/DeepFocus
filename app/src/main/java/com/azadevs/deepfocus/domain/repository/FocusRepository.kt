@@ -1,6 +1,5 @@
 package com.azadevs.deepfocus.domain.repository
 
-import com.azadevs.deepfocus.core.model.Resource
 import com.azadevs.deepfocus.domain.model.FocusSession
 import kotlinx.coroutines.flow.Flow
 
@@ -10,12 +9,11 @@ import kotlinx.coroutines.flow.Flow
  */
 interface FocusRepository {
 
-    suspend fun upsertSession(session: FocusSession): Resource<Unit>
+    suspend fun upsertSession(session: FocusSession)
 
-    fun getAllSessions(): Flow<Resource<List<FocusSession>>>
+    fun getAllSessions(): Flow<List<FocusSession>>
 
-    fun getTotalFocusMinutes(): Flow<Resource<Int>>
+    fun getTotalFocusMinutes(): Flow<Int>
 
-    fun getSessionsBetween(start: Long, end: Long): Flow<Resource<List<FocusSession>>>
-
+    fun getSessionsBetween(start: Long, end: Long): Flow<List<FocusSession>>
 }
