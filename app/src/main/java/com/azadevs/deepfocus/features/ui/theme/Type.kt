@@ -1,4 +1,4 @@
-package com.azadevs.deepfocus.core.ui.theme
+package com.azadevs.deepfocus.features.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
