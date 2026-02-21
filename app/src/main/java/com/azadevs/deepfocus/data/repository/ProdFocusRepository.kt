@@ -20,7 +20,7 @@ class ProdFocusRepository(
     private val focusSessionDao: FocusSessionDao
 ) : FocusRepository {
 
-    override suspend fun insertSession(
+    override suspend fun upsertSession(
         session: FocusSession
     ): Resource<Unit> {
         return try {
@@ -39,9 +39,18 @@ class ProdFocusRepository(
 
     override fun getTotalFocusMinutes(): Flow<Resource<Int>> =
         focusSessionDao.getTotalFocusDuration().map<Int?, Resource<Int>> { total ->
-                Resource.Success(total ?: 0)
-            }.catch {
-                emit(Resource.Error(DataError.DatabaseError))
-            }
+            Resource.Success(total ?: 0)
+        }.catch {
+            emit(Resource.Error(DataError.DatabaseError))
+        }
 
+    override fun getSessionsBetween(start: Long, end: Long): Flow<Resource<List<FocusSession>>> =
+        focusSessionDao.getSessionsBetween(
+            start = start,
+            end = end
+        ).map<List<FocusSessionEntity>, Resource<List<FocusSession>>> { entities ->
+            Resource.Success(entities.map { it.toDomain() })
+        }.catch {
+            emit(Resource.Error(DataError.DatabaseError))
+        }
 }
