@@ -10,10 +10,12 @@ import kotlinx.coroutines.flow.Flow
  */
 interface FocusRepository {
 
-    suspend fun insertSession(session: FocusSession): Resource<Unit>
+    suspend fun upsertSession(session: FocusSession): Resource<Unit>
 
     fun getAllSessions(): Flow<Resource<List<FocusSession>>>
 
     fun getTotalFocusMinutes(): Flow<Resource<Int>>
+
+    fun getSessionsBetween(start: Long, end: Long): Flow<Resource<List<FocusSession>>>
 
 }
