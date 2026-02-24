@@ -43,6 +43,7 @@ class PomodoroController @Inject constructor(
 
         _state.value = _state.value.copy(
             remainingMillis = duration,
+            phaseDurationMillis = duration,
             isRunning = true
         )
 
