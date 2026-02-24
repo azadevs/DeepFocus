@@ -1,4 +1,4 @@
-package com.azadevs.deepfocus.presentation.ui.theme
+package com.azadevs.deepfocus.presentation.util.theme
 
 import androidx.compose.ui.graphics.Color
 
