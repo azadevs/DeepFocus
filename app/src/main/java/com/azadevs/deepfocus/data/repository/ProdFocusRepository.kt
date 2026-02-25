@@ -7,12 +7,13 @@ import com.azadevs.deepfocus.domain.model.FocusSession
 import com.azadevs.deepfocus.domain.repository.FocusRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
 /**
  * Created by : Azamat Kalmurzaev
  * 20/02/2026
  */
-class ProdFocusRepository(
+class ProdFocusRepository @Inject constructor(
     private val focusSessionDao: FocusSessionDao
 ) : FocusRepository {
 

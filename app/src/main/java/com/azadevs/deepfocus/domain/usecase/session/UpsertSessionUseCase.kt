@@ -17,6 +17,6 @@ class UpsertSessionUseCase(
         if (session.durationMinutes <= 0) {
             return Resource.Error(IllegalArgumentException("Invalid duration"))
         }
-        return repository.upsertSession(session)
+        return Resource.Success(repository.upsertSession(session))
     }
 }
