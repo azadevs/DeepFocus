@@ -2,6 +2,7 @@ package com.azadevs.deepfocus.presentation.pomodoro.viemwodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.azadevs.deepfocus.domain.model.PomodoroPhase
 import com.azadevs.deepfocus.domain.model.PomodoroState
 import com.azadevs.deepfocus.domain.pomodoro.PomodoroController
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,5 +34,9 @@ class PomodoroViewModel @Inject constructor(
 
     fun onStopClick() {
         controller.stop(viewModelScope)
+    }
+
+    fun onPhaseSelected(phase: PomodoroPhase) {
+        controller.selectPhase(phase)
     }
 }

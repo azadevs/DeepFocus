@@ -167,4 +167,11 @@ class PomodoroController @Inject constructor(
                 config.longBreakMinutes * 60_000L
         }
     }
+
+    fun selectPhase(phase: PomodoroPhase) {
+        _state.value = PomodoroState(
+            phase = phase,
+            cycleIndex = _state.value.cycleIndex
+        )
+    }
 }
