@@ -1,6 +1,11 @@
 package com.azadevs.deepfocus.domain.usecase.session
 
+import com.azadevs.deepfocus.core.model.Resource
+import com.azadevs.deepfocus.domain.model.FocusSession
 import com.azadevs.deepfocus.domain.repository.FocusRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
 
 /**
  * Created by : Azamat Kalmurzaev
@@ -12,5 +17,12 @@ class GetSessionsBetweenUseCase(
     operator fun invoke(
         start: Long,
         end: Long
-    ) = repository.getSessionsBetween(start, end)
+    ): Flow<Resource<List<FocusSession>>> {
+        return repository.getSessionsBetween(start, end)
+            .map<List<FocusSession>, Resource<List<FocusSession>>> {
+                Resource.Success(it)
+            }.catch {
+            emit(Resource.Error(it.message ?: "Unknown error"))
+        }
+    }
 }

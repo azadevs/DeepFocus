@@ -15,7 +15,7 @@ class UpsertSessionUseCase(
         session: FocusSession
     ): Resource<Unit> {
         if (session.durationMinutes <= 0) {
-            return Resource.Error(IllegalArgumentException("Invalid duration"))
+            return Resource.Error("Invalid duration")
         }
         return Resource.Success(repository.upsertSession(session))
     }
