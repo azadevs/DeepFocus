@@ -2,6 +2,7 @@ package com.azadevs.deepfocus.domain.pomodoro
 
 import android.content.Context
 import android.content.Intent
+import android.media.RingtoneManager
 import androidx.core.content.ContextCompat
 import com.azadevs.deepfocus.domain.model.FocusSession
 import com.azadevs.deepfocus.domain.model.PomodoroConfig
@@ -13,6 +14,7 @@ import com.azadevs.deepfocus.domain.model.TimerState
 import com.azadevs.deepfocus.domain.repository.FocusRepository
 import com.azadevs.deepfocus.domain.timer.TimerManager
 import com.azadevs.deepfocus.presentation.service.FocusForegroundService
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -30,6 +32,7 @@ import javax.inject.Singleton
  */
 @Singleton
 class PomodoroController @Inject constructor(
+    @param:ApplicationContext private val context: Context,
     private val timerManager: TimerManager,
     private val focusRepository: FocusRepository
 ) {
@@ -49,19 +52,22 @@ class PomodoroController @Inject constructor(
 
     fun start(context: Context) {
         val duration = durationFor(_state.value.phase)
-
         phaseStartTime = System.currentTimeMillis()
+
         _state.value = _state.value.copy(
             remainingMillis = duration,
             phaseDurationMillis = duration,
             isRunning = true
         )
 
+        timerManager.start(controllerScope, duration)
+
         val intent = Intent(context, FocusForegroundService::class.java).apply {
             action = FocusForegroundService.ACTION_START
             putExtra(FocusForegroundService.EXTRA_DURATION, duration)
         }
         ContextCompat.startForegroundService(context, intent)
+        playNotificationSound()
     }
 
     fun pause() {
@@ -137,6 +143,7 @@ class PomodoroController @Inject constructor(
                 )
             }
         }
+        playNotificationSound()
         moveToNextPhase()
     }
 
@@ -169,6 +176,16 @@ class PomodoroController @Inject constructor(
             phaseDurationMillis = durationFor(nextPhase),
             isRunning = false
         )
+    }
+
+    private fun playNotificationSound() {
+        try {
+            val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+            val ringtone = RingtoneManager.getRingtone(context, defaultSoundUri)
+            ringtone.play()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun durationFor(phase: PomodoroPhase): Long {

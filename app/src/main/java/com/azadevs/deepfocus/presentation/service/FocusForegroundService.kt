@@ -11,9 +11,9 @@ import android.os.IBinder
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.azadevs.deepfocus.R
-import com.azadevs.deepfocus.domain.model.TimerState
 import com.azadevs.deepfocus.core.util.TimeFormatter
-import com.azadevs.deepfocus.domain.timer.TimerManager
+import com.azadevs.deepfocus.domain.model.PomodoroState
+import com.azadevs.deepfocus.domain.pomodoro.PomodoroController
 import com.azadevs.deepfocus.presentation.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -30,7 +30,8 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class FocusForegroundService : Service() {
 
-    @Inject lateinit var timerManager: TimerManager
+    @Inject
+    lateinit var controller: PomodoroController
 
     private val serviceScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     private var isForegroundStarted = false
@@ -60,16 +61,11 @@ class FocusForegroundService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
         when (intent?.action) {
-
             ACTION_START -> {
-                val duration = intent.getLongExtra(EXTRA_DURATION, 0L)
-
-                timerManager.start(serviceScope, duration)
-
                 if (!isForegroundStarted) {
                     startForeground(
                         NOTIFICATION_ID,
-                        buildNotification(timerManager.timerState.value)
+                        buildNotification(controller.state.value)
                     )
                     isForegroundStarted = true
                 }
@@ -79,18 +75,18 @@ class FocusForegroundService : Service() {
                 if (!isForegroundStarted) {
                     startForeground(
                         NOTIFICATION_ID,
-                        buildNotification(timerManager.timerState.value)
+                        buildNotification(controller.state.value)
                     )
                     isForegroundStarted = true
                 }
             }
 
-            ACTION_PAUSE -> timerManager.pause()
+            ACTION_PAUSE -> controller.pause()
 
-            ACTION_RESUME -> timerManager.resume(serviceScope)
+            ACTION_RESUME -> controller.resume()
 
             ACTION_STOP -> {
-                timerManager.stop(serviceScope)
+                controller.stop()
                 stopForeground(STOP_FOREGROUND_REMOVE)
                 stopSelf()
             }
@@ -101,13 +97,9 @@ class FocusForegroundService : Service() {
 
     private fun observeTimer() {
         serviceScope.launch {
-            timerManager.timerState.collect { state ->
+            controller.state.collect { state ->
                 if (isForegroundStarted) {
                     updateNotification(state)
-                }
-                if (state is TimerState.Finished) {
-                    stopForeground(STOP_FOREGROUND_REMOVE)
-                    stopSelf()
                 }
             }
         }
@@ -115,10 +107,10 @@ class FocusForegroundService : Service() {
 
     override fun onBind(intent: Intent?): IBinder? = null
 
-    private fun buildNotification(state: TimerState): Notification {
+    private fun buildNotification(state: PomodoroState): Notification {
 
         val activityIntent = Intent(this, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            this.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
         }
 
         val activityPendingIntent = PendingIntent.getActivity(
@@ -129,19 +121,20 @@ class FocusForegroundService : Service() {
         )
 
         val builder = NotificationCompat.Builder(this, CHANNEL_ID)
+            .setContentTitle("DeepFocus")
             .setSmallIcon(R.drawable.ic_notification)
             .setOngoing(true)
             .setContentIntent(activityPendingIntent)
             .setAutoCancel(false)
 
-        when (state) {
-            is TimerState.Running -> {
+        when {
+            state.isRunning -> {
                 builder
                     .setContentText(TimeFormatter.format(state.remainingMillis))
                     .addAction(R.drawable.ic_pause, "Pause", pendingIntent(ACTION_PAUSE))
             }
 
-            is TimerState.Paused -> {
+            !state.isRunning && state.remainingMillis > 0L -> {
                 builder
                     .setContentText("Paused • ${TimeFormatter.format(state.remainingMillis)}")
                     .addAction(R.drawable.ic_play, "Resume", pendingIntent(ACTION_RESUME))
@@ -167,7 +160,7 @@ class FocusForegroundService : Service() {
         )
     }
 
-    private fun updateNotification(state: TimerState) {
+    private fun updateNotification(state: PomodoroState) {
         val manager = getSystemService(NotificationManager::class.java)
         manager.notify(NOTIFICATION_ID, buildNotification(state))
     }
