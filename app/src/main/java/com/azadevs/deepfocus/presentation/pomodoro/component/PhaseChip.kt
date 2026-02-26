@@ -12,9 +12,9 @@ import com.azadevs.deepfocus.domain.model.PomodoroPhase
 @Composable
 fun PhaseChip(phase: PomodoroPhase) {
     val label = when (phase) {
-        PomodoroPhase.FOCUS -> "FOCUS"
-        PomodoroPhase.SHORT_BREAK -> "SHORT BREAK"
-        PomodoroPhase.LONG_BREAK -> "LONG BREAK"
+        PomodoroPhase.FOCUS -> "Focus"
+        PomodoroPhase.SHORT_BREAK -> "Short Break"
+        PomodoroPhase.LONG_BREAK -> "Long Break"
     }
 
     AssistChip(

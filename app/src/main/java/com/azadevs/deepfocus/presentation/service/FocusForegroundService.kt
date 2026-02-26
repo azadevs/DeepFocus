@@ -8,6 +8,7 @@ import android.app.Service
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
+import android.os.PowerManager
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.azadevs.deepfocus.R
@@ -33,6 +34,8 @@ class FocusForegroundService : Service() {
     @Inject
     lateinit var controller: PomodoroController
 
+    private var wakeLock: PowerManager.WakeLock? = null
+
     private val serviceScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     private var isForegroundStarted = false
 
@@ -46,6 +49,7 @@ class FocusForegroundService : Service() {
         const val ACTION_STOP = "ACTION_STOP"
         const val ACTION_START = "ACTION_START"
         const val EXTRA_DURATION = "EXTRA_DURATION"
+        const val ACTION_STOP_ALARM = "ACTION_STOP_ALARM"
     }
 
     override fun onCreate() {
@@ -54,8 +58,23 @@ class FocusForegroundService : Service() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createNotificationChannel()
         }
-
+        acquireWakeLock()
         observeTimer()
+    }
+
+    private fun acquireWakeLock() {
+        val powerManager = getSystemService(POWER_SERVICE) as PowerManager
+        wakeLock = powerManager.newWakeLock(
+            PowerManager.PARTIAL_WAKE_LOCK,
+            "DeepFocus::TimerWakeLock"
+        )
+        wakeLock?.acquire(100 * 60 * 1000L)
+    }
+
+    private fun releaseWakeLock() {
+        if (wakeLock?.isHeld == true) {
+            wakeLock?.release()
+        }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -69,6 +88,10 @@ class FocusForegroundService : Service() {
                     )
                     isForegroundStarted = true
                 }
+            }
+
+            ACTION_STOP_ALARM -> {
+                controller.stopAlarm()
             }
 
             ACTION_FOREGROUND -> {
@@ -119,32 +142,48 @@ class FocusForegroundService : Service() {
             activityIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
+        val deleteIntent = Intent(this, FocusForegroundService::class.java).apply {
+            action = ACTION_STOP_ALARM
+        }
+        val deletePendingIntent = PendingIntent.getService(
+            this, 1, deleteIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
 
         val builder = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("DeepFocus")
             .setSmallIcon(R.drawable.ic_notification)
             .setOngoing(true)
             .setContentIntent(activityPendingIntent)
+            .setDeleteIntent(deletePendingIntent)
             .setAutoCancel(false)
 
         when {
+            state.isRinging -> {
+                builder
+                    .setContentTitle("Timer is finished! ⏰")
+                    .setContentText("Ready to start.")
+                    .setOngoing(false)
+                    .addAction(R.drawable.ic_stop, "Turn off alarm", pendingIntent(ACTION_STOP_ALARM))
+            }
             state.isRunning -> {
                 builder
                     .setContentText(TimeFormatter.format(state.remainingMillis))
+                    .setOngoing(true)
                     .addAction(R.drawable.ic_pause, "Pause", pendingIntent(ACTION_PAUSE))
             }
-
             !state.isRunning && state.remainingMillis > 0L -> {
                 builder
                     .setContentText("Paused • ${TimeFormatter.format(state.remainingMillis)}")
+                    .setOngoing(true)
                     .addAction(R.drawable.ic_play, "Resume", pendingIntent(ACTION_RESUME))
             }
-
-            else -> builder.setContentText("Ready")
+            else -> {
+                builder.setContentText("Ready").setOngoing(true)
+            }
         }
 
-        builder.addAction(R.drawable.ic_stop, "Stop", pendingIntent(ACTION_STOP))
-
+        if (!state.isRinging) {
+            builder.addAction(R.drawable.ic_stop, "Stop", pendingIntent(ACTION_STOP))
+        }
         return builder.build()
     }
 
@@ -179,5 +218,6 @@ class FocusForegroundService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         serviceScope.cancel()
+        releaseWakeLock()
     }
 }
