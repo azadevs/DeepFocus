@@ -14,6 +14,7 @@ import com.azadevs.deepfocus.R
 import com.azadevs.deepfocus.domain.model.TimerState
 import com.azadevs.deepfocus.core.util.TimeFormatter
 import com.azadevs.deepfocus.domain.timer.TimerManager
+import com.azadevs.deepfocus.presentation.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -29,34 +30,31 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class FocusForegroundService : Service() {
 
-    @Inject
-    lateinit var timerManager: TimerManager
-    private val serviceScope = CoroutineScope(
-        Dispatchers.Default + SupervisorJob()
-    )
+    @Inject lateinit var timerManager: TimerManager
+
+    private val serviceScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     private var isForegroundStarted = false
 
     companion object {
         private const val CHANNEL_ID = "focus_channel"
         private const val NOTIFICATION_ID = 1
 
+        const val ACTION_FOREGROUND = "ACTION_FOREGROUND"
         const val ACTION_PAUSE = "ACTION_PAUSE"
         const val ACTION_RESUME = "ACTION_RESUME"
         const val ACTION_STOP = "ACTION_STOP"
-
         const val ACTION_START = "ACTION_START"
-
         const val EXTRA_DURATION = "EXTRA_DURATION"
     }
 
-    private fun observeTimer() {
-        serviceScope.launch {
-            timerManager.timerState.collect { state ->
-                if (isForegroundStarted) {
-                    updateNotification(state)
-                }
-            }
+    override fun onCreate() {
+        super.onCreate()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createNotificationChannel()
         }
+
+        observeTimer()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -65,28 +63,31 @@ class FocusForegroundService : Service() {
 
             ACTION_START -> {
                 val duration = intent.getLongExtra(EXTRA_DURATION, 0L)
-                timerManager.start(
-                    scope = serviceScope,
-                    durationMillis = duration
-                )
-                val initialState = TimerState.Running(duration)
-                startForeground(
-                    NOTIFICATION_ID,
-                    buildNotification(initialState)
-                )
 
-                isForegroundStarted = true
+                timerManager.start(serviceScope, duration)
 
-                observeTimer()
+                if (!isForegroundStarted) {
+                    startForeground(
+                        NOTIFICATION_ID,
+                        buildNotification(timerManager.timerState.value)
+                    )
+                    isForegroundStarted = true
+                }
             }
 
-            ACTION_PAUSE -> {
-                timerManager.pause()
+            ACTION_FOREGROUND -> {
+                if (!isForegroundStarted) {
+                    startForeground(
+                        NOTIFICATION_ID,
+                        buildNotification(timerManager.timerState.value)
+                    )
+                    isForegroundStarted = true
+                }
             }
 
-            ACTION_RESUME -> {
-                timerManager.resume(serviceScope)
-            }
+            ACTION_PAUSE -> timerManager.pause()
+
+            ACTION_RESUME -> timerManager.resume(serviceScope)
 
             ACTION_STOP -> {
                 timerManager.stop(serviceScope)
@@ -98,15 +99,17 @@ class FocusForegroundService : Service() {
         return START_STICKY
     }
 
-    override fun onCreate() {
-        super.onCreate()
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            createNotificationChannel()
-        }
-
+    private fun observeTimer() {
         serviceScope.launch {
-            timerManager.restoreIfNeeded(serviceScope)
+            timerManager.timerState.collect { state ->
+                if (isForegroundStarted) {
+                    updateNotification(state)
+                }
+                if (state is TimerState.Finished) {
+                    stopForeground(STOP_FOREGROUND_REMOVE)
+                    stopSelf()
+                }
+            }
         }
     }
 
@@ -114,43 +117,40 @@ class FocusForegroundService : Service() {
 
     private fun buildNotification(state: TimerState): Notification {
 
+        val activityIntent = Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        }
+
+        val activityPendingIntent = PendingIntent.getActivity(
+            this,
+            0,
+            activityIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
         val builder = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("DeepFocus")
             .setSmallIcon(R.drawable.ic_notification)
             .setOngoing(true)
+            .setContentIntent(activityPendingIntent)
+            .setAutoCancel(false)
 
         when (state) {
-
             is TimerState.Running -> {
                 builder
                     .setContentText(TimeFormatter.format(state.remainingMillis))
-                    .addAction(
-                        R.drawable.ic_pause,
-                        "Pause",
-                        pendingIntent(ACTION_PAUSE)
-                    )
+                    .addAction(R.drawable.ic_pause, "Pause", pendingIntent(ACTION_PAUSE))
             }
 
             is TimerState.Paused -> {
                 builder
-                    .setContentText("Paused")
-                    .addAction(
-                        R.drawable.ic_play,
-                        "Resume",
-                        pendingIntent(ACTION_RESUME)
-                    )
+                    .setContentText("Paused • ${TimeFormatter.format(state.remainingMillis)}")
+                    .addAction(R.drawable.ic_play, "Resume", pendingIntent(ACTION_RESUME))
             }
 
-            else -> {
-                builder.setContentText("Idle")
-            }
+            else -> builder.setContentText("Ready")
         }
 
-        builder.addAction(
-            R.drawable.ic_stop,
-            "Stop",
-            pendingIntent(ACTION_STOP)
-        )
+        builder.addAction(R.drawable.ic_stop, "Stop", pendingIntent(ACTION_STOP))
 
         return builder.build()
     }
@@ -159,7 +159,6 @@ class FocusForegroundService : Service() {
         val intent = Intent(this, FocusForegroundService::class.java).apply {
             this.action = action
         }
-
         return PendingIntent.getService(
             this,
             action.hashCode(),
@@ -169,20 +168,17 @@ class FocusForegroundService : Service() {
     }
 
     private fun updateNotification(state: TimerState) {
-        val notification = buildNotification(state)
         val manager = getSystemService(NotificationManager::class.java)
-        manager.notify(NOTIFICATION_ID, notification)
+        manager.notify(NOTIFICATION_ID, buildNotification(state))
     }
-
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun createNotificationChannel() {
-        val channel =
-            NotificationChannel(
-                CHANNEL_ID,
-                "DeepFocus Timer",
-                NotificationManager.IMPORTANCE_LOW
-            )
+        val channel = NotificationChannel(
+            CHANNEL_ID,
+            "DeepFocus Timer",
+            NotificationManager.IMPORTANCE_LOW
+        )
         val manager = getSystemService(NotificationManager::class.java)
         manager.createNotificationChannel(channel)
     }
