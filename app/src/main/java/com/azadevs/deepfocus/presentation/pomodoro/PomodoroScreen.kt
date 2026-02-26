@@ -1,5 +1,6 @@
 package com.azadevs.deepfocus.presentation.pomodoro
 
+import android.content.Context
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
@@ -42,8 +43,10 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.azadevs.deepfocus.R
 import com.azadevs.deepfocus.domain.model.PomodoroPhase
 import com.azadevs.deepfocus.presentation.pomodoro.component.InfoPill
 import com.azadevs.deepfocus.presentation.pomodoro.component.PhaseChip
@@ -90,7 +93,7 @@ fun PomodoroScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("DeepFocus") },
+                title = { Text(stringResource(R.string.app_name)) },
                 actions = {
                     AssistChip(
                         onClick = {},
@@ -149,7 +152,7 @@ fun PomodoroScreen(
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 AnimatedContent(
                                     targetState = formatTime(state.remainingMillis),
-                                    label = "time"
+                                    label = stringResource(R.string.time)
                                 ) { formatted ->
                                     Text(
                                         text = formatted,
@@ -161,7 +164,7 @@ fun PomodoroScreen(
                                 Spacer(modifier = Modifier.height(6.dp))
 
                                 Text(
-                                    text = phaseSubtitle(state.phase),
+                                    text = phaseSubtitle(state.phase, context),
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -187,7 +190,7 @@ fun PomodoroScreen(
                                     ) {
                                         Icon(Icons.Outlined.PlayArrow, contentDescription = null)
                                         Spacer(Modifier.width(8.dp))
-                                        Text("Start")
+                                        Text(stringResource(R.string.start))
                                     }
                                 }
 
@@ -198,7 +201,7 @@ fun PomodoroScreen(
                                     ) {
                                         Icon(Icons.Outlined.Pause, contentDescription = null)
                                         Spacer(Modifier.width(8.dp))
-                                        Text("Pause")
+                                        Text(stringResource(R.string.pause))
                                     }
                                 }
 
@@ -209,7 +212,7 @@ fun PomodoroScreen(
                                     ) {
                                         Icon(Icons.Outlined.PlayArrow, contentDescription = null)
                                         Spacer(Modifier.width(8.dp))
-                                        Text("Resume")
+                                        Text(stringResource(R.string.resume))
                                     }
                                 }
                             }
@@ -220,7 +223,7 @@ fun PomodoroScreen(
                             ) {
                                 Icon(Icons.Outlined.Stop, contentDescription = null)
                                 Spacer(Modifier.width(8.dp))
-                                Text("Stop")
+                                Text(stringResource(R.string.pause))
                             }
                         }
                     }
@@ -239,9 +242,18 @@ fun PomodoroScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        InfoPill(title = "Focus", value = "25m")
-                        InfoPill(title = "Short", value = "5m")
-                        InfoPill(title = "Long", value = "15m")
+                        InfoPill(
+                            title = stringResource(R.string.focus),
+                            value = stringResource(R.string._25m)
+                        )
+                        InfoPill(
+                            title = stringResource(R.string.shortBreak),
+                            value = stringResource(R.string._5m)
+                        )
+                        InfoPill(
+                            title = stringResource(R.string.longBreak),
+                            value = stringResource(R.string._15m)
+                        )
                     }
                 }
             }
@@ -249,10 +261,10 @@ fun PomodoroScreen(
     }
 }
 
-private fun phaseSubtitle(phase: PomodoroPhase): String =
+private fun phaseSubtitle(phase: PomodoroPhase, context: Context): String =
     when (phase) {
-        PomodoroPhase.FOCUS -> "Deep work time"
-        PomodoroPhase.SHORT_BREAK -> "Recharge briefly"
-        PomodoroPhase.LONG_BREAK -> "Full reset break"
+        PomodoroPhase.FOCUS -> context.getString(R.string.deep_work_time)
+        PomodoroPhase.SHORT_BREAK -> context.getString(R.string.recharge_briefly)
+        PomodoroPhase.LONG_BREAK -> context.getString(R.string.full_reset_break)
     }
 

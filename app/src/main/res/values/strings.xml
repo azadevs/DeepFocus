@@ -4,4 +4,14 @@
     <string name="pause">Pause</string>
     <string name="resume">Resume</string>
     <string name="stop">Stop</string>
+    <string name="focus">Focus</string>
+    <string name="shortBreak">Short</string>
+    <string name="longBreak">Long</string>
+    <string name="time">time</string>
+    <string name="deep_work_time">Deep work time</string>
+    <string name="recharge_briefly">Recharge briefly</string>
+    <string name="full_reset_break">Full reset break</string>
+    <string name="_25m">25m</string>
+    <string name="_5m">5m</string>
+    <string name="_15m">15m</string>
 </resources>

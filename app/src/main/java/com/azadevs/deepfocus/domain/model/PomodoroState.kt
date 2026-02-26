@@ -9,5 +9,6 @@ data class PomodoroState(
     val cycleIndex: Int = 1,
     val remainingMillis: Long = 0L,
     val phaseDurationMillis: Long = 0L,
-    val isRunning: Boolean = false
+    val isRunning: Boolean = false,
+    val isRinging: Boolean = false
 )

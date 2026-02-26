@@ -2,6 +2,7 @@ package com.azadevs.deepfocus.domain.pomodoro
 
 import android.content.Context
 import android.content.Intent
+import android.media.MediaPlayer
 import android.media.RingtoneManager
 import androidx.core.content.ContextCompat
 import com.azadevs.deepfocus.domain.model.FocusSession
@@ -41,6 +42,8 @@ class PomodoroController @Inject constructor(
     private val _state = MutableStateFlow(PomodoroState())
     val state: StateFlow<PomodoroState> = _state.asStateFlow()
 
+    private var mediaPlayer: MediaPlayer? = null
+
     private var observeJob: Job? = null
     private var phaseStartTime: Long = 0L
 
@@ -67,7 +70,6 @@ class PomodoroController @Inject constructor(
             putExtra(FocusForegroundService.EXTRA_DURATION, duration)
         }
         ContextCompat.startForegroundService(context, intent)
-        playNotificationSound()
     }
 
     fun pause() {
@@ -143,7 +145,7 @@ class PomodoroController @Inject constructor(
                 )
             }
         }
-        playNotificationSound()
+        playAlarmSound()
         moveToNextPhase()
     }
 
@@ -151,14 +153,12 @@ class PomodoroController @Inject constructor(
         val current = _state.value
 
         val nextPhase = when (current.phase) {
-
             PomodoroPhase.FOCUS -> {
                 if (current.cycleIndex % config.cyclesBeforeLongBreak == 0)
                     PomodoroPhase.LONG_BREAK
                 else
                     PomodoroPhase.SHORT_BREAK
             }
-
             PomodoroPhase.SHORT_BREAK,
             PomodoroPhase.LONG_BREAK -> PomodoroPhase.FOCUS
         }
@@ -169,25 +169,40 @@ class PomodoroController @Inject constructor(
             else
                 current.cycleIndex
 
-        _state.value = PomodoroState(
+        val nextDuration = durationFor(nextPhase)
+
+        _state.value = current.copy(
             phase = nextPhase,
             cycleIndex = nextCycle,
-            remainingMillis = 0L,
-            phaseDurationMillis = durationFor(nextPhase),
+            remainingMillis = nextDuration,
+            phaseDurationMillis = nextDuration,
             isRunning = false
         )
     }
 
-    private fun playNotificationSound() {
+    private fun playAlarmSound() {
         try {
-            val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-            val ringtone = RingtoneManager.getRingtone(context, defaultSoundUri)
-            ringtone.play()
+            val alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+            mediaPlayer = MediaPlayer.create(context, alarmUri).apply {
+                isLooping = true
+                start()
+            }
+            _state.value = _state.value.copy(isRinging = true)
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
+    fun stopAlarm() {
+        mediaPlayer?.let {
+            if (it.isPlaying) it.stop()
+            it.release()
+        }
+        mediaPlayer = null
+        if (_state.value.isRinging) {
+            _state.value = _state.value.copy(isRinging = false)
+        }
+    }
     private fun durationFor(phase: PomodoroPhase): Long {
         return when (phase) {
             PomodoroPhase.FOCUS ->
