@@ -1,5 +1,8 @@
 package com.azadevs.deepfocus.domain.pomodoro
 
+import android.content.Context
+import android.content.Intent
+import androidx.core.content.ContextCompat
 import com.azadevs.deepfocus.domain.model.FocusSession
 import com.azadevs.deepfocus.domain.model.PomodoroConfig
 import com.azadevs.deepfocus.domain.model.PomodoroPhase
@@ -9,8 +12,11 @@ import com.azadevs.deepfocus.domain.model.TimerEvent
 import com.azadevs.deepfocus.domain.model.TimerState
 import com.azadevs.deepfocus.domain.repository.FocusRepository
 import com.azadevs.deepfocus.domain.timer.TimerManager
+import com.azadevs.deepfocus.presentation.service.FocusForegroundService
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,7 +33,6 @@ class PomodoroController @Inject constructor(
     private val timerManager: TimerManager,
     private val focusRepository: FocusRepository
 ) {
-
     private val config = PomodoroConfig()
 
     private val _state = MutableStateFlow(PomodoroState())
@@ -36,19 +41,27 @@ class PomodoroController @Inject constructor(
     private var observeJob: Job? = null
     private var phaseStartTime: Long = 0L
 
-    fun start(scope: CoroutineScope) {
+    private val controllerScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+
+    init {
+        observeTimer()
+    }
+
+    fun start(context: Context) {
         val duration = durationFor(_state.value.phase)
 
         phaseStartTime = System.currentTimeMillis()
-
         _state.value = _state.value.copy(
             remainingMillis = duration,
             phaseDurationMillis = duration,
             isRunning = true
         )
 
-        timerManager.start(scope, duration)
-        observeTimer(scope)
+        val intent = Intent(context, FocusForegroundService::class.java).apply {
+            action = FocusForegroundService.ACTION_START
+            putExtra(FocusForegroundService.EXTRA_DURATION, duration)
+        }
+        ContextCompat.startForegroundService(context, intent)
     }
 
     fun pause() {
@@ -56,30 +69,30 @@ class PomodoroController @Inject constructor(
         _state.value = _state.value.copy(isRunning = false)
     }
 
-    fun resume(scope: CoroutineScope) {
-        timerManager.resume(scope)
+    fun resume() {
+        timerManager.resume(controllerScope)
         _state.value = _state.value.copy(isRunning = true)
     }
 
-    fun stop(scope: CoroutineScope) {
-        timerManager.stop(scope)
+    fun stop() {
+        timerManager.stop(controllerScope)
         _state.value = PomodoroState()
     }
 
-    private fun observeTimer(scope: CoroutineScope) {
+    private fun observeTimer() {
         observeJob?.cancel()
 
-        observeJob = scope.launch {
+        observeJob = controllerScope.launch {
 
             launch {
                 timerManager.timerState.collect { timerState ->
                     when (timerState) {
                         is TimerState.Running -> {
                             _state.value = _state.value.copy(
-                                remainingMillis = timerState.remainingMillis
+                                remainingMillis = timerState.remainingMillis,
+                                isRunning = true
                             )
                         }
-
                         is TimerState.Paused -> {
                             _state.value = _state.value.copy(
                                 remainingMillis = timerState.remainingMillis,
@@ -87,7 +100,10 @@ class PomodoroController @Inject constructor(
                             )
                         }
 
-                        else -> Unit
+                        is TimerState.Finished->{
+
+                        }
+                        else -> {}
                     }
                 }
             }
@@ -95,23 +111,21 @@ class PomodoroController @Inject constructor(
             launch {
                 timerManager.events.collect { event ->
                     if (event is TimerEvent.Finished) {
-                        handlePhaseFinished(scope)
+                        handlePhaseFinished()
                     }
                 }
             }
         }
     }
 
-    private fun handlePhaseFinished(scope: CoroutineScope) {
-
+    private fun handlePhaseFinished() {
         val currentPhase = _state.value.phase
 
         if (currentPhase == PomodoroPhase.FOCUS) {
-
             val endTime = System.currentTimeMillis()
             val startTime = phaseStartTime
 
-            scope.launch {
+            controllerScope.launch {
                 focusRepository.upsertSession(
                     FocusSession(
                         id = 0L,
@@ -123,9 +137,10 @@ class PomodoroController @Inject constructor(
                 )
             }
         }
-        moveToNextPhase(scope)
+        moveToNextPhase()
     }
-    private fun moveToNextPhase(scope: CoroutineScope) {
+
+    private fun moveToNextPhase() {
         val current = _state.value
 
         val nextPhase = when (current.phase) {
@@ -149,10 +164,11 @@ class PomodoroController @Inject constructor(
 
         _state.value = PomodoroState(
             phase = nextPhase,
-            cycleIndex = nextCycle
+            cycleIndex = nextCycle,
+            remainingMillis = 0L,
+            phaseDurationMillis = durationFor(nextPhase),
+            isRunning = false
         )
-
-        start(scope)
     }
 
     private fun durationFor(phase: PomodoroPhase): Long {
@@ -166,12 +182,5 @@ class PomodoroController @Inject constructor(
             PomodoroPhase.LONG_BREAK ->
                 config.longBreakMinutes * 60_000L
         }
-    }
-
-    fun selectPhase(phase: PomodoroPhase) {
-        _state.value = PomodoroState(
-            phase = phase,
-            cycleIndex = _state.value.cycleIndex
-        )
     }
 }
