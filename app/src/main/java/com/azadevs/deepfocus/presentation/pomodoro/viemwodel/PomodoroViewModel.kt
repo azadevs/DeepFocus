@@ -1,8 +1,7 @@
 package com.azadevs.deepfocus.presentation.pomodoro.viemwodel
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.azadevs.deepfocus.domain.model.PomodoroPhase
 import com.azadevs.deepfocus.domain.model.PomodoroState
 import com.azadevs.deepfocus.domain.pomodoro.PomodoroController
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,23 +19,19 @@ class PomodoroViewModel @Inject constructor(
 
     val state: StateFlow<PomodoroState> = controller.state
 
-    fun onStartClick() {
-        controller.start(viewModelScope)
-    }
-
     fun onPauseClick() {
         controller.pause()
     }
 
     fun onResumeClick() {
-        controller.resume(viewModelScope)
+        controller.resume()
     }
 
     fun onStopClick() {
-        controller.stop(viewModelScope)
+        controller.stop()
     }
 
-    fun onPhaseSelected(phase: PomodoroPhase) {
-        controller.selectPhase(phase)
+    fun onStartClick(context: Context) {
+        controller.start(context)
     }
 }
