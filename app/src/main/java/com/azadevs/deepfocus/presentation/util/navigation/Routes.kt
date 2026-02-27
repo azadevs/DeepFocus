@@ -9,3 +9,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 object PomodoroRoute
+
+@Serializable
+object StatisticsRoute
+
+@Serializable
+object SettingsRoute

@@ -5,6 +5,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.azadevs.deepfocus.presentation.pomodoro.PomodoroScreen
+import com.azadevs.deepfocus.presentation.settings.SettingsScreen
+import com.azadevs.deepfocus.presentation.statistics.StatisticsScreen
 
 /**
  * Created by : Azamat Kalmurzaev
@@ -19,7 +21,20 @@ fun AppNavigation() {
         startDestination = PomodoroRoute
     ) {
         composable<PomodoroRoute> {
-            PomodoroScreen()
+            PomodoroScreen(
+                onNavigateToStatistics = {
+                    navController.navigate(StatisticsRoute)
+                },
+                onNavigateToSettings = {
+                    navController.navigate(SettingsRoute)
+                }
+            )
+        }
+        composable<StatisticsRoute> {
+            StatisticsScreen()
+        }
+        composable<SettingsRoute> {
+            SettingsScreen()
         }
     }
 }
