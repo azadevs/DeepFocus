@@ -2,7 +2,9 @@ package com.azadevs.deepfocus.di
 
 import com.azadevs.deepfocus.data.datastore.TimerPersistenceDataStore
 import com.azadevs.deepfocus.data.repository.ProdFocusRepository
+import com.azadevs.deepfocus.data.repository.ProdSettingsRepository
 import com.azadevs.deepfocus.domain.repository.FocusRepository
+import com.azadevs.deepfocus.domain.repository.SettingsRepository
 import com.azadevs.deepfocus.domain.repository.TimerRepository
 import dagger.Binds
 import dagger.Module
@@ -29,5 +31,12 @@ abstract class RepositoryModule {
     abstract fun bindTimerRepository(
         impl: TimerPersistenceDataStore
     ): TimerRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindSettingsRepository(
+        impl: ProdSettingsRepository
+    ): SettingsRepository
+
 
 }

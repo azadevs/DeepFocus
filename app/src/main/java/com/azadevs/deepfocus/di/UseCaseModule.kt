@@ -6,7 +6,11 @@ import com.azadevs.deepfocus.domain.usecase.session.GetSessionsBetweenUseCase
 import com.azadevs.deepfocus.domain.usecase.session.GetTotalFocusMinutesUseCase
 import com.azadevs.deepfocus.domain.usecase.session.UpsertSessionUseCase
 import com.azadevs.deepfocus.domain.usecase.settings.GetFocusDurationUseCase
+import com.azadevs.deepfocus.domain.usecase.settings.GetLongBreakDurationUseCase
+import com.azadevs.deepfocus.domain.usecase.settings.GetShortBreakDurationUseCase
 import com.azadevs.deepfocus.domain.usecase.settings.SetFocusDurationUseCase
+import com.azadevs.deepfocus.domain.usecase.settings.SetLongBreakDurationUseCase
+import com.azadevs.deepfocus.domain.usecase.settings.SetShortBreakDurationUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -29,7 +33,11 @@ object UseCaseModule {
         total: GetTotalFocusMinutesUseCase,
         between: GetSessionsBetweenUseCase,
         getDuration: GetFocusDurationUseCase,
-        setDuration: SetFocusDurationUseCase
+        setDuration: SetFocusDurationUseCase,
+        getShortBreakDuration: GetShortBreakDurationUseCase,
+        setShortBreakDuration: SetShortBreakDurationUseCase,
+        getLongBreakDuration: GetLongBreakDurationUseCase,
+        setLongBreakDuration: SetLongBreakDurationUseCase
     ): DeepFocusUseCases {
         return DeepFocusUseCases(
             upsert,
@@ -37,7 +45,11 @@ object UseCaseModule {
             total,
             between,
             getDuration,
-            setDuration
+            setDuration,
+            getShortBreakDuration,
+            setShortBreakDuration,
+            getLongBreakDuration,
+            setLongBreakDuration
         )
     }
 
