@@ -34,6 +34,20 @@ class SettingsViewModel @Inject constructor(
                 duration.let { _focusMinutes.value = it }
             }
         }
+        viewModelScope.launch {
+            useCases.getShortBreakDuration().collect { duration ->
+                duration.let {
+                    _shortBreakMinutes.value = it
+                }
+            }
+            viewModelScope.launch {
+                useCases.getLongBreakDuration().collect { duration ->
+                    duration.let {
+                        _longBreakMinutes.value = it
+                    }
+                }
+            }
+        }
     }
 
     fun updateFocusDuration(minutes: Int) {

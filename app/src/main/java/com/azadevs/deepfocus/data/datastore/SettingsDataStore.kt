@@ -34,4 +34,33 @@ class SettingsDataStore(
         }
     }
 
+    val shortBreakDuration = context.dataStore.data.map { preferences ->
+        preferences[Keys.SHORT_BREAK] ?: 5
+    }
+
+    suspend fun setShortBreakDuration(value: Int) {
+        context.dataStore.edit { preferences ->
+            preferences[Keys.SHORT_BREAK] = value
+        }
+    }
+
+    val longBreakDuration = context.dataStore.data.map { preferences ->
+        preferences[Keys.LONG_BREAK] ?: 15
+    }
+
+    suspend fun setLongBreakDuration(value: Int) {
+        context.dataStore.edit { preferences ->
+            preferences[Keys.LONG_BREAK] = value
+        }
+    }
+
+    val soundEnabled = context.dataStore.data.map { preferences ->
+        preferences[Keys.SOUND_ENABLED] ?: true
+    }
+
+    suspend fun setSoundEnabled(value: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[Keys.SOUND_ENABLED] = value
+        }
+    }
 }
