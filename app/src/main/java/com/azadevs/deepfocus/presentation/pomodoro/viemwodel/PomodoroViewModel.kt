@@ -34,4 +34,12 @@ class PomodoroViewModel @Inject constructor(
     fun onStartClick(context: Context) {
         controller.start(context)
     }
+
+    fun onStopAlarmClick() {
+        controller.stopAlarm()
+    }
+
+    fun onSkipClick() {
+        controller.skip()
+    }
 }

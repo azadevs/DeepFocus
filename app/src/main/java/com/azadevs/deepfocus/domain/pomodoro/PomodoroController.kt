@@ -101,6 +101,7 @@ class PomodoroController @Inject constructor(
                                 isRunning = true
                             )
                         }
+
                         is TimerState.Paused -> {
                             _state.value = _state.value.copy(
                                 remainingMillis = timerState.remainingMillis,
@@ -108,9 +109,10 @@ class PomodoroController @Inject constructor(
                             )
                         }
 
-                        is TimerState.Finished->{
+                        is TimerState.Finished -> {
 
                         }
+
                         else -> {}
                     }
                 }
@@ -159,6 +161,7 @@ class PomodoroController @Inject constructor(
                 else
                     PomodoroPhase.SHORT_BREAK
             }
+
             PomodoroPhase.SHORT_BREAK,
             PomodoroPhase.LONG_BREAK -> PomodoroPhase.FOCUS
         }
@@ -203,6 +206,7 @@ class PomodoroController @Inject constructor(
             _state.value = _state.value.copy(isRinging = false)
         }
     }
+
     private fun durationFor(phase: PomodoroPhase): Long {
         return when (phase) {
             PomodoroPhase.FOCUS ->
@@ -214,5 +218,11 @@ class PomodoroController @Inject constructor(
             PomodoroPhase.LONG_BREAK ->
                 config.longBreakMinutes * 60_000L
         }
+    }
+
+    fun skip() {
+        stopAlarm()
+        timerManager.stop(controllerScope)
+        moveToNextPhase()
     }
 }
