@@ -2,6 +2,7 @@ package com.azadevs.deepfocus.presentation.pomodoro
 
 import android.content.Context
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
@@ -16,22 +17,28 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Pause
-import androidx.compose.material.icons.outlined.PlayArrow
-import androidx.compose.material.icons.outlined.Stop
-import androidx.compose.material3.AssistChip
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.filled.NotificationsOff
+import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.SkipNext
+import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -44,6 +51,7 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.azadevs.deepfocus.R
@@ -74,15 +82,18 @@ fun PomodoroScreen(
         label = "progress"
     )
     val scale by animateFloatAsState(
-        targetValue = if (state.isRunning) 1f else 0.95f,
-        animationSpec = spring(),
+        targetValue = if (state.isRunning) 1.05f else 1f,
+        animationSpec = spring(dampingRatio = 0.6f, stiffness = 300f),
         label = "scale"
     )
-    val phaseColor = when (state.phase) {
-        PomodoroPhase.FOCUS -> MaterialTheme.colorScheme.primary
-        PomodoroPhase.SHORT_BREAK -> MaterialTheme.colorScheme.secondary
-        PomodoroPhase.LONG_BREAK -> MaterialTheme.colorScheme.error
-    }
+    val phaseColor by animateColorAsState(
+        targetValue = when (state.phase) {
+            PomodoroPhase.FOCUS -> MaterialTheme.colorScheme.primary
+            PomodoroPhase.SHORT_BREAK -> MaterialTheme.colorScheme.secondary
+            PomodoroPhase.LONG_BREAK -> MaterialTheme.colorScheme.tertiary
+        }, label = "phaseColor"
+    )
+
     val haptic = LocalHapticFeedback.current
     val context = LocalContext.current
 
@@ -93,13 +104,23 @@ fun PomodoroScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.app_name)) },
+                title = { Text(stringResource(R.string.app_name), fontWeight = FontWeight.Bold) },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background.copy(alpha = 0.8f)
+                ),
                 actions = {
-                    AssistChip(
-                        onClick = {},
-                        label = { Text("Cycle ${state.cycleIndex}") }
-                    )
-                    Spacer(modifier = Modifier.width(12.dp))
+                    Surface(
+                        shape = RoundedCornerShape(16.dp),
+                        color = MaterialTheme.colorScheme.surfaceVariant,
+                    ) {
+                        Text(
+                            text = "Cycle ${state.cycleIndex}",
+                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(16.dp))
                 }
             )
         }
@@ -111,149 +132,160 @@ fun PomodoroScreen(
                     brush = Brush.verticalGradient(
                         colors = listOf(
                             MaterialTheme.colorScheme.background,
-                            MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)
+                            phaseColor.copy(alpha = 0.15f)
                         )
                     )
                 )
         ) {
             Column(
                 modifier = Modifier
+                    .fillMaxSize()
                     .padding(padding)
-                    .padding(20.dp),
-                verticalArrangement = Arrangement.Center,
+                    .padding(bottom = 32.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Spacer(modifier = Modifier.height(24.dp))
 
-                PhaseChip(phase = state.phase)
+                PhaseChip(phase = state.phase, color = phaseColor)
 
-                Spacer(modifier = Modifier.height(18.dp))
+                Spacer(modifier = Modifier.weight(1f))
 
-                ElevatedCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(24.dp)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(20.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
+                Box(contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(
+                        progress = { progress },
+                        color = phaseColor,
+                        trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                        strokeWidth = 12.dp,
+                        modifier = Modifier.size(280.dp)
+                    )
 
-                        Box(contentAlignment = Alignment.Center) {
-
-                            CircularProgressIndicator(
-                                progress = { progress },
-                                color = phaseColor,
-                                trackColor = phaseColor.copy(alpha = 0.15f),
-                                strokeWidth = 10.dp,
-                                modifier = Modifier.size(220.dp)
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        AnimatedContent(
+                            targetState = formatTime(state.remainingMillis),
+                            label = "time_anim"
+                        ) { formatted ->
+                            Text(
+                                text = formatted,
+                                modifier = Modifier.scale(scale),
+                                style = MaterialTheme.typography.displayLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onBackground
                             )
-
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                AnimatedContent(
-                                    targetState = formatTime(state.remainingMillis),
-                                    label = stringResource(R.string.time)
-                                ) { formatted ->
-                                    Text(
-                                        text = formatted,
-                                        modifier = Modifier.scale(scale),
-                                        style = MaterialTheme.typography.displayMedium
-                                    )
-                                }
-
-                                Spacer(modifier = Modifier.height(6.dp))
-
-                                Text(
-                                    text = phaseSubtitle(state.phase, context),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
                         }
 
-                        Spacer(modifier = Modifier.height(18.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Text(
+                            text = phaseSubtitle(state.phase, context),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(100.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (state.isRinging) {
+                        ExtendedFloatingActionButton(
+                            onClick = { viewModel.onStopAlarmClick() },
+                            containerColor = MaterialTheme.colorScheme.errorContainer,
+                            contentColor = MaterialTheme.colorScheme.onErrorContainer,
+                            icon = {
+                                Icon(
+                                    Icons.Default.NotificationsOff,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(28.dp)
+                                )
+                            },
+                            text = {
+                                Text(
+                                    "Ovozni o'chirish",
+                                    style = MaterialTheme.typography.titleMedium
+                                )
+                            },
+                            modifier = Modifier.height(64.dp)
+                        )
+                    } else {
+                        val canStart =
+                            !state.isRunning && state.remainingMillis == state.phaseDurationMillis
+                        val showPause = state.isRunning
+                        val showResume =
+                            !state.isRunning && state.remainingMillis > 0L && state.remainingMillis < state.phaseDurationMillis
 
                         Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(24.dp)
                         ) {
-
-                            val canStart = !state.isRunning && state.remainingMillis == 0L
-                            val showPause = state.isRunning
-                            val showResume = !state.isRunning && state.remainingMillis > 0L
-
-                            when {
-                                canStart -> {
-                                    Button(
-                                        modifier = Modifier.weight(1f),
-                                        onClick = { viewModel.onStartClick(context) }
-                                    ) {
-                                        Icon(Icons.Outlined.PlayArrow, contentDescription = null)
-                                        Spacer(Modifier.width(8.dp))
-                                        Text(stringResource(R.string.start))
-                                    }
-                                }
-
-                                showPause -> {
-                                    Button(
-                                        modifier = Modifier.weight(1f),
-                                        onClick = { viewModel.onPauseClick() }
-                                    ) {
-                                        Icon(Icons.Outlined.Pause, contentDescription = null)
-                                        Spacer(Modifier.width(8.dp))
-                                        Text(stringResource(R.string.pause))
-                                    }
-                                }
-
-                                showResume -> {
-                                    Button(
-                                        modifier = Modifier.weight(1f),
-                                        onClick = { viewModel.onResumeClick() }
-                                    ) {
-                                        Icon(Icons.Outlined.PlayArrow, contentDescription = null)
-                                        Spacer(Modifier.width(8.dp))
-                                        Text(stringResource(R.string.resume))
-                                    }
-                                }
+                            FilledIconButton(
+                                onClick = { viewModel.onStopClick() },
+                                modifier = Modifier.size(56.dp),
+                                colors = IconButtonDefaults.filledIconButtonColors(
+                                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                                )
+                            ) {
+                                Icon(
+                                    Icons.Default.Stop,
+                                    contentDescription = "Stop",
+                                    modifier = Modifier.size(28.dp)
+                                )
                             }
 
-                            OutlinedButton(
-                                modifier = Modifier.weight(1f),
-                                onClick = { viewModel.onStopClick() }
+                            FloatingActionButton(
+                                onClick = {
+                                    if (canStart) viewModel.onStartClick(context)
+                                    else if (showPause) viewModel.onPauseClick()
+                                    else if (showResume) viewModel.onResumeClick()
+                                },
+                                containerColor = phaseColor,
+                                modifier = Modifier.size(80.dp),
+                                shape = CircleShape,
+                                elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 8.dp)
                             ) {
-                                Icon(Icons.Outlined.Stop, contentDescription = null)
-                                Spacer(Modifier.width(8.dp))
-                                Text(stringResource(R.string.pause))
+                                Icon(
+                                    imageVector = if (showPause) Icons.Default.Pause else Icons.Default.PlayArrow,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(40.dp)
+                                )
+                            }
+
+                            FilledIconButton(
+                                onClick = { viewModel.onSkipClick() },
+                                modifier = Modifier.size(56.dp),
+                                colors = IconButtonDefaults.filledIconButtonColors(
+                                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                                )
+                            ) {
+                                Icon(
+                                    Icons.Default.SkipNext,
+                                    contentDescription = "Skip",
+                                    modifier = Modifier.size(28.dp)
+                                )
                             }
                         }
                     }
                 }
 
-                Spacer(modifier = Modifier.height(18.dp))
+                Spacer(modifier = Modifier.height(32.dp))
 
-                ElevatedCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(20.dp)
+                Surface(
+                    shape = RoundedCornerShape(24.dp),
+                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
+                    modifier = Modifier.fillMaxWidth(0.9f)
                 ) {
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
+                        modifier = Modifier.padding(vertical = 16.dp, horizontal = 24.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        InfoPill(
-                            title = stringResource(R.string.focus),
-                            value = stringResource(R.string._25m)
-                        )
-                        InfoPill(
-                            title = stringResource(R.string.shortBreak),
-                            value = stringResource(R.string._5m)
-                        )
-                        InfoPill(
-                            title = stringResource(R.string.longBreak),
-                            value = stringResource(R.string._15m)
-                        )
+                        InfoPill(stringResource(R.string.focus), stringResource(R.string._25m))
+                        InfoPill(stringResource(R.string.shortBreak), stringResource(R.string._5m))
+                        InfoPill(stringResource(R.string.longBreak), stringResource(R.string._15m))
                     }
                 }
             }
