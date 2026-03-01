@@ -17,8 +17,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.NotificationsOff
@@ -50,6 +52,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -162,6 +165,7 @@ fun PomodoroScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
                     .padding(padding)
                     .padding(bottom = 32.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -170,7 +174,7 @@ fun PomodoroScreen(
 
                 PhaseChip(phase = state.phase, color = phaseColor)
 
-                Spacer(modifier = Modifier.weight(1f))
+                Spacer(modifier = Modifier.height(48.dp))
 
                 Box(contentAlignment = Alignment.Center) {
                     CircularProgressIndicator(
@@ -178,6 +182,7 @@ fun PomodoroScreen(
                         color = phaseColor,
                         trackColor = MaterialTheme.colorScheme.surfaceVariant,
                         strokeWidth = 12.dp,
+                        strokeCap = StrokeCap.Round,
                         modifier = Modifier.size(280.dp)
                     )
 
@@ -227,7 +232,7 @@ fun PomodoroScreen(
                             },
                             text = {
                                 Text(
-                                    "Ovozni o'chirish",
+                                    stringResource(R.string.turn_off_alarm),
                                     style = MaterialTheme.typography.titleMedium
                                 )
                             },
@@ -253,7 +258,7 @@ fun PomodoroScreen(
                             ) {
                                 Icon(
                                     Icons.Default.Stop,
-                                    contentDescription = "Stop",
+                                    contentDescription = stringResource(R.string.stop),
                                     modifier = Modifier.size(28.dp)
                                 )
                             }
@@ -285,7 +290,7 @@ fun PomodoroScreen(
                             ) {
                                 Icon(
                                     Icons.Default.SkipNext,
-                                    contentDescription = "Skip",
+                                    contentDescription = stringResource(R.string.skip),
                                     modifier = Modifier.size(28.dp)
                                 )
                             }

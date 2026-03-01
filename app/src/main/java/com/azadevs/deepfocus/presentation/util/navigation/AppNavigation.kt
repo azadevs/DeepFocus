@@ -31,10 +31,18 @@ fun AppNavigation() {
             )
         }
         composable<StatisticsRoute> {
-            StatisticsScreen()
+            StatisticsScreen(
+                onNavigateBack = {
+                    navController.navigateUp()
+                }
+            )
         }
         composable<SettingsRoute> {
-            SettingsScreen()
+            SettingsScreen(
+                onNavigateBack = {
+                    navController.navigateUp()
+                }
+            )
         }
     }
 }
