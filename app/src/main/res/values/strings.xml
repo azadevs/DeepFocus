@@ -23,4 +23,10 @@
     <string name="long_break">Long Break</string>
     <string name="settings">Settings</string>
     <string name="statistics">Statistics</string>
+    <string name="turn_off_alarm">Turn off alarm</string>
+    <string name="chart_content_desc">Weekly statistics bar chart</string>
+    <string name="last_7_days">Last 7 Days</string>
+    <string name="average">Average</string>
+    <string name="sessions">Sessions</string>
+    <string name="back">Back button</string>
 </resources>

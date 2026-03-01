@@ -13,9 +13,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -34,6 +37,7 @@ import com.azadevs.deepfocus.R
 import com.azadevs.deepfocus.presentation.statistics.component.SessionHistoryItem
 import com.azadevs.deepfocus.presentation.statistics.component.SummaryCard
 import com.azadevs.deepfocus.presentation.statistics.component.TotalTimeCard
+import com.azadevs.deepfocus.presentation.statistics.component.WeeklyBarChart
 import com.azadevs.deepfocus.presentation.statistics.viewmodel.StatisticsViewModel
 
 /**
@@ -43,10 +47,12 @@ import com.azadevs.deepfocus.presentation.statistics.viewmodel.StatisticsViewMod
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StatisticsScreen(
-    viewModel: StatisticsViewModel = hiltViewModel()
+    viewModel: StatisticsViewModel = hiltViewModel(),
+    onNavigateBack: () -> Unit
 ) {
     val totalMinutes by viewModel.totalFocusMinutes.collectAsState()
     val sessions by viewModel.allSessions.collectAsState()
+    val weeklyStats by viewModel.weeklyStats.collectAsState()
 
     val totalHours = totalMinutes / 60
     val remainingMinutes = totalMinutes % 60
@@ -57,7 +63,17 @@ fun StatisticsScreen(
                 title = { Text(stringResource(R.string.statistics), fontWeight = FontWeight.Bold) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background.copy(alpha = 0.8f)
-                )
+                ),
+                navigationIcon = {
+                    IconButton(onClick = {
+                        onNavigateBack()
+                    }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.back),
+                        )
+                    }
+                }
             )
         }
     ) { padding ->
@@ -68,7 +84,7 @@ fun StatisticsScreen(
                     brush = Brush.verticalGradient(
                         colors = listOf(
                             MaterialTheme.colorScheme.background,
-                            MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                            MaterialTheme.colorScheme.primary.copy(alpha = 0.05f)
                         )
                     )
                 )
@@ -93,18 +109,33 @@ fun StatisticsScreen(
                     ) {
                         SummaryCard(
                             modifier = Modifier.weight(1f),
-                            title = "Sessions",
+                            title = stringResource(R.string.sessions),
                             value = "${sessions.size}",
                             icon = Icons.Outlined.CheckCircle
                         )
                         SummaryCard(
                             modifier = Modifier.weight(1f),
-                            title = "Average",
+                            title = stringResource(R.string.average),
                             value = if (sessions.isNotEmpty()) "${totalMinutes / sessions.size}m" else "0m",
                             icon = Icons.Outlined.Timer
                         )
                     }
                     Spacer(modifier = Modifier.height(32.dp))
+                }
+
+                item {
+                    Text(
+                        text = stringResource(R.string.last_7_days),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+
+                    if (weeklyStats.isNotEmpty()) {
+                        WeeklyBarChart(stats = weeklyStats)
+                        Spacer(modifier = Modifier.height(32.dp))
+                    }
                 }
 
                 item {
@@ -135,3 +166,4 @@ fun StatisticsScreen(
         }
     }
 }
+
