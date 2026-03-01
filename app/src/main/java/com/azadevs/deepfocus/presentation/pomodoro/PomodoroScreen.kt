@@ -265,7 +265,7 @@ fun PomodoroScreen(
 
                             FloatingActionButton(
                                 onClick = {
-                                    if (canStart) viewModel.onStartClick(context)
+                                    if (canStart) viewModel.onStartClick()
                                     else if (showPause) viewModel.onPauseClick()
                                     else if (showResume) viewModel.onResumeClick()
                                 },

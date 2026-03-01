@@ -1,6 +1,5 @@
 package com.azadevs.deepfocus.presentation.pomodoro.viemwodel
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.azadevs.deepfocus.domain.model.PomodoroState
@@ -45,8 +44,8 @@ class PomodoroViewModel @Inject constructor(
         controller.stop()
     }
 
-    fun onStartClick(context: Context) {
-        controller.start(context)
+    fun onStartClick() {
+        controller.start()
     }
 
     fun onStopAlarmClick() {

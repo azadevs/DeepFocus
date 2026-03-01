@@ -76,7 +76,7 @@ class PomodoroController @Inject constructor(
         }
     }
 
-    fun start(context: Context) {
+    fun start() {
         val duration = durationFor(_state.value.phase)
         phaseStartTime = System.currentTimeMillis()
 
