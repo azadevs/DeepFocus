@@ -12,10 +12,10 @@ import android.os.PowerManager
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.azadevs.deepfocus.R
-import com.azadevs.deepfocus.core.util.TimeFormatter
 import com.azadevs.deepfocus.domain.model.PomodoroState
 import com.azadevs.deepfocus.domain.pomodoro.PomodoroController
 import com.azadevs.deepfocus.presentation.MainActivity
+import com.azadevs.deepfocus.presentation.util.DeepFocusUtils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -162,20 +162,27 @@ class FocusForegroundService : Service() {
                     .setContentTitle("Timer is finished! ⏰")
                     .setContentText("Ready to start.")
                     .setOngoing(false)
-                    .addAction(R.drawable.ic_stop, "Turn off alarm", pendingIntent(ACTION_STOP_ALARM))
+                    .addAction(
+                        R.drawable.ic_stop,
+                        "Turn off alarm",
+                        pendingIntent(ACTION_STOP_ALARM)
+                    )
             }
+
             state.isRunning -> {
                 builder
-                    .setContentText(TimeFormatter.format(state.remainingMillis))
+                    .setContentText(DeepFocusUtils.formatTime(state.remainingMillis))
                     .setOngoing(true)
                     .addAction(R.drawable.ic_pause, "Pause", pendingIntent(ACTION_PAUSE))
             }
+
             !state.isRunning && state.remainingMillis > 0L -> {
                 builder
-                    .setContentText("Paused • ${TimeFormatter.format(state.remainingMillis)}")
+                    .setContentText("Paused • ${DeepFocusUtils.formatTime(state.remainingMillis)}")
                     .setOngoing(true)
                     .addAction(R.drawable.ic_play, "Resume", pendingIntent(ACTION_RESUME))
             }
+
             else -> {
                 builder.setContentText("Ready").setOngoing(true)
             }
