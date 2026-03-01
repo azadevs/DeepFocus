@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
+import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.IBinder
 import android.os.PowerManager
@@ -68,7 +69,7 @@ class FocusForegroundService : Service() {
             PowerManager.PARTIAL_WAKE_LOCK,
             "DeepFocus::TimerWakeLock"
         )
-        wakeLock?.acquire(100 * 60 * 1000L)
+        wakeLock?.acquire()
     }
 
     private fun releaseWakeLock() {
@@ -80,28 +81,30 @@ class FocusForegroundService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
         when (intent?.action) {
-            ACTION_START -> {
+            ACTION_START, ACTION_FOREGROUND -> {
                 if (!isForegroundStarted) {
-                    startForeground(
-                        NOTIFICATION_ID,
-                        buildNotification(controller.state.value)
-                    )
-                    isForegroundStarted = true
+                    try {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                            startForeground(
+                                NOTIFICATION_ID,
+                                buildNotification(controller.state.value),
+                                ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
+                            )
+                        } else {
+                            startForeground(
+                                NOTIFICATION_ID,
+                                buildNotification(controller.state.value)
+                            )
+                        }
+                        isForegroundStarted = true
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
                 }
             }
 
             ACTION_STOP_ALARM -> {
                 controller.stopAlarm()
-            }
-
-            ACTION_FOREGROUND -> {
-                if (!isForegroundStarted) {
-                    startForeground(
-                        NOTIFICATION_ID,
-                        buildNotification(controller.state.value)
-                    )
-                    isForegroundStarted = true
-                }
             }
 
             ACTION_PAUSE -> controller.pause()
@@ -112,6 +115,7 @@ class FocusForegroundService : Service() {
                 controller.stop()
                 stopForeground(STOP_FOREGROUND_REMOVE)
                 stopSelf()
+                isForegroundStarted = false
             }
         }
 
@@ -122,7 +126,15 @@ class FocusForegroundService : Service() {
         serviceScope.launch {
             controller.state.collect { state ->
                 if (isForegroundStarted) {
-                    updateNotification(state)
+                    val isReady = !state.isRunning && !state.isRinging && state.remainingMillis == state.phaseDurationMillis
+
+                    if (isReady) {
+                        stopForeground(STOP_FOREGROUND_REMOVE)
+                        stopSelf()
+                        isForegroundStarted = false
+                    } else {
+                        updateNotification(state)
+                    }
                 }
             }
         }
@@ -151,6 +163,7 @@ class FocusForegroundService : Service() {
 
         val builder = NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification)
+            .setContentTitle("DeepFocus Timer")
             .setOngoing(true)
             .setContentIntent(activityPendingIntent)
             .setDeleteIntent(deletePendingIntent)
