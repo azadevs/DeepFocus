@@ -14,6 +14,7 @@ import com.azadevs.deepfocus.domain.model.TimerEvent
 import com.azadevs.deepfocus.domain.model.TimerState
 import com.azadevs.deepfocus.domain.repository.FocusRepository
 import com.azadevs.deepfocus.domain.timer.TimerManager
+import com.azadevs.deepfocus.domain.usecase.DeepFocusUseCases
 import com.azadevs.deepfocus.presentation.service.FocusForegroundService
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
@@ -35,9 +36,10 @@ import javax.inject.Singleton
 class PomodoroController @Inject constructor(
     @param:ApplicationContext private val context: Context,
     private val timerManager: TimerManager,
-    private val focusRepository: FocusRepository
+    private val focusRepository: FocusRepository,
+    private val useCases: DeepFocusUseCases
 ) {
-    private val config = PomodoroConfig()
+    private var config = PomodoroConfig()
 
     private val _state = MutableStateFlow(PomodoroState())
     val state: StateFlow<PomodoroState> = _state.asStateFlow()
@@ -51,6 +53,27 @@ class PomodoroController @Inject constructor(
 
     init {
         observeTimer()
+        observeSettings()
+    }
+
+    private fun observeSettings() {
+        controllerScope.launch {
+            launch {
+                useCases.getFocusDuration().collect { duration ->
+                    duration.let { config = config.copy(focusMinutes = it) }
+                }
+            }
+            launch {
+                useCases.getShortBreakDuration().collect { duration ->
+                    duration.let { config = config.copy(shortBreakMinutes = it) }
+                }
+            }
+            launch {
+                useCases.getLongBreakDuration().collect { duration ->
+                    duration.let { config = config.copy(longBreakMinutes = it) }
+                }
+            }
+        }
     }
 
     fun start(context: Context) {

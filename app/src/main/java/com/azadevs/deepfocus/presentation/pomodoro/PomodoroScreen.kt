@@ -20,9 +20,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.NotificationsOff
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.CircularProgressIndicator
@@ -32,6 +34,7 @@ import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -70,9 +73,14 @@ import kotlin.math.min
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PomodoroScreen(
-    viewModel: PomodoroViewModel = hiltViewModel()
+    viewModel: PomodoroViewModel = hiltViewModel(),
+    onNavigateToStatistics: () -> Unit,
+    onNavigateToSettings: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
+    val focusTime by viewModel.focusDuration.collectAsState()
+    val shortTime by viewModel.shortBreakDuration.collectAsState()
+    val longTime by viewModel.longBreakDuration.collectAsState()
 
     val total = max(1L, state.phaseDurationMillis)
     val remaining = min(total, max(0L, state.remainingMillis))
@@ -121,6 +129,20 @@ fun PomodoroScreen(
                         )
                     }
                     Spacer(modifier = Modifier.width(16.dp))
+                    IconButton(onClick = onNavigateToStatistics) {
+                        Icon(
+                            imageVector = Icons.Default.BarChart,
+                            contentDescription = stringResource(R.string.statistics),
+                            tint = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
+                    IconButton(onClick = onNavigateToSettings) {
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = stringResource(R.string.settings),
+                            tint = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
                 }
             )
         }
@@ -283,9 +305,9 @@ fun PomodoroScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        InfoPill(stringResource(R.string.focus), stringResource(R.string._25m))
-                        InfoPill(stringResource(R.string.shortBreak), stringResource(R.string._5m))
-                        InfoPill(stringResource(R.string.longBreak), stringResource(R.string._15m))
+                        InfoPill(stringResource(R.string.focus), "${focusTime}m")
+                        InfoPill(stringResource(R.string.shortBreak), "${shortTime}m")
+                        InfoPill(stringResource(R.string.longBreak), "${longTime}m")
                     }
                 }
             }
