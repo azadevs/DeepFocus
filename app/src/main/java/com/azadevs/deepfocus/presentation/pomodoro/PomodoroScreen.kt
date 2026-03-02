@@ -152,7 +152,6 @@ fun PomodoroScreen(
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
-            // New animated mesh background added here
             AnimatedMeshBackground(phase = state.phase, modifier = Modifier.fillMaxSize())
             Column(
                 modifier = Modifier
@@ -293,7 +292,7 @@ fun PomodoroScreen(
 
                 Surface(
                     shape = RoundedCornerShape(24.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f), // Glassmorphism effect
+                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
                     modifier = Modifier.fillMaxWidth(0.9f)
                 ) {
                     Row(
