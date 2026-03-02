@@ -1,0 +1,85 @@
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt">
+
+    <aapt:attr name="android:drawable">
+        <vector
+            android:width="288dp"
+            android:height="288dp"
+            android:viewportWidth="108"
+            android:viewportHeight="108">
+            <path
+                android:name="timer_ring"
+                android:pathData="M 54,18 A 36,36 0 1,1 54,90 A 36,36 0 1,1 54,18"
+                android:strokeColor="#4F46E5"
+                android:strokeWidth="5"
+                android:strokeLineCap="round"
+                android:trimPathEnd="0" />
+            <path
+                android:name="timer_ring_inner"
+                android:pathData="M 54,30 A 24,24 0 1,0 54,78 A 24,24 0 1,0 54,30"
+                android:strokeColor="#4F46E5"
+                android:strokeWidth="4"
+                android:strokeLineCap="round"
+                android:trimPathEnd="0" />
+            <group
+                android:name="center_dot_group"
+                android:pivotX="54"
+                android:pivotY="54"
+                android:scaleX="0"
+                android:scaleY="0">
+                <path
+                    android:name="center_dot"
+                    android:pathData="M 54,46 A 8,8 0 1,1 54,62 A 8,8 0 1,1 54,46"
+                    android:fillColor="#4F46E5" />
+            </group>
+        </vector>
+    </aapt:attr>
+
+    <target android:name="timer_ring">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:propertyName="trimPathEnd"
+                android:duration="800"
+                android:valueFrom="0"
+                android:valueTo="1"
+                android:valueType="floatType"
+                android:interpolator="@android:interpolator/fast_out_slow_in" />
+        </aapt:attr>
+    </target>
+
+    <target android:name="timer_ring_inner">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:propertyName="trimPathEnd"
+                android:duration="800"
+                android:startOffset="100"
+                android:valueFrom="0"
+                android:valueTo="1"
+                android:valueType="floatType"
+                android:interpolator="@android:interpolator/fast_out_slow_in" />
+        </aapt:attr>
+    </target>
+
+    <target android:name="center_dot_group">
+        <aapt:attr name="android:animation">
+            <set>
+                <objectAnimator
+                    android:propertyName="scaleX"
+                    android:duration="600"
+                    android:startOffset="400"
+                    android:valueFrom="0"
+                    android:valueTo="1"
+                    android:valueType="floatType"
+                    android:interpolator="@android:interpolator/overshoot" />
+                <objectAnimator
+                    android:propertyName="scaleY"
+                    android:duration="600"
+                    android:startOffset="400"
+                    android:valueFrom="0"
+                    android:valueTo="1"
+                    android:valueType="floatType"
+                    android:interpolator="@android:interpolator/overshoot" />
+            </set>
+        </aapt:attr>
+    </target>
+</animated-vector>
