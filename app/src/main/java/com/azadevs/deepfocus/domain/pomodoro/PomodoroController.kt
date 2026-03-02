@@ -2,8 +2,15 @@ package com.azadevs.deepfocus.domain.pomodoro
 
 import android.content.Context
 import android.content.Intent
+import android.media.AudioAttributes
+import android.media.AudioFocusRequest
+import android.media.AudioManager
 import android.media.MediaPlayer
 import android.media.RingtoneManager
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import androidx.core.content.ContextCompat
 import com.azadevs.deepfocus.domain.model.FocusSession
 import com.azadevs.deepfocus.domain.model.PomodoroConfig
@@ -50,6 +57,8 @@ class PomodoroController @Inject constructor(
     private var phaseStartTime: Long = 0L
 
     private val controllerScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+    private val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+    private var audioFocusRequest: AudioFocusRequest? = null
 
     init {
         observeTimer()
@@ -208,10 +217,45 @@ class PomodoroController @Inject constructor(
 
     private fun playAlarmSound() {
         try {
-            val alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+            var alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+            if (alarmUri == null) {
+                alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val audioAttributes = AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_ALARM)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .build()
+
+                audioFocusRequest = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK)
+                    .setAudioAttributes(audioAttributes)
+                    .build()
+
+                audioManager.requestAudioFocus(audioFocusRequest!!)
+            }
+
             mediaPlayer = MediaPlayer.create(context, alarmUri).apply {
                 isLooping = true
                 start()
+            }
+
+            val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+                vibratorManager.defaultVibrator
+            } else {
+                @Suppress("DEPRECATION")
+                context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+            }
+
+            if (vibrator.hasVibrator()) {
+                val pattern = longArrayOf(0, 500, 500)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    vibrator.vibrate(VibrationEffect.createWaveform(pattern, 0))
+                } else {
+                    @Suppress("DEPRECATION")
+                    vibrator.vibrate(pattern, 0)
+                }
             }
             _state.value = _state.value.copy(isRinging = true)
         } catch (e: Exception) {
@@ -225,6 +269,20 @@ class PomodoroController @Inject constructor(
             it.release()
         }
         mediaPlayer = null
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && audioFocusRequest != null) {
+            audioManager.abandonAudioFocusRequest(audioFocusRequest!!)
+        }
+
+        val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+            vibratorManager.defaultVibrator
+        } else {
+            @Suppress("DEPRECATION")
+            context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        }
+        vibrator.cancel()
+
         if (_state.value.isRinging) {
             _state.value = _state.value.copy(isRinging = false)
         }
