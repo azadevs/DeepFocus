@@ -5,7 +5,6 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,7 +28,6 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.Stop
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FilledIconButton
@@ -51,8 +49,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -62,6 +58,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.azadevs.deepfocus.R
 import com.azadevs.deepfocus.domain.model.PomodoroPhase
+import com.azadevs.deepfocus.presentation.pomodoro.component.AnimatedMeshBackground
+import com.azadevs.deepfocus.presentation.pomodoro.component.GlowingTimerRing
 import com.azadevs.deepfocus.presentation.pomodoro.component.InfoPill
 import com.azadevs.deepfocus.presentation.pomodoro.component.PhaseChip
 import com.azadevs.deepfocus.presentation.pomodoro.viemwodel.PomodoroViewModel
@@ -122,13 +120,14 @@ fun PomodoroScreen(
                 actions = {
                     Surface(
                         shape = RoundedCornerShape(16.dp),
-                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
                     ) {
                         Text(
                             text = "Cycle ${state.cycleIndex}",
                             modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
                             style = MaterialTheme.typography.labelMedium,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
                     Spacer(modifier = Modifier.width(16.dp))
@@ -151,17 +150,10 @@ fun PomodoroScreen(
         }
     ) { padding ->
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            MaterialTheme.colorScheme.background,
-                            phaseColor.copy(alpha = 0.15f)
-                        )
-                    )
-                )
+            modifier = Modifier.fillMaxSize()
         ) {
+            // New animated mesh background added here
+            AnimatedMeshBackground(phase = state.phase, modifier = Modifier.fillMaxSize())
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -177,13 +169,12 @@ fun PomodoroScreen(
                 Spacer(modifier = Modifier.height(48.dp))
 
                 Box(contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(
-                        progress = { progress },
+                    GlowingTimerRing(
+                        progress = progress,
                         color = phaseColor,
-                        trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                        modifier = Modifier.size(280.dp),
                         strokeWidth = 12.dp,
-                        strokeCap = StrokeCap.Round,
-                        modifier = Modifier.size(280.dp)
+                        glowRadius = 50f
                     )
 
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -302,7 +293,7 @@ fun PomodoroScreen(
 
                 Surface(
                     shape = RoundedCornerShape(24.dp),
-                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
+                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f), // Glassmorphism effect
                     modifier = Modifier.fillMaxWidth(0.9f)
                 ) {
                     Row(
