@@ -151,7 +151,7 @@ fun StatisticsScreen(
                 if (sessions.isEmpty()) {
                     item {
                         Text(
-                            text = "There is no history yet.",
+                            text = stringResource(R.string.there_is_no_history_yet),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(vertical = 32.dp)
                         )
