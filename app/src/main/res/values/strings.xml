@@ -30,4 +30,10 @@
     <string name="sessions">Sessions</string>
     <string name="back">Back button</string>
     <string name="there_is_no_history_yet">There is no history yet.</string>
+    
+    <string name="soundscapes">Soundscapes</string>
+    <string name="sound_none">None</string>
+    <string name="sound_rain">Rain</string>
+    <string name="sound_cafe">Cafe</string>
+    <string name="sound_fire">Fireplace</string>
 </resources>

@@ -1,6 +1,7 @@
 package com.azadevs.deepfocus.presentation.pomodoro
 
 import android.content.Context
+import android.content.Intent
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -22,6 +23,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BarChart
+import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.NotificationsOff
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
@@ -46,6 +48,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -62,7 +68,9 @@ import com.azadevs.deepfocus.presentation.pomodoro.component.AnimatedMeshBackgro
 import com.azadevs.deepfocus.presentation.pomodoro.component.GlowingTimerRing
 import com.azadevs.deepfocus.presentation.pomodoro.component.InfoPill
 import com.azadevs.deepfocus.presentation.pomodoro.component.PhaseChip
+import com.azadevs.deepfocus.presentation.pomodoro.component.SoundscapesBottomSheet
 import com.azadevs.deepfocus.presentation.pomodoro.viemwodel.PomodoroViewModel
+import com.azadevs.deepfocus.presentation.service.FocusForegroundService
 import com.azadevs.deepfocus.presentation.util.DeepFocusUtils.formatTime
 import kotlin.math.max
 import kotlin.math.min
@@ -110,6 +118,32 @@ fun PomodoroScreen(
         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
     }
 
+    var showSoundscapes by remember { mutableStateOf(false) }
+    var selectedSoundId by remember { mutableIntStateOf(-1) }
+
+    if (showSoundscapes) {
+        SoundscapesBottomSheet(
+            selectedSoundId = selectedSoundId,
+            onDismiss = { showSoundscapes = false },
+            onSoundSelected = { resId ->
+                selectedSoundId = resId
+                if (resId == -1) {
+                    val intent = Intent(context, FocusForegroundService::class.java).apply {
+                        action = FocusForegroundService.ACTION_STOP_AMBIENT
+                    }
+                    context.startService(intent)
+                } else {
+                    val intent = Intent(context, FocusForegroundService::class.java).apply {
+                        action = FocusForegroundService.ACTION_PLAY_AMBIENT
+                        putExtra(FocusForegroundService.EXTRA_SOUND_RES_ID, resId)
+                    }
+                    context.startService(intent)
+                }
+                showSoundscapes = false
+            }
+        )
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -130,7 +164,14 @@ fun PomodoroScreen(
                             color = MaterialTheme.colorScheme.onSurface
                         )
                     }
-                    Spacer(modifier = Modifier.width(16.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    IconButton(onClick = { showSoundscapes = true }) {
+                        Icon(
+                            imageVector = Icons.Default.MusicNote,
+                            contentDescription = stringResource(R.string.soundscapes),
+                            tint = if (selectedSoundId != -1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground
+                        )
+                    }
                     IconButton(onClick = onNavigateToStatistics) {
                         Icon(
                             imageVector = Icons.Default.BarChart,
