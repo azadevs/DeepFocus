@@ -7,6 +7,8 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
 import android.content.pm.ServiceInfo
+import android.media.AudioAttributes
+import android.media.MediaPlayer
 import android.os.Build
 import android.os.IBinder
 import android.os.PowerManager
@@ -36,6 +38,10 @@ class FocusForegroundService : Service() {
     lateinit var controller: PomodoroController
 
     private var wakeLock: PowerManager.WakeLock? = null
+    
+    private var currentPlayer: MediaPlayer? = null
+    private var nextPlayer: MediaPlayer? = null
+    private var currentSoundResId: Int? = null
 
     private val serviceScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     private var isForegroundStarted = false
@@ -51,6 +57,10 @@ class FocusForegroundService : Service() {
         const val ACTION_START = "ACTION_START"
         const val EXTRA_DURATION = "EXTRA_DURATION"
         const val ACTION_STOP_ALARM = "ACTION_STOP_ALARM"
+
+        const val ACTION_PLAY_AMBIENT = "ACTION_PLAY_AMBIENT"
+        const val ACTION_STOP_AMBIENT = "ACTION_STOP_AMBIENT"
+        const val EXTRA_SOUND_RES_ID = "EXTRA_SOUND_RES_ID"
     }
 
     override fun onCreate() {
@@ -107,19 +117,112 @@ class FocusForegroundService : Service() {
                 controller.stopAlarm()
             }
 
-            ACTION_PAUSE -> controller.pause()
+            ACTION_PAUSE -> {
+                controller.pause()
+                pauseAmbientSound()
+            }
 
-            ACTION_RESUME -> controller.resume()
+            ACTION_RESUME -> {
+                controller.resume()
+                resumeAmbientSound()
+            }
 
             ACTION_STOP -> {
                 controller.stop()
+                stopAmbientSound()
                 stopForeground(STOP_FOREGROUND_REMOVE)
                 stopSelf()
                 isForegroundStarted = false
             }
+
+            ACTION_PLAY_AMBIENT -> {
+                val soundResId = intent.getIntExtra(EXTRA_SOUND_RES_ID, -1)
+                if (soundResId != -1) {
+                    playAmbientSound(soundResId)
+                }
+            }
+            
+            ACTION_STOP_AMBIENT -> {
+                stopAmbientSound()
+            }
         }
 
         return START_STICKY
+    }
+
+    private fun createPlayer(resId: Int): MediaPlayer? {
+        return MediaPlayer.create(this, resId)?.apply {
+            setAudioAttributes(
+                AudioAttributes.Builder()
+                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                    .setUsage(AudioAttributes.USAGE_MEDIA)
+                    .build()
+            )
+        }
+    }
+
+    private val completionListener = object : MediaPlayer.OnCompletionListener {
+        override fun onCompletion(mp: MediaPlayer) {
+            mp.release()
+            currentPlayer = nextPlayer
+            
+            val resId = currentSoundResId
+            if (resId != null) {
+                try {
+                    nextPlayer = createPlayer(resId)
+                    currentPlayer?.setNextMediaPlayer(nextPlayer)
+                    currentPlayer?.setOnCompletionListener(this)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+    }
+
+    private fun playAmbientSound(resId: Int) {
+        if (currentSoundResId == resId && currentPlayer?.isPlaying == true) return
+        
+        stopAmbientSound()
+        
+        try {
+            currentSoundResId = resId
+            currentPlayer = createPlayer(resId)
+            nextPlayer = createPlayer(resId)
+            
+            currentPlayer?.setNextMediaPlayer(nextPlayer)
+            currentPlayer?.setOnCompletionListener(completionListener)
+
+            if (controller.state.value.isRunning) {
+                currentPlayer?.start()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            stopAmbientSound()
+        }
+    }
+
+    private fun pauseAmbientSound() {
+        if (currentPlayer?.isPlaying == true) {
+            currentPlayer?.pause()
+        }
+    }
+
+    private fun resumeAmbientSound() {
+        if (currentPlayer != null && !currentPlayer!!.isPlaying) {
+            currentPlayer?.start()
+        }
+    }
+
+    private fun stopAmbientSound() {
+        currentPlayer?.let {
+            if (it.isPlaying) it.stop()
+            it.release()
+        }
+        nextPlayer?.release()
+        
+        currentPlayer = null
+        nextPlayer = null
+        currentSoundResId = null
     }
 
     private fun observeTimer() {
@@ -129,11 +232,18 @@ class FocusForegroundService : Service() {
                     val isReady = !state.isRunning && !state.isRinging && state.remainingMillis == state.phaseDurationMillis
 
                     if (isReady) {
+                        stopAmbientSound()
                         stopForeground(STOP_FOREGROUND_REMOVE)
                         stopSelf()
                         isForegroundStarted = false
                     } else {
                         updateNotification(state)
+                        
+                        if (state.isRinging || !state.isRunning) {
+                            pauseAmbientSound()
+                        } else if (state.isRunning && currentPlayer != null && !currentPlayer!!.isPlaying) {
+                            resumeAmbientSound()
+                        }
                     }
                 }
             }
@@ -172,7 +282,7 @@ class FocusForegroundService : Service() {
         when {
             state.isRinging -> {
                 builder
-                    .setContentTitle("Timer is finished! ⏰")
+                    .setContentTitle("Timer is finished! \u23F0")
                     .setContentText("Ready to start.")
                     .setOngoing(false)
                     .addAction(
@@ -237,6 +347,7 @@ class FocusForegroundService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
+        stopAmbientSound()
         serviceScope.cancel()
         releaseWakeLock()
     }
