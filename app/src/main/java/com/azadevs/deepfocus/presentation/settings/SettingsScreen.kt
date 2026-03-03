@@ -75,8 +75,6 @@ fun SettingsScreen(
     }
 
     Scaffold(
-        modifier = Modifier.systemBarsPadding(),
-        containerColor = Color.Transparent,
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.settings), fontWeight = FontWeight.Bold) },
@@ -99,6 +97,7 @@ fun SettingsScreen(
     ) { padding ->
         Box(
             modifier = Modifier.fillMaxSize()
+                .systemBarsPadding()
         ) {
             Column(
                 modifier = Modifier
