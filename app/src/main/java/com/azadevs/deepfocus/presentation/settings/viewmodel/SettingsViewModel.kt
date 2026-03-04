@@ -36,16 +36,12 @@ class SettingsViewModel @Inject constructor(
         }
         viewModelScope.launch {
             useCases.getShortBreakDuration().collect { duration ->
-                duration.let {
-                    _shortBreakMinutes.value = it
-                }
+                _shortBreakMinutes.value = duration
             }
-            viewModelScope.launch {
-                useCases.getLongBreakDuration().collect { duration ->
-                    duration.let {
-                        _longBreakMinutes.value = it
-                    }
-                }
+        }
+        viewModelScope.launch {
+            useCases.getLongBreakDuration().collect { duration ->
+                _longBreakMinutes.value = duration
             }
         }
     }
