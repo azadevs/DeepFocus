@@ -64,7 +64,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.compose.ui.graphics.Color
 import com.azadevs.deepfocus.R
 import com.azadevs.deepfocus.domain.model.PomodoroPhase
-import com.azadevs.deepfocus.presentation.pomodoro.component.GlowingTimerRing
+import com.azadevs.deepfocus.presentation.pomodoro.component.FlowOrb
 import com.azadevs.deepfocus.presentation.pomodoro.component.InfoPill
 import com.azadevs.deepfocus.presentation.pomodoro.component.PhaseChip
 import com.azadevs.deepfocus.presentation.pomodoro.component.SoundscapesBottomSheet
@@ -138,7 +138,6 @@ fun PomodoroScreen(
                     }
                     context.startService(intent)
                 }
-                showSoundscapes = false
             }
         )
     }
@@ -164,7 +163,9 @@ fun PomodoroScreen(
                         )
                     }
                     Spacer(modifier = Modifier.width(8.dp))
-                    IconButton(onClick = { showSoundscapes = true }) {
+                    IconButton(onClick = {
+                        showSoundscapes = true
+                    }) {
                         Icon(
                             imageVector = Icons.Default.MusicNote,
                             contentDescription = stringResource(R.string.soundscapes),
@@ -207,12 +208,13 @@ fun PomodoroScreen(
                 Spacer(modifier = Modifier.height(48.dp))
 
                 Box(contentAlignment = Alignment.Center) {
-                    GlowingTimerRing(
+                    FlowOrb(
                         progress = progress,
                         color = phaseColor,
                         modifier = Modifier.size(280.dp),
                         strokeWidth = 12.dp,
-                        glowRadius = 50f
+                        glowRadius = 50f,
+                        isPulsing = state.isRunning
                     )
 
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
