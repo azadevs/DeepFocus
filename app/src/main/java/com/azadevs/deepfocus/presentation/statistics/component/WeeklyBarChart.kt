@@ -61,6 +61,14 @@ fun WeeklyBarChart(stats: List<DailyStat>) {
 
     val textMeasurer = rememberTextMeasurer()
     val textStyle = MaterialTheme.typography.labelMedium.copy(color = textColor, fontWeight = FontWeight.Medium)
+    val valStyle = textStyle.copy(fontWeight = FontWeight.Bold, color = barColor)
+
+    val dayLayouts = remember(stats, textStyle) {
+        stats.map { textMeasurer.measure(it.dayName, textStyle) }
+    }
+    val valLayouts = remember(stats, valStyle) {
+        stats.map { textMeasurer.measure("${it.minutes}", valStyle) }
+    }
 
     val chartContentDesc = stringResource(R.string.chart_content_desc)
 
@@ -155,28 +163,22 @@ fun WeeklyBarChart(stats: List<DailyStat>) {
                     )
                 }
 
-                val dayLayoutResult = textMeasurer.measure(stat.dayName, textStyle)
+                val dayLayoutResult = dayLayouts[index]
                 val textX = xPos + (barWidth - dayLayoutResult.size.width) / 2
                 val textY = chartHeight + 8.dp.toPx()
 
                 drawText(
-                    textMeasurer = textMeasurer,
-                    text = stat.dayName,
-                    style = textStyle,
+                    textLayoutResult = dayLayoutResult,
                     topLeft = Offset(textX, textY)
                 )
 
                 if (stat.minutes > 0) {
-                    val valText = "${stat.minutes}"
-                    val valStyle = textStyle.copy(fontWeight = FontWeight.Bold, color = barColor)
-                    val valLayout = textMeasurer.measure(valText, valStyle)
-                    val valX = xPos + (barWidth - valLayout.size.width) / 2
-                    val valY = yPos - valLayout.size.height - 4.dp.toPx()
+                    val valLayoutResult = valLayouts[index]
+                    val valX = xPos + (barWidth - valLayoutResult.size.width) / 2
+                    val valY = yPos - valLayoutResult.size.height - 4.dp.toPx()
 
                     drawText(
-                        textMeasurer = textMeasurer,
-                        text = valText,
-                        style = valStyle,
+                        textLayoutResult = valLayoutResult,
                         topLeft = Offset(valX, valY)
                     )
                 }

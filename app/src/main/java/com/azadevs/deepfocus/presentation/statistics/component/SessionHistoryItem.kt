@@ -49,7 +49,9 @@ fun SessionHistoryItem(session: FocusSession, index: Int = 0) {
     var isVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        delay(index * 100L) // Staggered delay based on list index
+        if (index < 10) {
+            delay(index * 70L)
+        }
         isVisible = true
     }
 

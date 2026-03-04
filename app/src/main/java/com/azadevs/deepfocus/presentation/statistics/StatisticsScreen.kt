@@ -140,7 +140,7 @@ fun StatisticsScreen(
 
                 item {
                     Text(
-                        text = "History",
+                        text = stringResource(R.string.history),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onBackground,
