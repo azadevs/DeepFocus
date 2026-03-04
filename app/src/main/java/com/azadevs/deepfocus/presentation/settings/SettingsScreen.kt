@@ -128,7 +128,7 @@ fun SettingsScreen(
                         SettingSliderCard(
                             title = stringResource(R.string.short_break),
                             icon = Icons.Outlined.Coffee,
-                            iconBgColor = Color(0xFFF57C00),
+                            iconBgColor = MaterialTheme.colorScheme.secondary,
                             value = shortMins,
                             range = 1f..15f,
                             onValueChange = { 
@@ -140,7 +140,7 @@ fun SettingsScreen(
                         SettingSliderCard(
                             title = stringResource(R.string.long_break),
                             icon = Icons.Outlined.SelfImprovement,
-                            iconBgColor = Color(0xFF0288D1),
+                            iconBgColor = MaterialTheme.colorScheme.tertiary,
                             value = longMins,
                             range = 10f..45f,
                             showDivider = false,
