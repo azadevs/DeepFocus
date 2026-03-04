@@ -1,6 +1,11 @@
 package com.azadevs.deepfocus.presentation.util.navigation
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -15,34 +20,27 @@ import com.azadevs.deepfocus.presentation.statistics.StatisticsScreen
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
-
-    NavHost(
-        navController = navController,
-        startDestination = PomodoroRoute
-    ) {
-        composable<PomodoroRoute> {
-            PomodoroScreen(
-                onNavigateToStatistics = {
-                    navController.navigate(StatisticsRoute)
-                },
-                onNavigateToSettings = {
-                    navController.navigate(SettingsRoute)
+    Scaffold(
+        bottomBar = {
+            AppBottomNavigationBar(navController = navController)
+        },
+        containerColor = Color.Transparent
+    ) { _ ->
+        Box(modifier = Modifier.fillMaxSize()) {
+            NavHost(
+                navController = navController,
+                startDestination = PomodoroRoute
+            ) {
+                composable<PomodoroRoute> {
+                    PomodoroScreen()
                 }
-            )
-        }
-        composable<StatisticsRoute> {
-            StatisticsScreen(
-                onNavigateBack = {
-                    navController.navigateUp()
+                composable<StatisticsRoute> {
+                    StatisticsScreen()
                 }
-            )
-        }
-        composable<SettingsRoute> {
-            SettingsScreen(
-                onNavigateBack = {
-                    navController.navigateUp()
+                composable<SettingsRoute> {
+                    SettingsScreen()
                 }
-            )
+            }
         }
     }
 }
