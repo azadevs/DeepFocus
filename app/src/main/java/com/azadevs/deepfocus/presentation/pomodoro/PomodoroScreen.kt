@@ -2,7 +2,6 @@ package com.azadevs.deepfocus.presentation.pomodoro
 
 import android.content.Context
 import android.content.Intent
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
@@ -62,9 +61,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.compose.ui.graphics.Color
 import com.azadevs.deepfocus.R
 import com.azadevs.deepfocus.domain.model.PomodoroPhase
-import com.azadevs.deepfocus.presentation.pomodoro.component.AnimatedMeshBackground
 import com.azadevs.deepfocus.presentation.pomodoro.component.GlowingTimerRing
 import com.azadevs.deepfocus.presentation.pomodoro.component.InfoPill
 import com.azadevs.deepfocus.presentation.pomodoro.component.PhaseChip
@@ -149,7 +148,7 @@ fun PomodoroScreen(
             TopAppBar(
                 title = { Text(stringResource(R.string.app_name), fontWeight = FontWeight.Bold) },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background.copy(alpha = 0.8f)
+                    containerColor = Color.Transparent
                 ),
                 actions = {
                     Surface(
@@ -193,7 +192,6 @@ fun PomodoroScreen(
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
-            AnimatedMeshBackground(phase = state.phase, modifier = Modifier.fillMaxSize())
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -218,18 +216,13 @@ fun PomodoroScreen(
                     )
 
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        AnimatedContent(
-                            targetState = formatTime(state.remainingMillis),
-                            label = "time_anim"
-                        ) { formatted ->
                             Text(
-                                text = formatted,
+                                text = formatTime(state.remainingMillis),
                                 modifier = Modifier.scale(scale),
                                 style = MaterialTheme.typography.displayLarge,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onBackground
                             )
-                        }
 
                         Spacer(modifier = Modifier.height(8.dp))
 

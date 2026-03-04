@@ -31,6 +31,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -67,20 +68,19 @@ class PomodoroController @Inject constructor(
 
     private fun observeSettings() {
         controllerScope.launch {
-            launch {
-                useCases.getFocusDuration().collect { duration ->
-                    duration.let { config = config.copy(focusMinutes = it) }
-                }
-            }
-            launch {
-                useCases.getShortBreakDuration().collect { duration ->
-                    duration.let { config = config.copy(shortBreakMinutes = it) }
-                }
-            }
-            launch {
-                useCases.getLongBreakDuration().collect { duration ->
-                    duration.let { config = config.copy(longBreakMinutes = it) }
-                }
+            combine(
+                useCases.getFocusDuration(),
+                useCases.getShortBreakDuration(),
+                useCases.getLongBreakDuration()
+            ) { focus, short, long ->
+                PomodoroConfig(
+                    focusMinutes = focus,
+                    shortBreakMinutes = short,
+                    longBreakMinutes = long,
+                    cyclesBeforeLongBreak = config.cyclesBeforeLongBreak
+                )
+            }.collect { newConfig ->
+                config = newConfig
             }
         }
     }
