@@ -21,12 +21,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.NotificationsOff
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -54,6 +52,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -61,7 +60,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.compose.ui.graphics.Color
 import com.azadevs.deepfocus.R
 import com.azadevs.deepfocus.domain.model.PomodoroPhase
 import com.azadevs.deepfocus.presentation.pomodoro.component.FlowOrb
@@ -81,9 +79,7 @@ import kotlin.math.min
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PomodoroScreen(
-    viewModel: PomodoroViewModel = hiltViewModel(),
-    onNavigateToStatistics: () -> Unit,
-    onNavigateToSettings: () -> Unit
+    viewModel: PomodoroViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
     val focusTime by viewModel.focusDuration.collectAsState()
@@ -138,6 +134,7 @@ fun PomodoroScreen(
                     }
                     context.startService(intent)
                 }
+                showSoundscapes = false
             }
         )
     }
@@ -172,20 +169,6 @@ fun PomodoroScreen(
                             tint = if (selectedSoundId != -1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground
                         )
                     }
-                    IconButton(onClick = onNavigateToStatistics) {
-                        Icon(
-                            imageVector = Icons.Default.BarChart,
-                            contentDescription = stringResource(R.string.statistics),
-                            tint = MaterialTheme.colorScheme.onBackground
-                        )
-                    }
-                    IconButton(onClick = onNavigateToSettings) {
-                        Icon(
-                            imageVector = Icons.Default.Settings,
-                            contentDescription = stringResource(R.string.settings),
-                            tint = MaterialTheme.colorScheme.onBackground
-                        )
-                    }
                 }
             )
         }
@@ -198,7 +181,7 @@ fun PomodoroScreen(
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
                     .padding(padding)
-                    .padding(bottom = 32.dp),
+                    .padding(bottom = 100.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Spacer(modifier = Modifier.height(24.dp))
@@ -218,13 +201,13 @@ fun PomodoroScreen(
                     )
 
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(
-                                text = formatTime(state.remainingMillis),
-                                modifier = Modifier.scale(scale),
-                                style = MaterialTheme.typography.displayLarge,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onBackground
-                            )
+                        Text(
+                            text = formatTime(state.remainingMillis),
+                            modifier = Modifier.scale(scale),
+                            style = MaterialTheme.typography.displayLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
 
                         Spacer(modifier = Modifier.height(8.dp))
 
