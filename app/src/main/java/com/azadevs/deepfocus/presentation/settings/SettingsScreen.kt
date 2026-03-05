@@ -80,10 +80,7 @@ fun SettingsScreen(
                     navigationIconContentColor = Color.Unspecified,
                     titleContentColor = Color.Unspecified,
                     actionIconContentColor = Color.Unspecified
-                ),
-                navigationIcon = {
-                    // Back button removed for Bottom Navigation
-                }
+                )
             )
         }
     ) { padding ->

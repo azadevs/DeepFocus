@@ -94,7 +94,7 @@ fun SettingSliderCard(
                 label = "valueAnimation"
             ) { targetValue ->
                 Text(
-                    text = "$targetValue daq",
+                    text = "$targetValue min",
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.ExtraBold
