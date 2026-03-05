@@ -37,4 +37,11 @@
     <string name="sound_rain">Rain</string>
     <string name="sound_cafe">Cafe</string>
     <string name="sound_fire">Fireplace</string>
+
+    <string name="rank">Rank</string>
+    <string name="stardust">Stardust</string>
+    <string name="streak">Current Streak</string>
+    <string name="best_streak">Best Streak</string>
+    <string name="your_progress">Your Progress</string>
+    <string name="level_up_to">Level up to: %1$s</string>
 </resources>

@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.LocalFireDepartment
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -49,6 +51,10 @@ fun StatisticsScreen(
     val totalMinutes by viewModel.totalFocusMinutes.collectAsState()
     val sessions by viewModel.allSessions.collectAsState()
     val weeklyStats by viewModel.weeklyStats.collectAsState()
+    val stardust by viewModel.stardust.collectAsState()
+    val currentStreak by viewModel.currentStreak.collectAsState()
+    val bestStreak by viewModel.bestStreak.collectAsState()
+    val rank by viewModel.userRank.collectAsState()
 
     val totalHours = totalMinutes / 60
     val remainingMinutes = totalMinutes % 60
@@ -59,10 +65,7 @@ fun StatisticsScreen(
                 title = { Text(stringResource(R.string.statistics), fontWeight = FontWeight.Bold) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background.copy(alpha = 0.8f)
-                ),
-                navigationIcon = {
-                    // Back button removed for Bottom Navigation
-                }
+                )
             )
         }
     ) { padding ->
@@ -89,6 +92,44 @@ fun StatisticsScreen(
                     Spacer(modifier = Modifier.height(16.dp))
                     TotalTimeCard(totalHours, remainingMinutes)
                     Spacer(modifier = Modifier.height(24.dp))
+                }
+
+                item {
+                    Text(
+                        text = stringResource(R.string.your_progress),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                    com.azadevs.deepfocus.presentation.statistics.component.RankCard(
+                        rank = rank,
+                        stardust = stardust
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            SummaryCard(
+                                modifier = Modifier.weight(1f),
+                                title = stringResource(R.string.streak),
+                                value = "$currentStreak 🔥",
+                                icon = Icons.Default.LocalFireDepartment
+                            )
+                            SummaryCard(
+                                modifier = Modifier.weight(1f),
+                                title = stringResource(R.string.best_streak),
+                                value = "$bestStreak 🏆",
+                                icon = Icons.Default.EmojiEvents
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(32.dp))
                 }
 
                 item {

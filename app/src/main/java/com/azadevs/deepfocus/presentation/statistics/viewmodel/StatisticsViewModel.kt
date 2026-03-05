@@ -3,6 +3,7 @@ package com.azadevs.deepfocus.presentation.statistics.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.azadevs.deepfocus.domain.model.FocusSession
+import com.azadevs.deepfocus.domain.model.UserRank
 import com.azadevs.deepfocus.domain.usecase.DeepFocusUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -27,6 +28,35 @@ class StatisticsViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = 0
         )
+
+    val stardust: StateFlow<Int> = useCases.getStardust()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = 0
+        )
+
+    val currentStreak: StateFlow<Int> = useCases.getCurrentStreak()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = 0
+        )
+
+    val bestStreak: StateFlow<Int> = useCases.getBestStreak()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = 0
+        )
+
+    val userRank: StateFlow<UserRank> = totalFocusMinutes.map { minutes ->
+        UserRank.fromMinutes(minutes)
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = UserRank.STARGAZER
+    )
 
     val allSessions: StateFlow<List<FocusSession>> = useCases.getAllSessions()
         .stateIn(
