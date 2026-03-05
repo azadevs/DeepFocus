@@ -1,6 +1,7 @@
 package com.azadevs.deepfocus.di
 
 import android.content.Context
+import com.azadevs.deepfocus.data.datastore.GamificationDataStore
 import com.azadevs.deepfocus.data.datastore.SettingsDataStore
 import com.azadevs.deepfocus.data.datastore.TimerPersistenceDataStore
 import dagger.Module
@@ -32,5 +33,13 @@ object DataStoreModule {
         @ApplicationContext context: Context
     ): TimerPersistenceDataStore {
         return TimerPersistenceDataStore(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGamificationDataStore(
+        @ApplicationContext context: Context
+    ): GamificationDataStore {
+        return GamificationDataStore(context)
     }
 }

@@ -38,5 +38,9 @@ abstract class RepositoryModule {
         impl: ProdSettingsRepository
     ): SettingsRepository
 
-
+    @Binds
+    @Singleton
+    abstract fun bindFocusStreakRepository(
+        impl: com.azadevs.deepfocus.data.repository.ProdFocusStreakRepository
+    ): com.azadevs.deepfocus.domain.repository.FocusStreakRepository
 }

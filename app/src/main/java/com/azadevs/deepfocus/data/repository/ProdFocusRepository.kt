@@ -4,7 +4,9 @@ import com.azadevs.deepfocus.data.local.dao.FocusSessionDao
 import com.azadevs.deepfocus.data.mapper.toDomain
 import com.azadevs.deepfocus.data.mapper.toEntity
 import com.azadevs.deepfocus.domain.model.FocusSession
+import com.azadevs.deepfocus.domain.model.SessionType
 import com.azadevs.deepfocus.domain.repository.FocusRepository
+import com.azadevs.deepfocus.domain.repository.FocusStreakRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -14,11 +16,16 @@ import javax.inject.Inject
  * 20/02/2026
  */
 class ProdFocusRepository @Inject constructor(
-    private val focusSessionDao: FocusSessionDao
+    private val focusSessionDao: FocusSessionDao,
+    private val streakRepository: FocusStreakRepository
 ) : FocusRepository {
 
     override suspend fun upsertSession(session: FocusSession) {
         focusSessionDao.upsert(session.toEntity())
+        if (session.type == SessionType.FOCUS) {
+            streakRepository.updateStreak(session.endTime)
+            streakRepository.addStardust(session.durationMinutes)
+        }
     }
 
     override fun getAllSessions(): Flow<List<FocusSession>> =
