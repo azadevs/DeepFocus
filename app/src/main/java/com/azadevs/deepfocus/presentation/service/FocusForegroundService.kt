@@ -15,6 +15,7 @@ import android.os.PowerManager
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.azadevs.deepfocus.R
+import com.azadevs.deepfocus.domain.model.PomodoroPhase
 import com.azadevs.deepfocus.domain.model.PomodoroState
 import com.azadevs.deepfocus.domain.pomodoro.PomodoroController
 import com.azadevs.deepfocus.presentation.MainActivity
@@ -281,9 +282,20 @@ class FocusForegroundService : Service() {
 
         when {
             state.isRinging -> {
+                val title = when (state.phase) {
+                    PomodoroPhase.FOCUS -> "Break is over! \u23F0"
+                    PomodoroPhase.SHORT_BREAK, PomodoroPhase.LONG_BREAK -> "Focus finished! \u23F0"
+                }
+
+                val text = when (state.phase) {
+                    PomodoroPhase.FOCUS -> "Time to focus."
+                    PomodoroPhase.SHORT_BREAK -> "Time for a short break."
+                    PomodoroPhase.LONG_BREAK -> "Time for a long break."
+                }
+
                 builder
-                    .setContentTitle("Timer is finished! \u23F0")
-                    .setContentText("Ready to start.")
+                    .setContentTitle(title)
+                    .setContentText(text)
                     .setOngoing(false)
                     .addAction(
                         R.drawable.ic_stop,
