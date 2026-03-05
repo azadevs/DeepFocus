@@ -1,6 +1,9 @@
 package com.azadevs.deepfocus.di
 
 import com.azadevs.deepfocus.domain.usecase.DeepFocusUseCases
+import com.azadevs.deepfocus.domain.usecase.gamification.GetBestStreakUseCase
+import com.azadevs.deepfocus.domain.usecase.gamification.GetCurrentStreakUseCase
+import com.azadevs.deepfocus.domain.usecase.gamification.GetStardustUseCase
 import com.azadevs.deepfocus.domain.usecase.session.GetAllSessionUseCase
 import com.azadevs.deepfocus.domain.usecase.session.GetSessionsBetweenUseCase
 import com.azadevs.deepfocus.domain.usecase.session.GetTotalFocusMinutesUseCase
@@ -37,7 +40,10 @@ object UseCaseModule {
         getShortBreakDuration: GetShortBreakDurationUseCase,
         setShortBreakDuration: SetShortBreakDurationUseCase,
         getLongBreakDuration: GetLongBreakDurationUseCase,
-        setLongBreakDuration: SetLongBreakDurationUseCase
+        setLongBreakDuration: SetLongBreakDurationUseCase,
+        getStardust: GetStardustUseCase,
+        getCurrentStreak: GetCurrentStreakUseCase,
+        getBestStreak: GetBestStreakUseCase
     ): DeepFocusUseCases {
         return DeepFocusUseCases(
             upsert,
@@ -49,7 +55,10 @@ object UseCaseModule {
             getShortBreakDuration,
             setShortBreakDuration,
             getLongBreakDuration,
-            setLongBreakDuration
+            setLongBreakDuration,
+            getStardust,
+            getCurrentStreak,
+            getBestStreak
         )
     }
 

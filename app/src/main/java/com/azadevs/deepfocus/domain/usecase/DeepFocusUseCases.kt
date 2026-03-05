@@ -1,5 +1,8 @@
 package com.azadevs.deepfocus.domain.usecase
 
+import com.azadevs.deepfocus.domain.usecase.gamification.GetBestStreakUseCase
+import com.azadevs.deepfocus.domain.usecase.gamification.GetCurrentStreakUseCase
+import com.azadevs.deepfocus.domain.usecase.gamification.GetStardustUseCase
 import com.azadevs.deepfocus.domain.usecase.session.GetAllSessionUseCase
 import com.azadevs.deepfocus.domain.usecase.session.GetSessionsBetweenUseCase
 import com.azadevs.deepfocus.domain.usecase.session.GetTotalFocusMinutesUseCase
@@ -25,5 +28,8 @@ data class DeepFocusUseCases(
     val getShortBreakDuration: GetShortBreakDurationUseCase,
     val setShortBreakDuration: SetShortBreakDurationUseCase,
     val getLongBreakDuration: GetLongBreakDurationUseCase,
-    val setLongBreakDuration: SetLongBreakDurationUseCase
+    val setLongBreakDuration: SetLongBreakDurationUseCase,
+    val getStardust: GetStardustUseCase,
+    val getCurrentStreak: GetCurrentStreakUseCase,
+    val getBestStreak: GetBestStreakUseCase
 )
