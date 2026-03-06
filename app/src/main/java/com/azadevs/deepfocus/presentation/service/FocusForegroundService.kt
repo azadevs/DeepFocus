@@ -39,7 +39,7 @@ class FocusForegroundService : Service() {
     lateinit var controller: PomodoroController
 
     private var wakeLock: PowerManager.WakeLock? = null
-    
+
     private var currentPlayer: MediaPlayer? = null
     private var nextPlayer: MediaPlayer? = null
     private var currentSoundResId: Int? = null
@@ -142,7 +142,7 @@ class FocusForegroundService : Service() {
                     playAmbientSound(soundResId)
                 }
             }
-            
+
             ACTION_STOP_AMBIENT -> {
                 stopAmbientSound()
             }
@@ -166,7 +166,7 @@ class FocusForegroundService : Service() {
         override fun onCompletion(mp: MediaPlayer) {
             mp.release()
             currentPlayer = nextPlayer
-            
+
             val resId = currentSoundResId
             if (resId != null) {
                 try {
@@ -182,14 +182,14 @@ class FocusForegroundService : Service() {
 
     private fun playAmbientSound(resId: Int) {
         if (currentSoundResId == resId && currentPlayer?.isPlaying == true) return
-        
+
         stopAmbientSound()
-        
+
         try {
             currentSoundResId = resId
             currentPlayer = createPlayer(resId)
             nextPlayer = createPlayer(resId)
-            
+
             currentPlayer?.setNextMediaPlayer(nextPlayer)
             currentPlayer?.setOnCompletionListener(completionListener)
 
@@ -220,7 +220,7 @@ class FocusForegroundService : Service() {
             it.release()
         }
         nextPlayer?.release()
-        
+
         currentPlayer = null
         nextPlayer = null
         currentSoundResId = null
@@ -230,7 +230,8 @@ class FocusForegroundService : Service() {
         serviceScope.launch {
             controller.state.collect { state ->
                 if (isForegroundStarted) {
-                    val isReady = !state.isRunning && !state.isRinging && state.remainingMillis == state.phaseDurationMillis
+                    val isReady =
+                        !state.isRunning && !state.isRinging && state.remainingMillis == state.phaseDurationMillis
 
                     if (isReady) {
                         stopAmbientSound()
@@ -239,7 +240,7 @@ class FocusForegroundService : Service() {
                         isForegroundStarted = false
                     } else {
                         updateNotification(state)
-                        
+
                         if (state.isRinging || !state.isRunning) {
                             pauseAmbientSound()
                         } else if (state.isRunning && currentPlayer != null && !currentPlayer!!.isPlaying) {
