@@ -243,7 +243,7 @@ class FocusForegroundService : Service() {
 
                         if (state.isRinging || !state.isRunning) {
                             pauseAmbientSound()
-                        } else if (state.isRunning && currentPlayer != null && !currentPlayer!!.isPlaying) {
+                        } else if (currentPlayer != null && !currentPlayer!!.isPlaying) {
                             resumeAmbientSound()
                         }
                     }
