@@ -99,7 +99,6 @@ fun AppBottomNavigationBar(
             .padding(start = 32.dp, end = 32.dp, bottom = 12.dp),
         contentAlignment = Alignment.CenterStart
     ) {
-        // Background Layer (Glassmorphism & Shadow)
         Box(
             modifier = Modifier
                 .matchParentSize()
@@ -125,18 +124,16 @@ fun AppBottomNavigationBar(
                 )
         )
 
-        // Indicator & Icons Layer
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(64.dp),
             contentAlignment = Alignment.CenterStart
         ) {
-            // Liquid Indicator
             if (barSize.width > 0) {
                 Box(
                     modifier = Modifier
-                        .offset(x = indicatorOffsetDp - 24.dp) // Perfectly center the 48dp glow
+                        .offset(x = indicatorOffsetDp - 24.dp)
                         .size(48.dp)
                         .clip(CircleShape)
                         .background(
@@ -150,7 +147,6 @@ fun AppBottomNavigationBar(
                         .align(Alignment.CenterStart)
                 )
 
-                // Core tiny dot
                 Box(
                     modifier = Modifier
                         .offset(x = indicatorOffsetDp - 3.dp)
