@@ -93,7 +93,7 @@ fun SettingsScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
-                    .padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 100.dp),
+                    .padding(start = 20.dp, end = 20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Surface(
@@ -145,7 +145,7 @@ fun SettingsScreen(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(bottom = 32.dp),
+                    .padding(bottom = 80.dp),
                 contentAlignment = Alignment.BottomCenter
             ) {
                 AnimatedVisibility(
