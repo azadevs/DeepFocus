@@ -1,14 +1,11 @@
 package com.azadevs.deepfocus.presentation.statistics
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -27,12 +24,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.azadevs.deepfocus.R
+import com.azadevs.deepfocus.presentation.statistics.component.RankCard
 import com.azadevs.deepfocus.presentation.statistics.component.SessionHistoryItem
 import com.azadevs.deepfocus.presentation.statistics.component.SummaryCard
 import com.azadevs.deepfocus.presentation.statistics.component.TotalTimeCard
@@ -60,79 +57,62 @@ fun StatisticsScreen(
     val remainingMinutes = totalMinutes % 60
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.statistics), fontWeight = FontWeight.Bold) },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background.copy(alpha = 0.8f)
+                    containerColor = MaterialTheme.colorScheme.background,
+                    scrolledContainerColor = MaterialTheme.colorScheme.surface // Pastga tushganda ozgina ajralib turadi
                 )
             )
         }
     ) { padding ->
-        Box(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            MaterialTheme.colorScheme.background,
-                            MaterialTheme.colorScheme.primary.copy(alpha = 0.05f)
-                        )
-                    )
-                )
                 .padding(padding)
+                .padding(horizontal = 20.dp),
+            contentPadding = PaddingValues(top = 16.dp, bottom = 100.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 20.dp),
-                contentPadding = PaddingValues(bottom = 100.dp)
-            ) {
-                item {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    TotalTimeCard(totalHours, remainingMinutes)
-                    Spacer(modifier = Modifier.height(24.dp))
-                }
 
-                item {
+            item {
+                TotalTimeCard(totalHours, remainingMinutes)
+            }
+
+            item {
+                Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     Text(
                         text = stringResource(R.string.your_progress),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        modifier = Modifier.padding(bottom = 16.dp)
+                        color = MaterialTheme.colorScheme.onBackground
                     )
-                    com.azadevs.deepfocus.presentation.statistics.component.RankCard(
+
+                    RankCard(
                         rank = rank,
                         stardust = stardust
                     )
-                    Spacer(modifier = Modifier.height(16.dp))
+
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(16.dp)
-                        ) {
-                            SummaryCard(
-                                modifier = Modifier.weight(1f),
-                                title = stringResource(R.string.streak),
-                                value = "$currentStreak 🔥",
-                                icon = Icons.Default.LocalFireDepartment
-                            )
-                            SummaryCard(
-                                modifier = Modifier.weight(1f),
-                                title = stringResource(R.string.best_streak),
-                                value = "$bestStreak 🏆",
-                                icon = Icons.Default.EmojiEvents
-                            )
-                        }
+                        SummaryCard(
+                            modifier = Modifier.weight(1f),
+                            title = stringResource(R.string.streak),
+                            value = "$currentStreak 🔥",
+                            icon = Icons.Default.LocalFireDepartment
+                        )
+                        SummaryCard(
+                            modifier = Modifier.weight(1f),
+                            title = stringResource(R.string.best_streak),
+                            value = "$bestStreak 🏆",
+                            icon = Icons.Default.EmojiEvents
+                        )
                     }
-                    Spacer(modifier = Modifier.height(32.dp))
-                }
 
-                item {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -150,50 +130,44 @@ fun StatisticsScreen(
                             icon = Icons.Outlined.Timer
                         )
                     }
-                    Spacer(modifier = Modifier.height(32.dp))
                 }
-
+            }
+            if (weeklyStats.isNotEmpty()) {
                 item {
-                    Text(
-                        text = stringResource(R.string.last_7_days),
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        modifier = Modifier.padding(bottom = 16.dp)
-                    )
-
-                    if (weeklyStats.isNotEmpty()) {
-                        WeeklyBarChart(stats = weeklyStats)
-                        Spacer(modifier = Modifier.height(32.dp))
-                    }
-                }
-
-                item {
-                    Text(
-                        text = stringResource(R.string.history),
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        modifier = Modifier.padding(bottom = 16.dp)
-                    )
-                }
-
-                if (sessions.isEmpty()) {
-                    item {
+                    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                         Text(
-                            text = stringResource(R.string.there_is_no_history_yet),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(vertical = 32.dp)
+                            text = stringResource(R.string.last_7_days),
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onBackground
                         )
+                        WeeklyBarChart(stats = weeklyStats)
                     }
-                } else {
-                    itemsIndexed(sessions) { index, session ->
-                        SessionHistoryItem(session = session, index = index)
-                        Spacer(modifier = Modifier.height(12.dp))
-                    }
+                }
+            }
+
+            item {
+                Text(
+                    text = stringResource(R.string.history),
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+            }
+
+            if (sessions.isEmpty()) {
+                item {
+                    Text(
+                        text = stringResource(R.string.there_is_no_history_yet),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(vertical = 16.dp)
+                    )
+                }
+            } else {
+                itemsIndexed(sessions) { index, session ->
+                    SessionHistoryItem(session = session, index = index)
                 }
             }
         }
     }
 }
-

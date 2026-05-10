@@ -3,14 +3,13 @@ package com.azadevs.deepfocus.presentation.statistics.component
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -19,12 +18,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.res.stringResource
@@ -37,10 +33,6 @@ import androidx.compose.ui.unit.dp
 import com.azadevs.deepfocus.R
 import com.azadevs.deepfocus.presentation.statistics.viewmodel.DailyStat
 
-/**
- * Created by : Azamat Kalmurzaev
- * 01/03/26
- */
 @Composable
 fun WeeklyBarChart(stats: List<DailyStat>) {
     val maxMinutes = stats.maxOfOrNull { it.minutes }?.coerceAtLeast(1) ?: 1
@@ -57,7 +49,7 @@ fun WeeklyBarChart(stats: List<DailyStat>) {
     val barColor = MaterialTheme.colorScheme.primary
     val trackColor = MaterialTheme.colorScheme.surfaceVariant
     val textColor = MaterialTheme.colorScheme.onSurfaceVariant
-    val gridColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f)
+    val gridColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
 
     val textMeasurer = rememberTextMeasurer()
     val textStyle = MaterialTheme.typography.labelMedium.copy(color = textColor, fontWeight = FontWeight.Medium)
@@ -72,36 +64,16 @@ fun WeeklyBarChart(stats: List<DailyStat>) {
 
     val chartContentDesc = stringResource(R.string.chart_content_desc)
 
-    Box(
+    Card(
         modifier = Modifier
             .fillMaxWidth()
             .height(280.dp)
-            .shadow(
-                elevation = 16.dp,
-                shape = RoundedCornerShape(24.dp),
-                spotColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
-                ambientColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.05f)
-            )
-            .clip(RoundedCornerShape(24.dp))
-            .background(
-                brush = Brush.linearGradient(
-                    colors = listOf(
-                        MaterialTheme.colorScheme.surface,
-                        MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)
-                    )
-                )
-            )
-            .border(
-                width = 1.dp,
-                brush = Brush.linearGradient(
-                    colors = listOf(
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
-                        Color.Transparent
-                    )
-                ),
-                shape = RoundedCornerShape(24.dp)
-            )
-            .semantics { contentDescription = chartContentDesc }
+            .semantics { contentDescription = chartContentDesc },
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface // Toza solid fon
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Canvas(
             modifier = Modifier
@@ -123,7 +95,7 @@ fun WeeklyBarChart(stats: List<DailyStat>) {
                     color = gridColor,
                     start = Offset(0f, y),
                     end = Offset(canvasWidth, y),
-                    strokeWidth = 1.5.dp.toPx(),
+                    strokeWidth = 1.dp.toPx(),
                     pathEffect = PathEffect.dashPathEffect(floatArrayOf(15f, 15f), 0f)
                 )
             }
@@ -132,8 +104,9 @@ fun WeeklyBarChart(stats: List<DailyStat>) {
                 val sectionWidth = canvasWidth / stats.size
                 val xPos = (index * sectionWidth) + (sectionWidth / 2) - (barWidth / 2)
 
+                // Orqa fon (track)
                 drawRoundRect(
-                    color = trackColor.copy(alpha = 0.3f),
+                    color = trackColor.copy(alpha = 0.4f),
                     topLeft = Offset(xPos, 0f),
                     size = Size(barWidth, chartHeight),
                     cornerRadius = CornerRadius(50f, 50f)
@@ -142,21 +115,18 @@ fun WeeklyBarChart(stats: List<DailyStat>) {
                 val fillHeight = (stat.minutes.toFloat() / maxMinutes) * chartHeight * animationProgress
                 val yPos = chartHeight - fillHeight
 
+                // Asosiy Ustun (Solid color)
                 if (fillHeight > 0) {
                     drawRoundRect(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(barColor.copy(alpha = 0.8f), barColor),
-                            startY = yPos,
-                            endY = chartHeight
-                        ),
+                        color = barColor,
                         topLeft = Offset(xPos, yPos),
                         size = Size(barWidth, fillHeight),
                         cornerRadius = CornerRadius(50f, 50f)
                     )
-                    
-                    // Added glowing top
+
+                    // Ustun ustidagi kichik oq chiziqcha (yarqirash effekti)
                     drawRoundRect(
-                        color = Color.White.copy(alpha = 0.3f),
+                        color = Color.White.copy(alpha = 0.4f),
                         topLeft = Offset(xPos + (barWidth * 0.2f), yPos + 2.dp.toPx()),
                         size = Size(barWidth * 0.6f, 4.dp.toPx()),
                         cornerRadius = CornerRadius(50f, 50f)
