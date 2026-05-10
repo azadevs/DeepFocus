@@ -1,7 +1,6 @@
 package com.azadevs.deepfocus.data.datastore
 
 import android.content.Context
-import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -21,7 +20,6 @@ class SettingsDataStore(
         val FOCUS_DURATION = intPreferencesKey("focus_duration")
         val SHORT_BREAK = intPreferencesKey("short_break")
         val LONG_BREAK = intPreferencesKey("long_break")
-        val SOUND_ENABLED = booleanPreferencesKey("sound_enabled")
     }
 
     val focusDuration = context.dataStore.data.map { preferences ->
@@ -54,13 +52,4 @@ class SettingsDataStore(
         }
     }
 
-    val soundEnabled = context.dataStore.data.map { preferences ->
-        preferences[Keys.SOUND_ENABLED] ?: true
-    }
-
-    suspend fun setSoundEnabled(value: Boolean) {
-        context.dataStore.edit { preferences ->
-            preferences[Keys.SOUND_ENABLED] = value
-        }
-    }
 }

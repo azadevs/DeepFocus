@@ -117,11 +117,6 @@ class PomodoroController @Inject constructor(
     fun stop() {
         timerManager.stop(controllerScope)
         _state.value = PomodoroState()
-        
-        val intent = Intent(context, FocusForegroundService::class.java).apply {
-            action = FocusForegroundService.ACTION_STOP_AMBIENT
-        }
-        context.startService(intent)
     }
 
     private fun observeTimer() {
@@ -309,11 +304,6 @@ class PomodoroController @Inject constructor(
     fun skip() {
         stopAlarm()
         timerManager.stop(controllerScope)
-        
-        val intent = Intent(context, FocusForegroundService::class.java).apply {
-            action = FocusForegroundService.ACTION_STOP_AMBIENT
-        }
-        context.startService(intent)
         
         moveToNextPhase()
     }
