@@ -254,10 +254,6 @@ private fun TimerSection(
     }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// BottomSection – Controls Row + Statistics Card
-// ─────────────────────────────────────────────────────────────────────────────
-
 @Composable
 private fun BottomSection(
     state: PomodoroState,

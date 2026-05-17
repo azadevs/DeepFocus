@@ -49,7 +49,13 @@ class PomodoroController @Inject constructor(
 ) {
     private var config = PomodoroConfig()
 
-    private val _state = MutableStateFlow(PomodoroState())
+    private val _state = MutableStateFlow(
+        PomodoroState(
+            phase = PomodoroPhase.FOCUS,
+            remainingMillis = config.focusMinutes * 60_000L,
+            phaseDurationMillis = config.focusMinutes * 60_000L
+        )
+    )
     val state: StateFlow<PomodoroState> = _state.asStateFlow()
 
     private var mediaPlayer: MediaPlayer? = null
@@ -81,6 +87,15 @@ class PomodoroController @Inject constructor(
                 )
             }.collect { newConfig ->
                 config = newConfig
+
+                val current = _state.value
+                if (!current.isRunning && current.remainingMillis == current.phaseDurationMillis) {
+                    val idleDuration = durationFor(current.phase)
+                    _state.value = current.copy(
+                        remainingMillis = idleDuration,
+                        phaseDurationMillis = idleDuration
+                    )
+                }
             }
         }
     }
@@ -116,7 +131,15 @@ class PomodoroController @Inject constructor(
 
     fun stop() {
         timerManager.stop(controllerScope)
-        _state.value = PomodoroState()
+        val idleDuration = durationFor(_state.value.phase)
+        _state.value = PomodoroState(
+            phase = _state.value.phase,
+            cycleIndex = _state.value.cycleIndex,
+            remainingMillis = idleDuration,
+            phaseDurationMillis = idleDuration,
+            isRunning = false,
+            isRinging = false
+        )
     }
 
     private fun observeTimer() {
