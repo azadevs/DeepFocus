@@ -42,10 +42,13 @@ class FocusForegroundService : Service() {
 
     private val serviceScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     private var isForegroundStarted = false
+    private var lastRingingState = false
 
     companion object {
         private const val CHANNEL_ID = "focus_channel"
+        private const val ALARM_CHANNEL_ID = "alarm_channel"
         private const val NOTIFICATION_ID = 1
+        private const val ALARM_NOTIFICATION_ID = 2
 
         const val ACTION_FOREGROUND = "ACTION_FOREGROUND"
         const val ACTION_PAUSE = "ACTION_PAUSE"
@@ -54,8 +57,6 @@ class FocusForegroundService : Service() {
         const val ACTION_START = "ACTION_START"
         const val EXTRA_DURATION = "EXTRA_DURATION"
         const val ACTION_STOP_ALARM = "ACTION_STOP_ALARM"
-
-
     }
 
     override fun onCreate() {
@@ -121,7 +122,13 @@ class FocusForegroundService : Service() {
             }
 
             ACTION_STOP -> {
+                controller.stopAlarm()
                 controller.stop()
+
+                val manager = getSystemService(NotificationManager::class.java)
+                manager.cancel(NOTIFICATION_ID)
+                manager.cancel(ALARM_NOTIFICATION_ID)
+
                 stopForeground(STOP_FOREGROUND_REMOVE)
                 stopSelf()
                 isForegroundStarted = false
@@ -141,6 +148,10 @@ class FocusForegroundService : Service() {
                         !state.isRunning && !state.isRinging && state.remainingMillis == state.phaseDurationMillis
 
                     if (isReady) {
+                        val manager = getSystemService(NotificationManager::class.java)
+                        manager.cancel(NOTIFICATION_ID)
+                        manager.cancel(ALARM_NOTIFICATION_ID)
+
                         stopForeground(STOP_FOREGROUND_REMOVE)
                         stopSelf()
                         isForegroundStarted = false
@@ -173,19 +184,36 @@ class FocusForegroundService : Service() {
             this, 1, deleteIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val builder = NotificationCompat.Builder(this, CHANNEL_ID)
+        val channelId = if (state.isRinging) ALARM_CHANNEL_ID else CHANNEL_ID
+        val builder = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle("DeepFocus Timer")
             .setOngoing(true)
             .setContentIntent(activityPendingIntent)
             .setDeleteIntent(deletePendingIntent)
             .setAutoCancel(false)
+            .setCategory(if (state.isRinging) NotificationCompat.CATEGORY_ALARM else NotificationCompat.CATEGORY_PROGRESS)
+
+        if (state.isRinging) {
+            val fullScreenIntent = Intent(this, TimerExpiredActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            }
+            val fullScreenPendingIntent = PendingIntent.getActivity(
+                this,
+                1001,
+                fullScreenIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+            builder.setFullScreenIntent(fullScreenPendingIntent, true)
+            builder.setPriority(NotificationCompat.PRIORITY_MAX)
+            builder.setOngoing(true)
+        }
 
         when {
             state.isRinging -> {
                 val title = when (state.phase) {
-                    PomodoroPhase.FOCUS -> "Break is over! \u23F0"
-                    PomodoroPhase.SHORT_BREAK, PomodoroPhase.LONG_BREAK -> "Focus finished! \u23F0"
+                    PomodoroPhase.FOCUS -> "Break is over! ⏰"
+                    PomodoroPhase.SHORT_BREAK, PomodoroPhase.LONG_BREAK -> "Focus finished! ⏰"
                 }
 
                 val text = when (state.phase) {
@@ -197,7 +225,6 @@ class FocusForegroundService : Service() {
                 builder
                     .setContentTitle(title)
                     .setContentText(text)
-                    .setOngoing(false)
                     .addAction(
                         R.drawable.ic_stop,
                         "Turn off alarm",
@@ -244,18 +271,74 @@ class FocusForegroundService : Service() {
 
     private fun updateNotification(state: PomodoroState) {
         val manager = getSystemService(NotificationManager::class.java)
-        manager.notify(NOTIFICATION_ID, buildNotification(state))
+
+        if (state.isRinging) {
+            if (!lastRingingState) {
+                // Cancel the old timer notification first to clear channel association cache in system
+                manager.cancel(NOTIFICATION_ID)
+
+                val alarmNotification = buildNotification(state)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                    startForeground(
+                        ALARM_NOTIFICATION_ID,
+                        alarmNotification,
+                        ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
+                    )
+                } else {
+                    startForeground(
+                        ALARM_NOTIFICATION_ID,
+                        alarmNotification
+                    )
+                }
+                lastRingingState = true
+            } else {
+                manager.notify(ALARM_NOTIFICATION_ID, buildNotification(state))
+            }
+        } else {
+            if (lastRingingState) {
+                manager.cancel(ALARM_NOTIFICATION_ID)
+
+                val timerNotification = buildNotification(state)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                    startForeground(
+                        NOTIFICATION_ID,
+                        timerNotification,
+                        ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
+                    )
+                } else {
+                    startForeground(
+                        NOTIFICATION_ID,
+                        timerNotification
+                    )
+                }
+                lastRingingState = false
+            } else {
+                manager.notify(NOTIFICATION_ID, buildNotification(state))
+            }
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun createNotificationChannel() {
-        val channel = NotificationChannel(
+        val manager = getSystemService(NotificationManager::class.java)
+
+        val timerChannel = NotificationChannel(
             CHANNEL_ID,
             "DeepFocus Timer",
             NotificationManager.IMPORTANCE_LOW
         )
-        val manager = getSystemService(NotificationManager::class.java)
-        manager.createNotificationChannel(channel)
+        manager.createNotificationChannel(timerChannel)
+
+        val alarmChannel = NotificationChannel(
+            ALARM_CHANNEL_ID,
+            "DeepFocus Alarm",
+            NotificationManager.IMPORTANCE_HIGH
+        ).apply {
+            enableVibration(true)
+            enableLights(true)
+            lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+        }
+        manager.createNotificationChannel(alarmChannel)
     }
 
     override fun onDestroy() {
