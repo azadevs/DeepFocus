@@ -41,8 +41,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -54,9 +55,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.azadevs.deepfocus.R
 import com.azadevs.deepfocus.domain.model.PomodoroPhase
-import com.azadevs.deepfocus.domain.model.PomodoroState
 import com.azadevs.deepfocus.presentation.pomodoro.component.FlowOrb
 import com.azadevs.deepfocus.presentation.pomodoro.component.InfoPill
 import com.azadevs.deepfocus.presentation.pomodoro.component.PhaseChip
@@ -74,26 +75,31 @@ import kotlin.math.min
 fun PomodoroScreen(
     viewModel: PomodoroViewModel = hiltViewModel()
 ) {
-    val state by viewModel.state.collectAsState()
-    val focusTime by viewModel.focusDuration.collectAsState()
-    val shortTime by viewModel.shortBreakDuration.collectAsState()
-    val longTime by viewModel.longBreakDuration.collectAsState()
+    val stateState = viewModel.state.collectAsStateWithLifecycle()
+    val focusTime by viewModel.focusDuration.collectAsStateWithLifecycle()
+    val shortTime by viewModel.shortBreakDuration.collectAsStateWithLifecycle()
+    val longTime by viewModel.longBreakDuration.collectAsStateWithLifecycle()
 
-    val total = max(1L, state.phaseDurationMillis)
-    val remaining = min(total, max(0L, state.remainingMillis))
-    val rawProgress = 1f - (remaining.toFloat() / total.toFloat())
+    val cycleIndex by remember { derivedStateOf { stateState.value.cycleIndex } }
+    val phase by remember { derivedStateOf { stateState.value.phase } }
+    val isRinging by remember { derivedStateOf { stateState.value.isRinging } }
 
-    val progress by animateFloatAsState(
-        targetValue = rawProgress.coerceIn(0f, 1f),
-        label = "progress"
-    )
-    val scale by animateFloatAsState(
-        targetValue = if (state.isRunning) 1.05f else 1f,
-        animationSpec = spring(dampingRatio = 0.6f, stiffness = 300f),
-        label = "scale"
-    )
+    val canStart by remember {
+        derivedStateOf {
+            val s = stateState.value
+            !s.isRunning && s.remainingMillis == s.phaseDurationMillis
+        }
+    }
+    val showPause by remember { derivedStateOf { stateState.value.isRunning } }
+    val showResume by remember {
+        derivedStateOf {
+            val s = stateState.value
+            !s.isRunning && s.remainingMillis > 0L && s.remainingMillis < s.phaseDurationMillis
+        }
+    }
+
     val phaseColor by animateColorAsState(
-        targetValue = when (state.phase) {
+        targetValue = when (phase) {
             PomodoroPhase.FOCUS -> MaterialTheme.colorScheme.primary
             PomodoroPhase.SHORT_BREAK -> MaterialTheme.colorScheme.secondary
             PomodoroPhase.LONG_BREAK -> MaterialTheme.colorScheme.tertiary
@@ -104,13 +110,13 @@ fun PomodoroScreen(
     val haptic = LocalHapticFeedback.current
     val context = LocalContext.current
 
-    LaunchedEffect(state.phase) {
+    LaunchedEffect(phase) {
         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
     }
 
     Scaffold(
         topBar = {
-            PomodoroTopBar(cycleIndex = state.cycleIndex)
+            PomodoroTopBar(cycleIndex = cycleIndex)
         },
         containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
@@ -125,7 +131,7 @@ fun PomodoroScreen(
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             TopSection(
-                phase = state.phase,
+                phase = phase,
                 phaseColor = phaseColor,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -133,9 +139,10 @@ fun PomodoroScreen(
             )
 
             TimerSection(
-                state = state,
-                progress = progress,
-                scale = scale,
+                remainingMillisProvider = { stateState.value.remainingMillis },
+                phaseDurationMillisProvider = { stateState.value.phaseDurationMillis },
+                isRunningProvider = { stateState.value.isRunning },
+                phaseProvider = { stateState.value.phase },
                 phaseColor = phaseColor,
                 context = context,
                 modifier = Modifier
@@ -144,7 +151,10 @@ fun PomodoroScreen(
             )
 
             BottomSection(
-                state = state,
+                isRinging = isRinging,
+                canStart = canStart,
+                showPause = showPause,
+                showResume = showResume,
                 focusTime = focusTime,
                 shortTime = shortTime,
                 longTime = longTime,
@@ -213,30 +223,45 @@ private fun TopSection(
 
 @Composable
 private fun TimerSection(
-    state: PomodoroState,
-    progress: Float,
-    scale: Float,
+    remainingMillisProvider: () -> Long,
+    phaseDurationMillisProvider: () -> Long,
+    isRunningProvider: () -> Boolean,
+    phaseProvider: () -> PomodoroPhase,
     phaseColor: Color,
     context: Context,
     modifier: Modifier = Modifier
 ) {
+    val total = max(1L, phaseDurationMillisProvider())
+    val remaining = min(total, max(0L, remainingMillisProvider()))
+    val rawProgress = 1f - (remaining.toFloat() / total.toFloat())
+
+    val progress by animateFloatAsState(
+        targetValue = rawProgress.coerceIn(0f, 1f),
+        label = "progress"
+    )
+    val scale by animateFloatAsState(
+        targetValue = if (isRunningProvider()) 1.05f else 1f,
+        animationSpec = spring(dampingRatio = 0.6f, stiffness = 300f),
+        label = "scale"
+    )
+
     Box(
         modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
         FlowOrb(
-            progress = progress,
+            progressProvider = { progress },
             color = phaseColor,
             modifier = Modifier.fillMaxSize(),
             strokeWidth = 12.dp,
             glowRadius = 50f,
-            isPulsing = state.isRunning
+            isPulsing = isRunningProvider()
         )
 
         // Countdown text overlay
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                text = formatTime(state.remainingMillis),
+                text = formatTime(remainingMillisProvider()),
                 modifier = Modifier.scale(scale),
                 style = MaterialTheme.typography.displayLarge,
                 fontWeight = FontWeight.Bold,
@@ -246,7 +271,7 @@ private fun TimerSection(
             Spacer(modifier = Modifier.height(6.dp))
 
             Text(
-                text = phaseSubtitle(state.phase, context),
+                text = phaseSubtitle(phaseProvider(), context),
                 style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -256,7 +281,10 @@ private fun TimerSection(
 
 @Composable
 private fun BottomSection(
-    state: PomodoroState,
+    isRinging: Boolean,
+    canStart: Boolean,
+    showPause: Boolean,
+    showResume: Boolean,
     focusTime: Int,
     shortTime: Int,
     longTime: Int,
@@ -275,7 +303,10 @@ private fun BottomSection(
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
         ControlsSection(
-            state = state,
+            isRinging = isRinging,
+            canStart = canStart,
+            showPause = showPause,
+            showResume = showResume,
             phaseColor = phaseColor,
             onStartClick = onStartClick,
             onPauseClick = onPauseClick,
@@ -296,7 +327,10 @@ private fun BottomSection(
 
 @Composable
 private fun ControlsSection(
-    state: PomodoroState,
+    isRinging: Boolean,
+    canStart: Boolean,
+    showPause: Boolean,
+    showResume: Boolean,
     phaseColor: Color,
     onStartClick: () -> Unit,
     onPauseClick: () -> Unit,
@@ -312,7 +346,7 @@ private fun ControlsSection(
             .height(88.dp),
         contentAlignment = Alignment.Center
     ) {
-        if (state.isRinging) {
+        if (isRinging) {
             ExtendedFloatingActionButton(
                 onClick = onStopAlarmClick,
                 containerColor = MaterialTheme.colorScheme.errorContainer,
@@ -333,12 +367,6 @@ private fun ControlsSection(
                 modifier = Modifier.height(60.dp)
             )
         } else {
-            val canStart = !state.isRunning && state.remainingMillis == state.phaseDurationMillis
-            val showPause = state.isRunning
-            val showResume = !state.isRunning
-                    && state.remainingMillis > 0L
-                    && state.remainingMillis < state.phaseDurationMillis
-
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(20.dp)

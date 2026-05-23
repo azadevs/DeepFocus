@@ -30,7 +30,7 @@ import kotlin.math.sin
 
 @Composable
 fun FlowOrb(
-    progress: Float,
+    progressProvider: () -> Float,
     color: Color,
     modifier: Modifier = Modifier,
     strokeWidth: Dp = 12.dp,
@@ -94,7 +94,7 @@ fun FlowOrb(
             )
 
             drawProgressRing(
-                progress = progress,
+                progress = progressProvider(),
                 color = color,
                 strokeWidth = strokeWidth.toPx(),
                 radius = radius,
