@@ -19,3 +19,7 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Production Crash Reporting Optimization: Keep line numbers and source file mappings
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile
