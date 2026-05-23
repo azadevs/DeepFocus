@@ -30,7 +30,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,6 +41,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.azadevs.deepfocus.R
 import com.azadevs.deepfocus.presentation.settings.component.SettingSliderCard
 import com.azadevs.deepfocus.presentation.settings.viewmodel.SettingsViewModel
@@ -56,9 +56,9 @@ import kotlinx.coroutines.delay
 fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
-    val focusMins by viewModel.focusMinutes.collectAsState()
-    val shortMins by viewModel.shortBreakMinutes.collectAsState()
-    val longMins by viewModel.longBreakMinutes.collectAsState()
+    val focusMins by viewModel.focusMinutes.collectAsStateWithLifecycle()
+    val shortMins by viewModel.shortBreakMinutes.collectAsStateWithLifecycle()
+    val longMins by viewModel.longBreakMinutes.collectAsStateWithLifecycle()
     
     var showSavedIndicator by remember { mutableStateOf(false) }
     var saveIndicatorTrigger by remember { androidx.compose.runtime.mutableIntStateOf(0) }

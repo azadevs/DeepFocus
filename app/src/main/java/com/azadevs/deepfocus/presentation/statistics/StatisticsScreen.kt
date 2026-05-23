@@ -21,13 +21,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.azadevs.deepfocus.R
 import com.azadevs.deepfocus.presentation.statistics.component.RankCard
 import com.azadevs.deepfocus.presentation.statistics.component.SessionHistoryItem
@@ -45,13 +45,13 @@ import com.azadevs.deepfocus.presentation.statistics.viewmodel.StatisticsViewMod
 fun StatisticsScreen(
     viewModel: StatisticsViewModel = hiltViewModel()
 ) {
-    val totalMinutes by viewModel.totalFocusMinutes.collectAsState()
-    val sessions by viewModel.allSessions.collectAsState()
-    val weeklyStats by viewModel.weeklyStats.collectAsState()
-    val stardust by viewModel.stardust.collectAsState()
-    val currentStreak by viewModel.currentStreak.collectAsState()
-    val bestStreak by viewModel.bestStreak.collectAsState()
-    val rank by viewModel.userRank.collectAsState()
+    val totalMinutes by viewModel.totalFocusMinutes.collectAsStateWithLifecycle()
+    val sessions by viewModel.allSessions.collectAsStateWithLifecycle()
+    val weeklyStats by viewModel.weeklyStats.collectAsStateWithLifecycle()
+    val stardust by viewModel.stardust.collectAsStateWithLifecycle()
+    val currentStreak by viewModel.currentStreak.collectAsStateWithLifecycle()
+    val bestStreak by viewModel.bestStreak.collectAsStateWithLifecycle()
+    val rank by viewModel.userRank.collectAsStateWithLifecycle()
 
     val totalHours = totalMinutes / 60
     val remainingMinutes = totalMinutes % 60
