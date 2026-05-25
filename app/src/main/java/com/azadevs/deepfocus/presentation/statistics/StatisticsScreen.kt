@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.LocalFireDepartment
@@ -29,8 +28,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.azadevs.deepfocus.R
+import com.azadevs.deepfocus.presentation.statistics.component.FocusHeatmapCard
 import com.azadevs.deepfocus.presentation.statistics.component.RankCard
-import com.azadevs.deepfocus.presentation.statistics.component.SessionHistoryItem
 import com.azadevs.deepfocus.presentation.statistics.component.SummaryCard
 import com.azadevs.deepfocus.presentation.statistics.component.TotalTimeCard
 import com.azadevs.deepfocus.presentation.statistics.component.WeeklyBarChart
@@ -52,6 +51,7 @@ fun StatisticsScreen(
     val currentStreak by viewModel.currentStreak.collectAsStateWithLifecycle()
     val bestStreak by viewModel.bestStreak.collectAsStateWithLifecycle()
     val rank by viewModel.userRank.collectAsStateWithLifecycle()
+    val heatmapStats by viewModel.heatmapStats.collectAsStateWithLifecycle()
 
     val totalHours = totalMinutes / 60
     val remainingMinutes = totalMinutes % 60
@@ -147,26 +147,7 @@ fun StatisticsScreen(
             }
 
             item {
-                Text(
-                    text = stringResource(R.string.history),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-            }
-
-            if (sessions.isEmpty()) {
-                item {
-                    Text(
-                        text = stringResource(R.string.there_is_no_history_yet),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(vertical = 16.dp)
-                    )
-                }
-            } else {
-                itemsIndexed(sessions) { index, session ->
-                    SessionHistoryItem(session = session, index = index)
-                }
+                FocusHeatmapCard(stats = heatmapStats)
             }
         }
     }
