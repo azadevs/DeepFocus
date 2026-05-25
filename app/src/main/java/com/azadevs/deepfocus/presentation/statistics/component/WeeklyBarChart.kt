@@ -16,6 +16,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
@@ -37,7 +38,7 @@ import com.azadevs.deepfocus.presentation.statistics.viewmodel.DailyStat
 fun WeeklyBarChart(stats: List<DailyStat>) {
     val maxMinutes = stats.maxOfOrNull { it.minutes }?.coerceAtLeast(1) ?: 1
 
-    var animationPlayed by remember { mutableStateOf(false) }
+    var animationPlayed by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(Unit) { animationPlayed = true }
 
     val animationProgress by animateFloatAsState(

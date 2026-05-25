@@ -18,7 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,12 +29,11 @@ import com.azadevs.deepfocus.R
 
 @Composable
 fun TotalTimeCard(hours: Int, minutes: Int) {
-    var animationPlayed by remember { mutableStateOf(false) }
+    var animationPlayed by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(key1 = true) {
         animationPlayed = true
     }
-
     val animatedHours by animateIntAsState(
         targetValue = if (animationPlayed) hours else 0,
         animationSpec = tween(durationMillis = 1500, easing = FastOutSlowInEasing),
