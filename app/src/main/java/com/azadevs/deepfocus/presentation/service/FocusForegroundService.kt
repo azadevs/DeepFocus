@@ -187,7 +187,7 @@ class FocusForegroundService : Service() {
         val channelId = if (state.isRinging) ALARM_CHANNEL_ID else CHANNEL_ID
         val builder = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.drawable.ic_notification)
-            .setContentTitle("DeepFocus Timer")
+            .setContentTitle(getString(R.string.notification_timer_title))
             .setOngoing(true)
             .setContentIntent(activityPendingIntent)
             .setDeleteIntent(deletePendingIntent)
@@ -212,14 +212,14 @@ class FocusForegroundService : Service() {
         when {
             state.isRinging -> {
                 val title = when (state.phase) {
-                    PomodoroPhase.FOCUS -> "Break is over! ⏰"
-                    PomodoroPhase.SHORT_BREAK, PomodoroPhase.LONG_BREAK -> "Focus finished! ⏰"
+                    PomodoroPhase.FOCUS -> getString(R.string.notification_break_over)
+                    PomodoroPhase.SHORT_BREAK, PomodoroPhase.LONG_BREAK -> getString(R.string.notification_focus_finished)
                 }
 
                 val text = when (state.phase) {
-                    PomodoroPhase.FOCUS -> "Time to focus."
-                    PomodoroPhase.SHORT_BREAK -> "Time for a short break."
-                    PomodoroPhase.LONG_BREAK -> "Time for a long break."
+                    PomodoroPhase.FOCUS -> getString(R.string.notification_time_to_focus)
+                    PomodoroPhase.SHORT_BREAK -> getString(R.string.notification_time_short_break)
+                    PomodoroPhase.LONG_BREAK -> getString(R.string.notification_time_long_break)
                 }
 
                 builder
@@ -227,7 +227,7 @@ class FocusForegroundService : Service() {
                     .setContentText(text)
                     .addAction(
                         R.drawable.ic_stop,
-                        "Turn off alarm",
+                        getString(R.string.turn_off_alarm),
                         pendingIntent(ACTION_STOP_ALARM)
                     )
             }
@@ -236,23 +236,40 @@ class FocusForegroundService : Service() {
                 builder
                     .setContentText(DeepFocusUtils.formatTime(state.remainingMillis))
                     .setOngoing(true)
-                    .addAction(R.drawable.ic_pause, "Pause", pendingIntent(ACTION_PAUSE))
+                    .addAction(
+                        R.drawable.ic_pause,
+                        getString(R.string.pause),
+                        pendingIntent(ACTION_PAUSE)
+                    )
             }
 
             !state.isRunning && state.remainingMillis > 0L -> {
                 builder
-                    .setContentText("Paused • ${DeepFocusUtils.formatTime(state.remainingMillis)}")
+                    .setContentText(
+                        getString(
+                            R.string.notification_paused,
+                            DeepFocusUtils.formatTime(state.remainingMillis)
+                        )
+                    )
                     .setOngoing(true)
-                    .addAction(R.drawable.ic_play, "Resume", pendingIntent(ACTION_RESUME))
+                    .addAction(
+                        R.drawable.ic_play,
+                        getString(R.string.resume),
+                        pendingIntent(ACTION_RESUME)
+                    )
             }
 
             else -> {
-                builder.setContentText("Ready").setOngoing(true)
+                builder.setContentText(getString(R.string.notification_ready)).setOngoing(true)
             }
         }
 
         if (!state.isRinging) {
-            builder.addAction(R.drawable.ic_stop, "Stop", pendingIntent(ACTION_STOP))
+            builder.addAction(
+                R.drawable.ic_stop,
+                getString(R.string.stop),
+                pendingIntent(ACTION_STOP)
+            )
         }
         return builder.build()
     }
@@ -324,14 +341,14 @@ class FocusForegroundService : Service() {
 
         val timerChannel = NotificationChannel(
             CHANNEL_ID,
-            "DeepFocus Timer",
+            getString(R.string.notification_channel_timer),
             NotificationManager.IMPORTANCE_LOW
         )
         manager.createNotificationChannel(timerChannel)
 
         val alarmChannel = NotificationChannel(
             ALARM_CHANNEL_ID,
-            "DeepFocus Alarm",
+            getString(R.string.notification_channel_alarm),
             NotificationManager.IMPORTANCE_HIGH
         ).apply {
             enableVibration(true)

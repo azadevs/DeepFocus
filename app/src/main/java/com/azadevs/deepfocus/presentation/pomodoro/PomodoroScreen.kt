@@ -196,7 +196,7 @@ private fun PomodoroTopBar(
                 tonalElevation = 2.dp
             ) {
                 Text(
-                    text = "Cycle $cycleIndex",
+                    text = stringResource(R.string.cycle_label, cycleIndex),
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Bold,

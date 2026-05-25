@@ -44,4 +44,33 @@
     <string name="best_streak">Best Streak</string>
     <string name="your_progress">Your Progress</string>
     <string name="level_up_to">Level up to: %1$s</string>
+
+    <string name="heatmap_title">Focus Activity Map</string>
+    <string name="heatmap_subtitle">Your daily focus results over the last year</string>
+    <string name="heatmap_less">Less</string>
+    <string name="heatmap_more">More</string>
+    <string name="heatmap_day_mon">Mo</string>
+    <string name="heatmap_day_wed">We</string>
+    <string name="heatmap_day_fri">Fr</string>
+    <string name="heatmap_day_sun">Su</string>
+    <string name="heatmap_content_desc">Focus activity heatmap for the last year</string>
+
+    <!-- Notification strings -->
+    <string name="notification_timer_title">DeepFocus Timer</string>
+    <string name="notification_channel_timer">DeepFocus Timer</string>
+    <string name="notification_channel_alarm">DeepFocus Alarm</string>
+    <string name="notification_break_over">Break is over! ⏰</string>
+    <string name="notification_focus_finished">Focus finished! ⏰</string>
+    <string name="notification_time_to_focus">Time to focus.</string>
+    <string name="notification_time_short_break">Time for a short break.</string>
+    <string name="notification_time_long_break">Time for a long break.</string>
+    <string name="notification_ready">Ready</string>
+    <string name="notification_paused">Paused • %1$s</string>
+
+    <!-- Pomodoro screen -->
+    <string name="cycle_label">Cycle %1$d</string>
+
+    <!-- Timer expired screen -->
+    <string name="dismiss_alarm">Dismiss Alarm</string>
+
 </resources>

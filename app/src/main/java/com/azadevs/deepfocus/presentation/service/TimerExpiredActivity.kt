@@ -47,10 +47,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.azadevs.deepfocus.R
 import com.azadevs.deepfocus.domain.model.PomodoroPhase
 import com.azadevs.deepfocus.domain.pomodoro.PomodoroController
 import com.azadevs.deepfocus.presentation.MainActivity
@@ -273,7 +275,7 @@ class TimerExpiredActivity : ComponentActivity() {
                                             modifier = Modifier.padding(end = 8.dp)
                                         )
                                         Text(
-                                            text = "Dismiss Alarm",
+                                            text = stringResource(R.string.dismiss_alarm),
                                             fontWeight = FontWeight.SemiBold,
                                             fontSize = 16.sp
                                         )

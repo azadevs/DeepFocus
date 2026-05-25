@@ -65,6 +65,7 @@ fun WeeklyBarChart(stats: List<DailyStat>) {
 
     val chartContentDesc = stringResource(R.string.chart_content_desc)
 
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
