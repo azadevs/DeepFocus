@@ -22,6 +22,10 @@ class ProdFocusStreakRepository @Inject constructor(
         dataStore.updateStardust(amount)
     }
 
+    override suspend fun spendStardust(amount: Int) {
+        dataStore.spendStardust(amount)
+    }
+
     override suspend fun updateStreak(lastSessionTime: Long) {
         val lastDate = dataStore.lastSessionDateFlow.first()
         val currentStreak = dataStore.currentStreakFlow.first()

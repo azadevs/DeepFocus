@@ -43,4 +43,10 @@ abstract class RepositoryModule {
     abstract fun bindFocusStreakRepository(
         impl: com.azadevs.deepfocus.data.repository.ProdFocusStreakRepository
     ): com.azadevs.deepfocus.domain.repository.FocusStreakRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindCosmicModuleRepository(
+        impl: com.azadevs.deepfocus.data.repository.ProdCosmicModuleRepository
+    ): com.azadevs.deepfocus.domain.repository.CosmicModuleRepository
 }
