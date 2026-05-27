@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.RocketLaunch
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -60,6 +61,7 @@ fun AppBottomNavigationBar(
     val items = listOf(
         BottomNavItem(Icons.Default.BarChart, StatisticsRoute, "Statistics"),
         BottomNavItem(Icons.Default.Home, PomodoroRoute, "Home"),
+        BottomNavItem(Icons.Default.RocketLaunch, CosmicBaseRoute, "Station"),
         BottomNavItem(Icons.Default.Settings, SettingsRoute, "Settings")
     )
 
@@ -95,7 +97,7 @@ fun AppBottomNavigationBar(
         modifier = modifier
             .fillMaxWidth()
             .navigationBarsPadding()
-            .padding(start = 32.dp, end = 32.dp, bottom = 12.dp)
+            .padding(start = 24.dp, end = 24.dp, bottom = 12.dp)
             .height(64.dp)
             .shadow(
                 elevation = 16.dp,
