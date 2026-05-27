@@ -14,4 +14,7 @@ object PomodoroRoute
 object StatisticsRoute
 
 @Serializable
+object CosmicBaseRoute
+
+@Serializable
 object SettingsRoute
