@@ -130,6 +130,7 @@ class PomodoroController @Inject constructor(
     }
 
     fun stop() {
+        stopAlarm()
         timerManager.stop(controllerScope)
         val idleDuration = durationFor(_state.value.phase)
         _state.value = PomodoroState(
