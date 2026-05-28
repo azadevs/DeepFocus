@@ -9,7 +9,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.azadevs.deepfocus.presentation.cosmic.CosmicBaseScreen
 import com.azadevs.deepfocus.presentation.pomodoro.PomodoroScreen
 import com.azadevs.deepfocus.presentation.settings.SettingsScreen
 import com.azadevs.deepfocus.presentation.statistics.StatisticsScreen
@@ -37,9 +36,6 @@ fun AppNavigation() {
                 }
                 composable<StatisticsRoute> {
                     StatisticsScreen()
-                }
-                composable<CosmicBaseRoute> {
-                    CosmicBaseScreen()
                 }
                 composable<SettingsRoute> {
                     SettingsScreen()
