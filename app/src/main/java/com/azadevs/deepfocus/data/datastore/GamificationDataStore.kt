@@ -7,7 +7,6 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
-import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -23,7 +22,6 @@ class GamificationDataStore(private val context: Context) {
         val CURRENT_STREAK = intPreferencesKey("current_streak")
         val BEST_STREAK = intPreferencesKey("best_streak")
         val LAST_SESSION_DATE = longPreferencesKey("last_session_date")
-        val UNLOCKED_MODULE_IDS = stringSetPreferencesKey("unlocked_module_ids")
     }
 
     val stardustFlow: Flow<Int> = context.gamificationDataStore.data
@@ -31,7 +29,7 @@ class GamificationDataStore(private val context: Context) {
             if (exception is IOException) emit(emptyPreferences())
             else throw exception
         }.map { preferences ->
-            preferences[PreferencesKeys.STARDUST] ?: 50000
+            preferences[PreferencesKeys.STARDUST] ?: 0
         }
 
     val currentStreakFlow: Flow<Int> = context.gamificationDataStore.data
@@ -72,31 +70,6 @@ class GamificationDataStore(private val context: Context) {
             if (streak > best) {
                 preferences[PreferencesKeys.BEST_STREAK] = streak
             }
-        }
-    }
-
-    val unlockedModuleIdsFlow: Flow<Set<Int>> = context.gamificationDataStore.data
-        .catch { exception ->
-            if (exception is IOException) emit(emptyPreferences())
-            else throw exception
-        }.map { preferences ->
-            preferences[PreferencesKeys.UNLOCKED_MODULE_IDS]
-                ?.mapNotNull { it.toIntOrNull() }
-                ?.toSet()
-                ?: emptySet()
-        }
-
-    suspend fun unlockModule(moduleId: Int) {
-        context.gamificationDataStore.edit { preferences ->
-            val current = preferences[PreferencesKeys.UNLOCKED_MODULE_IDS] ?: emptySet()
-            preferences[PreferencesKeys.UNLOCKED_MODULE_IDS] = current + moduleId.toString()
-        }
-    }
-
-    suspend fun spendStardust(amount: Int) {
-        context.gamificationDataStore.edit { preferences ->
-            val current = preferences[PreferencesKeys.STARDUST] ?: 0
-            preferences[PreferencesKeys.STARDUST] = (current - amount).coerceAtLeast(0)
         }
     }
 

@@ -7,6 +7,5 @@ interface FocusStreakRepository {
     fun getCurrentStreak(): Flow<Int>
     fun getBestStreak(): Flow<Int>
     suspend fun addStardust(amount: Int)
-    suspend fun spendStardust(amount: Int)
     suspend fun updateStreak(lastSessionTime: Long)
 }

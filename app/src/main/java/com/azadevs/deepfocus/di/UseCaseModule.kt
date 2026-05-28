@@ -1,8 +1,6 @@
 package com.azadevs.deepfocus.di
 
 import com.azadevs.deepfocus.domain.usecase.DeepFocusUseCases
-import com.azadevs.deepfocus.domain.usecase.cosmic.GetCosmicModulesUseCase
-import com.azadevs.deepfocus.domain.usecase.cosmic.UnlockCosmicModuleUseCase
 import com.azadevs.deepfocus.domain.usecase.gamification.GetBestStreakUseCase
 import com.azadevs.deepfocus.domain.usecase.gamification.GetCurrentStreakUseCase
 import com.azadevs.deepfocus.domain.usecase.gamification.GetStardustUseCase
@@ -46,8 +44,6 @@ object UseCaseModule {
         getStardust: GetStardustUseCase,
         getCurrentStreak: GetCurrentStreakUseCase,
         getBestStreak: GetBestStreakUseCase,
-        getCosmicModules: GetCosmicModulesUseCase,
-        unlockCosmicModule: UnlockCosmicModuleUseCase,
     ): DeepFocusUseCases {
         return DeepFocusUseCases(
             upsert,
@@ -63,8 +59,6 @@ object UseCaseModule {
             getStardust,
             getCurrentStreak,
             getBestStreak,
-            getCosmicModules,
-            unlockCosmicModule,
         )
     }
 }

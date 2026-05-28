@@ -1,7 +1,5 @@
 package com.azadevs.deepfocus.domain.usecase
 
-import com.azadevs.deepfocus.domain.usecase.cosmic.GetCosmicModulesUseCase
-import com.azadevs.deepfocus.domain.usecase.cosmic.UnlockCosmicModuleUseCase
 import com.azadevs.deepfocus.domain.usecase.gamification.GetBestStreakUseCase
 import com.azadevs.deepfocus.domain.usecase.gamification.GetCurrentStreakUseCase
 import com.azadevs.deepfocus.domain.usecase.gamification.GetStardustUseCase
@@ -34,6 +32,4 @@ data class DeepFocusUseCases(
     val getStardust: GetStardustUseCase,
     val getCurrentStreak: GetCurrentStreakUseCase,
     val getBestStreak: GetBestStreakUseCase,
-    val getCosmicModules: GetCosmicModulesUseCase,
-    val unlockCosmicModule: UnlockCosmicModuleUseCase,
 )
