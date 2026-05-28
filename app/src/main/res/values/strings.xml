@@ -38,12 +38,9 @@
     <string name="sound_cafe">Cafe</string>
     <string name="sound_fire">Fireplace</string>
 
-    <string name="rank">Rank</string>
-    <string name="stardust">Stardust</string>
     <string name="streak">Current Streak</string>
     <string name="best_streak">Best Streak</string>
     <string name="your_progress">Your Progress</string>
-    <string name="level_up_to">Level up to: %1$s</string>
 
     <string name="heatmap_title">Focus Activity Map</string>
     <string name="heatmap_subtitle">Your daily focus results over the last year</string>
@@ -69,42 +66,4 @@
     <string name="cycle_label">Cycle %1$d</string>
 
     <string name="dismiss_alarm">Dismiss Alarm</string>
-
-    <string name="cosmic_base_title">Focus Garden</string>
-    <string name="cosmic_base_subtitle">Grow a beautiful virtual forest by staying focused</string>
-    <string name="cosmic_base_your_balance">Your Water Drops</string>
-    <string name="cosmic_base_progress">%1$d / %2$d plants grown</string>
-    <string name="cosmic_base_unlock">Grow 💧 %1$d</string>
-    <string name="cosmic_base_unlocked">Grown 🌳</string>
-    <string name="cosmic_base_not_enough">Not enough Water Drops</string>
-    <string name="cosmic_base_earn_hint">Each focus minute = 1 💧 Water Drop</string>
-    <string name="cosmic_base_confirm_title">Water &amp; Grow?</string>
-    <string name="cosmic_base_confirm_body">Water \"%1$s\" with %2$d 💧 Water Drops?\nThis will add it to your Zen Garden.</string>
-    <string name="cosmic_base_confirm_yes">Water and Grow 🌱</string>
-    <string name="cosmic_base_confirm_no">Cancel</string>
-    <string name="cosmic_base_nav_label">Garden</string>
-
-    <!-- Module names -->
-    <string name="module_1_name">Bonsai Tree</string>
-    <string name="module_2_name">Sakura Blossom</string>
-    <string name="module_3_name">Lucky Bamboo</string>
-    <string name="module_4_name">Desert Cactus</string>
-    <string name="module_5_name">Sun Gold Flower</string>
-    <string name="module_6_name">Red Maple</string>
-    <string name="module_7_name">Tropical Palm</string>
-    <string name="module_8_name">Eternal Pine</string>
-    <string name="module_9_name">Midnight Rose</string>
-    <string name="module_10_name">Great Oak</string>
-
-    <string name="module_1_desc">A miniature art form representing harmony, balance, and patience.</string>
-    <string name="module_2_desc">A stunning cherry blossom, representing renewal, spring, and the beauty of life.</string>
-    <string name="module_3_desc">A clean, elegant stalk of bamboo, symbolizing strong willpower and resilience.</string>
-    <string name="module_4_desc">A resilient cactus thriving in the desert, symbolizing endurance and persistence.</string>
-    <string name="module_5_desc">A bright golden sunflower, always looking towards focus, sunlight, and positivity.</string>
-    <string name="module_6_desc">A beautiful maple tree with vibrant red leaves, representing warmth and deep calm.</string>
-    <string name="module_7_desc">A breezy, calm tropical palm tree, bringing beach-like relaxation and peace.</string>
-    <string name="module_8_desc">A sturdy evergreen pine tree, representing longevity, inner strength, and dedication.</string>
-    <string name="module_9_desc">A mysterious, deep dark rose that blossoms under midnight moonlight.</string>
-    <string name="module_10_desc">The magnificent King of the Forest. You have achieved supreme focus! 👑</string>
-
 </resources>
