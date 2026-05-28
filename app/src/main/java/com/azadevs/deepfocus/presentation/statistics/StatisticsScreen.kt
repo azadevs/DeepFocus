@@ -29,9 +29,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.azadevs.deepfocus.R
 import com.azadevs.deepfocus.presentation.statistics.component.FocusHeatmapCard
-import com.azadevs.deepfocus.presentation.statistics.component.RankCard
 import com.azadevs.deepfocus.presentation.statistics.component.SummaryCard
-import com.azadevs.deepfocus.presentation.statistics.component.TotalTimeCard
 import com.azadevs.deepfocus.presentation.statistics.component.WeeklyBarChart
 import com.azadevs.deepfocus.presentation.statistics.viewmodel.StatisticsViewModel
 
@@ -47,14 +45,9 @@ fun StatisticsScreen(
     val totalMinutes by viewModel.totalFocusMinutes.collectAsStateWithLifecycle()
     val sessions by viewModel.allSessions.collectAsStateWithLifecycle()
     val weeklyStats by viewModel.weeklyStats.collectAsStateWithLifecycle()
-    val stardust by viewModel.stardust.collectAsStateWithLifecycle()
     val currentStreak by viewModel.currentStreak.collectAsStateWithLifecycle()
     val bestStreak by viewModel.bestStreak.collectAsStateWithLifecycle()
-    val rank by viewModel.userRank.collectAsStateWithLifecycle()
     val heatmapStats by viewModel.heatmapStats.collectAsStateWithLifecycle()
-
-    val totalHours = totalMinutes / 60
-    val remainingMinutes = totalMinutes % 60
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -78,21 +71,12 @@ fun StatisticsScreen(
         ) {
 
             item {
-                TotalTimeCard(totalHours, remainingMinutes)
-            }
-
-            item {
                 Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     Text(
                         text = stringResource(R.string.your_progress),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onBackground
-                    )
-
-                    RankCard(
-                        rank = rank,
-                        stardust = stardust
                     )
 
                     Row(

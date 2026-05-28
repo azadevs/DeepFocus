@@ -70,41 +70,41 @@
 
     <string name="dismiss_alarm">Dismiss Alarm</string>
 
-    <string name="cosmic_base_title">Cosmic Station</string>
-    <string name="cosmic_base_subtitle">Build your space station with Stardust</string>
-    <string name="cosmic_base_your_balance">Your Balance</string>
-    <string name="cosmic_base_progress">%1$d / %2$d modules built</string>
-    <string name="cosmic_base_unlock">Build  ⭐ %1$d</string>
-    <string name="cosmic_base_unlocked">Built ✓</string>
-    <string name="cosmic_base_not_enough">Not enough Stardust</string>
-    <string name="cosmic_base_earn_hint">Each focus minute = 1 ⭐ Stardust</string>
-    <string name="cosmic_base_confirm_title">Build Module?</string>
-    <string name="cosmic_base_confirm_body">Build \"%1$s\" for %2$d ⭐ Stardust?\nThis action cannot be undone.</string>
-    <string name="cosmic_base_confirm_yes">Build 🚀</string>
+    <string name="cosmic_base_title">Focus Garden</string>
+    <string name="cosmic_base_subtitle">Grow a beautiful virtual forest by staying focused</string>
+    <string name="cosmic_base_your_balance">Your Water Drops</string>
+    <string name="cosmic_base_progress">%1$d / %2$d plants grown</string>
+    <string name="cosmic_base_unlock">Grow 💧 %1$d</string>
+    <string name="cosmic_base_unlocked">Grown 🌳</string>
+    <string name="cosmic_base_not_enough">Not enough Water Drops</string>
+    <string name="cosmic_base_earn_hint">Each focus minute = 1 💧 Water Drop</string>
+    <string name="cosmic_base_confirm_title">Water &amp; Grow?</string>
+    <string name="cosmic_base_confirm_body">Water \"%1$s\" with %2$d 💧 Water Drops?\nThis will add it to your Zen Garden.</string>
+    <string name="cosmic_base_confirm_yes">Water and Grow 🌱</string>
     <string name="cosmic_base_confirm_no">Cancel</string>
-    <string name="cosmic_base_nav_label">Station</string>
+    <string name="cosmic_base_nav_label">Garden</string>
 
     <!-- Module names -->
-    <string name="module_1_name">Core Reactor</string>
-    <string name="module_2_name">Navigation Dome</string>
-    <string name="module_3_name">Observation Tower</string>
-    <string name="module_4_name">Research Lab</string>
-    <string name="module_5_name">Solar Panel Array</string>
-    <string name="module_6_name">Biosphere Module</string>
-    <string name="module_7_name">Shield Generator</string>
-    <string name="module_8_name">Spacecraft Hangar</string>
-    <string name="module_9_name">Quasar Antenna</string>
-    <string name="module_10_name">Galaxy Commander</string>
+    <string name="module_1_name">Bonsai Tree</string>
+    <string name="module_2_name">Sakura Blossom</string>
+    <string name="module_3_name">Lucky Bamboo</string>
+    <string name="module_4_name">Desert Cactus</string>
+    <string name="module_5_name">Sun Gold Flower</string>
+    <string name="module_6_name">Red Maple</string>
+    <string name="module_7_name">Tropical Palm</string>
+    <string name="module_8_name">Eternal Pine</string>
+    <string name="module_9_name">Midnight Rose</string>
+    <string name="module_10_name">Great Oak</string>
 
-    <string name="module_1_desc">The energy heart of your station. Everything begins here.</string>
-    <string name="module_2_desc">Find your way through the cosmos. Never get lost again.</string>
-    <string name="module_3_desc">Watch distant stars and plan your next mission.</string>
-    <string name="module_4_desc">Unlock the secrets of the universe through science.</string>
-    <string name="module_5_desc">Harness the power of a thousand suns.</string>
-    <string name="module_6_desc">A living garden thriving in the void of space.</string>
-    <string name="module_7_desc">Protect your station from cosmic threats.</string>
-    <string name="module_8_desc">Launch missions to the farthest corners of space.</string>
-    <string name="module_9_desc">Communicate with civilizations across the galaxy.</string>
-    <string name="module_10_desc">You have achieved galactic supremacy. 👑</string>
+    <string name="module_1_desc">A miniature art form representing harmony, balance, and patience.</string>
+    <string name="module_2_desc">A stunning cherry blossom, representing renewal, spring, and the beauty of life.</string>
+    <string name="module_3_desc">A clean, elegant stalk of bamboo, symbolizing strong willpower and resilience.</string>
+    <string name="module_4_desc">A resilient cactus thriving in the desert, symbolizing endurance and persistence.</string>
+    <string name="module_5_desc">A bright golden sunflower, always looking towards focus, sunlight, and positivity.</string>
+    <string name="module_6_desc">A beautiful maple tree with vibrant red leaves, representing warmth and deep calm.</string>
+    <string name="module_7_desc">A breezy, calm tropical palm tree, bringing beach-like relaxation and peace.</string>
+    <string name="module_8_desc">A sturdy evergreen pine tree, representing longevity, inner strength, and dedication.</string>
+    <string name="module_9_desc">A mysterious, deep dark rose that blossoms under midnight moonlight.</string>
+    <string name="module_10_desc">The magnificent King of the Forest. You have achieved supreme focus! 👑</string>
 
 </resources>
