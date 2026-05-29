@@ -56,8 +56,16 @@
     <string name="notification_time_long_break">Time for a long break.</string>
     <string name="notification_ready">Ready</string>
     <string name="notification_paused">Paused • %1$s</string>
-
     <string name="cycle_label">Cycle %1$d</string>
-
     <string name="dismiss_alarm">Dismiss Alarm</string>
+
+    <string name="onboarding_skip">Skip</string>
+    <string name="onboarding_next">Next</string>
+    <string name="onboarding_finish">Get Started</string>
+    <string name="onboarding_title_1">Focus Redefined</string>
+    <string name="onboarding_desc_1">Leverage the Pomodoro technique to lock out distractions and maximize your focus cycles.</string>
+    <string name="onboarding_title_2">Keep Your Streak</string>
+    <string name="onboarding_desc_2">Build consistency by keeping your daily focus streaks alive and establishing positive habits.</string>
+    <string name="onboarding_title_3">Track Your Progress</string>
+    <string name="onboarding_desc_3">Analyze your growth with beautiful, real-time analytics and detailed weekly bar charts.</string>
 </resources>
