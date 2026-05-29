@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.azadevs.deepfocus.domain.pomodoro.PomodoroController
 import com.azadevs.deepfocus.presentation.util.navigation.AppNavigation
@@ -16,13 +17,20 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var controller: PomodoroController
 
+    private val viewModel: MainViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen()
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
+
+        splashScreen.setKeepOnScreenCondition {
+            viewModel.isOnboardingCompleted.value == null
+        }
+
         enableEdgeToEdge()
         setContent {
             DeepFocusTheme {
-                AppNavigation()
+                AppNavigation(viewModel = viewModel)
             }
         }
     }
