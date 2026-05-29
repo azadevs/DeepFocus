@@ -1,6 +1,7 @@
 package com.azadevs.deepfocus.data.datastore
 
 import android.content.Context
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -20,6 +21,7 @@ class SettingsDataStore(
         val FOCUS_DURATION = intPreferencesKey("focus_duration")
         val SHORT_BREAK = intPreferencesKey("short_break")
         val LONG_BREAK = intPreferencesKey("long_break")
+        val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
     }
 
     val focusDuration = context.dataStore.data.map { preferences ->
@@ -49,6 +51,16 @@ class SettingsDataStore(
     suspend fun setLongBreakDuration(value: Int) {
         context.dataStore.edit { preferences ->
             preferences[Keys.LONG_BREAK] = value
+        }
+    }
+
+    val isOnboardingCompleted = context.dataStore.data.map { preferences ->
+        preferences[Keys.ONBOARDING_COMPLETED] ?: false
+    }
+
+    suspend fun setOnboardingCompleted(value: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[Keys.ONBOARDING_COMPLETED] = value
         }
     }
 

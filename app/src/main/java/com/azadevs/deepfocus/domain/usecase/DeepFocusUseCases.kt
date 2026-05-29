@@ -9,9 +9,11 @@ import com.azadevs.deepfocus.domain.usecase.session.GetTotalFocusMinutesUseCase
 import com.azadevs.deepfocus.domain.usecase.session.UpsertSessionUseCase
 import com.azadevs.deepfocus.domain.usecase.settings.GetFocusDurationUseCase
 import com.azadevs.deepfocus.domain.usecase.settings.GetLongBreakDurationUseCase
+import com.azadevs.deepfocus.domain.usecase.settings.GetOnboardingCompletedUseCase
 import com.azadevs.deepfocus.domain.usecase.settings.GetShortBreakDurationUseCase
 import com.azadevs.deepfocus.domain.usecase.settings.SetFocusDurationUseCase
 import com.azadevs.deepfocus.domain.usecase.settings.SetLongBreakDurationUseCase
+import com.azadevs.deepfocus.domain.usecase.settings.SetOnboardingCompletedUseCase
 import com.azadevs.deepfocus.domain.usecase.settings.SetShortBreakDurationUseCase
 
 /**
@@ -32,4 +34,7 @@ data class DeepFocusUseCases(
     val getStardust: GetStardustUseCase,
     val getCurrentStreak: GetCurrentStreakUseCase,
     val getBestStreak: GetBestStreakUseCase,
+    val getOnboardingCompleted: GetOnboardingCompletedUseCase,
+    val setOnboardingCompleted: SetOnboardingCompletedUseCase
 )
+

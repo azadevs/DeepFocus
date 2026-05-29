@@ -10,9 +10,11 @@ import com.azadevs.deepfocus.domain.usecase.session.GetTotalFocusMinutesUseCase
 import com.azadevs.deepfocus.domain.usecase.session.UpsertSessionUseCase
 import com.azadevs.deepfocus.domain.usecase.settings.GetFocusDurationUseCase
 import com.azadevs.deepfocus.domain.usecase.settings.GetLongBreakDurationUseCase
+import com.azadevs.deepfocus.domain.usecase.settings.GetOnboardingCompletedUseCase
 import com.azadevs.deepfocus.domain.usecase.settings.GetShortBreakDurationUseCase
 import com.azadevs.deepfocus.domain.usecase.settings.SetFocusDurationUseCase
 import com.azadevs.deepfocus.domain.usecase.settings.SetLongBreakDurationUseCase
+import com.azadevs.deepfocus.domain.usecase.settings.SetOnboardingCompletedUseCase
 import com.azadevs.deepfocus.domain.usecase.settings.SetShortBreakDurationUseCase
 import dagger.Module
 import dagger.Provides
@@ -44,6 +46,8 @@ object UseCaseModule {
         getStardust: GetStardustUseCase,
         getCurrentStreak: GetCurrentStreakUseCase,
         getBestStreak: GetBestStreakUseCase,
+        getOnboardingCompleted: GetOnboardingCompletedUseCase,
+        setOnboardingCompleted: SetOnboardingCompletedUseCase
     ): DeepFocusUseCases {
         return DeepFocusUseCases(
             upsert,
@@ -59,6 +63,8 @@ object UseCaseModule {
             getStardust,
             getCurrentStreak,
             getBestStreak,
+            getOnboardingCompleted,
+            setOnboardingCompleted
         )
     }
 }

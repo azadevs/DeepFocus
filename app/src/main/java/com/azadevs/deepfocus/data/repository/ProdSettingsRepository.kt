@@ -27,4 +27,9 @@ class ProdSettingsRepository @Inject constructor(
     override suspend fun setLongBreakDuration(duration: Int) =
         dataStore.setLongBreakDuration(duration)
 
+    override fun isOnboardingCompleted(): Flow<Boolean> = dataStore.isOnboardingCompleted
+
+    override suspend fun setOnboardingCompleted(completed: Boolean) =
+        dataStore.setOnboardingCompleted(completed)
+
 }

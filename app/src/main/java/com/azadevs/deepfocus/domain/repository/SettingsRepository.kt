@@ -20,4 +20,8 @@ interface SettingsRepository {
 
     suspend fun setLongBreakDuration(duration: Int)
 
+    fun isOnboardingCompleted(): Flow<Boolean>
+
+    suspend fun setOnboardingCompleted(completed: Boolean)
+
 }
