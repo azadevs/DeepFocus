@@ -13,10 +13,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
+import java.time.DayOfWeek
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
 
 /**
  * Created by : Azamat Kalmurzaev
@@ -48,7 +48,9 @@ class StatisticsViewModel @Inject constructor(
             initialValue = 0
         )
 
-    private val heatmapStartMillis: Long = calculateHeatmapStartMillis()
+    private val zoneId: ZoneId = ZoneId.systemDefault()
+    private val heatmapStartDate: LocalDate = calculateHeatmapStartDate(zoneId)
+    private val heatmapStartMillis: Long = heatmapStartDate.atStartOfDay(zoneId).toInstant().toEpochMilli()
 
     // Bounded query: loads only sessions within the 53-week heatmap window from Room DB
     // preventing massive unbounded memory allocation and DB reads for old historical records.
@@ -62,7 +64,7 @@ class StatisticsViewModel @Inject constructor(
     val allSessions: StateFlow<List<FocusSession>> = sessionsFlow
 
     val weeklyStats: StateFlow<List<DailyStat>> = sessionsFlow
-        .map { sessions -> calculateWeeklyStats(sessions) }
+        .map { sessions -> calculateWeeklyStats(sessions, zoneId) }
         .flowOn(Dispatchers.Default)
         .stateIn(
             scope = viewModelScope,
@@ -71,7 +73,7 @@ class StatisticsViewModel @Inject constructor(
         )
 
     val heatmapStats: StateFlow<List<HeatmapDay>> = sessionsFlow
-        .map { sessions -> calculateHeatmapStats(sessions, heatmapStartMillis) }
+        .map { sessions -> calculateHeatmapStats(sessions, heatmapStartDate, zoneId) }
         .flowOn(Dispatchers.Default)
         .stateIn(
             scope = viewModelScope,
@@ -81,24 +83,20 @@ class StatisticsViewModel @Inject constructor(
 
     private fun calculateHeatmapStats(
         sessions: List<FocusSession>,
-        startMillis: Long
+        startDate: LocalDate,
+        zone: ZoneId
     ): List<HeatmapDay> {
         val daysList = ArrayList<HeatmapDay>(53 * 7)
-        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.US)
 
-        // Single O(N) pass aggregation by formatted date
-        val minutesByDate = sessions
+        // Single O(N) pass aggregation by LocalDate (Instant to LocalDate via ZoneId)
+        val minutesByDate: Map<LocalDate, Int> = sessions
             .filter { it.type == SessionType.FOCUS }
-            .groupBy { sdf.format(Date(it.startTime)) }
+            .groupBy { Instant.ofEpochMilli(it.startTime).atZone(zone).toLocalDate() }
             .mapValues { (_, list) -> list.sumOf { it.durationMinutes } }
 
-        val calendar = Calendar.getInstance().apply {
-            timeInMillis = startMillis
-        }
-
+        var currentDate = startDate
         repeat(53 * 7) {
-            val dateStr = sdf.format(calendar.time)
-            val minutes = minutesByDate[dateStr] ?: 0
+            val minutes = minutesByDate[currentDate] ?: 0
 
             val level = when {
                 minutes == 0 -> 0
@@ -108,60 +106,50 @@ class StatisticsViewModel @Inject constructor(
                 else -> 4
             }
 
-            daysList.add(HeatmapDay(date = calendar.timeInMillis, minutes = minutes, level = level))
-            calendar.add(Calendar.DAY_OF_YEAR, 1)
+            val epochMillis = currentDate.atStartOfDay(zone).toInstant().toEpochMilli()
+            daysList.add(HeatmapDay(date = epochMillis, minutes = minutes, level = level))
+            currentDate = currentDate.plusDays(1)
         }
 
         return daysList
     }
 
-    private fun calculateWeeklyStats(sessions: List<FocusSession>): List<DailyStat> {
+    private fun calculateWeeklyStats(sessions: List<FocusSession>, zone: ZoneId): List<DailyStat> {
         val stats = ArrayList<DailyStat>(7)
-        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.US)
 
         // Single O(N) pass aggregation
-        val minutesByDate = sessions
+        val minutesByDate: Map<LocalDate, Int> = sessions
             .filter { it.type == SessionType.FOCUS }
-            .groupBy { sdf.format(Date(it.startTime)) }
+            .groupBy { Instant.ofEpochMilli(it.startTime).atZone(zone).toLocalDate() }
             .mapValues { (_, list) -> list.sumOf { it.durationMinutes } }
 
-        val calendar = Calendar.getInstance()
+        val today = LocalDate.now(zone)
 
         for (i in 6 downTo 0) {
-            calendar.timeInMillis = System.currentTimeMillis()
-            calendar.add(Calendar.DAY_OF_YEAR, -i)
-
-            val dateStr = sdf.format(calendar.time)
-            val minutes = minutesByDate[dateStr] ?: 0
-
-            stats.add(DailyStat(getDayName(calendar.get(Calendar.DAY_OF_WEEK)), minutes))
+            val date = today.minusDays(i.toLong())
+            val minutes = minutesByDate[date] ?: 0
+            stats.add(DailyStat(getDayName(date.dayOfWeek), minutes))
         }
         return stats
     }
 
-    private fun calculateHeatmapStartMillis(): Long {
-        val calendar = Calendar.getInstance()
-        calendar.add(Calendar.WEEK_OF_YEAR, -52)
-        while (calendar.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) {
-            calendar.add(Calendar.DAY_OF_YEAR, -1)
+    private fun calculateHeatmapStartDate(zone: ZoneId): LocalDate {
+        var date = LocalDate.now(zone).minusWeeks(52)
+        while (date.dayOfWeek != DayOfWeek.MONDAY) {
+            date = date.minusDays(1)
         }
-        calendar.set(Calendar.HOUR_OF_DAY, 0)
-        calendar.set(Calendar.MINUTE, 0)
-        calendar.set(Calendar.SECOND, 0)
-        calendar.set(Calendar.MILLISECOND, 0)
-        return calendar.timeInMillis
+        return date
     }
 
-    private fun getDayName(dayOfWeek: Int): String {
+    private fun getDayName(dayOfWeek: DayOfWeek): String {
         return when (dayOfWeek) {
-            Calendar.MONDAY -> "Mo"
-            Calendar.TUESDAY -> "Tu"
-            Calendar.WEDNESDAY -> "We"
-            Calendar.THURSDAY -> "Thu"
-            Calendar.FRIDAY -> "Fr"
-            Calendar.SATURDAY -> "Sat"
-            Calendar.SUNDAY -> "Sun"
-            else -> ""
+            DayOfWeek.MONDAY -> "Mo"
+            DayOfWeek.TUESDAY -> "Tu"
+            DayOfWeek.WEDNESDAY -> "We"
+            DayOfWeek.THURSDAY -> "Thu"
+            DayOfWeek.FRIDAY -> "Fr"
+            DayOfWeek.SATURDAY -> "Sat"
+            DayOfWeek.SUNDAY -> "Sun"
         }
     }
 }
