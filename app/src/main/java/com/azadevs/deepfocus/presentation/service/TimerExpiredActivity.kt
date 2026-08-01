@@ -16,6 +16,8 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -115,10 +117,13 @@ class TimerExpiredActivity : ComponentActivity() {
                             .padding(24.dp),
                         contentAlignment = Alignment.Center
                     ) {
+                        val scrollState = rememberScrollState()
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center,
-                            modifier = Modifier.fillMaxSize()
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .verticalScroll(scrollState)
                         ) {
                             // Pulsing Ring Animation
                             val infiniteTransition = rememberInfiniteTransition(label = "pulse")
