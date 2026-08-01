@@ -1,5 +1,6 @@
 package com.azadevs.deepfocus.presentation.statistics.component
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -20,10 +21,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -44,14 +52,14 @@ fun FocusHeatmapCard(
     modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState()
+    var hasScrolledToBottom by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(stats) {
-        if (stats.isNotEmpty()) {
+        if (stats.isNotEmpty() && !hasScrolledToBottom) {
             scrollState.scrollTo(scrollState.maxValue)
+            hasScrolledToBottom = true
         }
     }
-
-    val weeks = remember(stats) { stats.chunked(7) }
 
     val primaryColor = MaterialTheme.colorScheme.primary
     val surfaceVariantColor = MaterialTheme.colorScheme.surfaceVariant
@@ -68,6 +76,9 @@ fun FocusHeatmapCard(
     }
 
     val contentDesc = stringResource(R.string.heatmap_content_desc)
+    val numWeeks = (stats.size + 6) / 7
+    val totalGridWidthDp = if (numWeeks > 0) (numWeeks * 10 + (numWeeks - 1) * 3).dp else 0.dp
+    val totalGridHeightDp = (7 * 10 + 6 * 3).dp
 
     Card(
         modifier = modifier
@@ -112,21 +123,21 @@ fun FocusHeatmapCard(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.height(10.dp)
                     )
-                    Spacer(modifier = Modifier.height(10.dp)) // skips Tuesday label for clean look
+                    Spacer(modifier = Modifier.height(10.dp))
                     Text(
                         text = stringResource(R.string.heatmap_day_wed),
                         fontSize = 9.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.height(10.dp)
                     )
-                    Spacer(modifier = Modifier.height(10.dp)) // skips Thursday label for clean look
+                    Spacer(modifier = Modifier.height(10.dp))
                     Text(
                         text = stringResource(R.string.heatmap_day_fri),
                         fontSize = 9.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.height(10.dp)
                     )
-                    Spacer(modifier = Modifier.height(10.dp)) // skips Saturday label for clean look
+                    Spacer(modifier = Modifier.height(10.dp))
                     Text(
                         text = stringResource(R.string.heatmap_day_sun),
                         fontSize = 9.sp,
@@ -135,36 +146,34 @@ fun FocusHeatmapCard(
                     )
                 }
 
-                Row(
+                Box(
                     modifier = Modifier
                         .weight(1f)
-                        .horizontalScroll(scrollState),
-                    horizontalArrangement = Arrangement.spacedBy(3.dp)
+                        .horizontalScroll(scrollState)
                 ) {
-                    weeks.forEach { week ->
-                        Column(
-                            verticalArrangement = Arrangement.spacedBy(3.dp)
-                        ) {
-                            week.forEach { day ->
-                                val color = heatmapColors.getOrElse(day.level) { Color.Transparent }
-                                Box(
-                                    modifier = Modifier
-                                        .size(10.dp)
-                                        .clip(RoundedCornerShape(2.dp))
-                                        .background(color)
-                                )
-                            }
-                            // Fill remaining days of the week if it's incomplete
-                            if (week.size < 7) {
-                                repeat(7 - week.size) {
-                                    Box(
-                                        modifier = Modifier
-                                            .size(10.dp)
-                                            .clip(RoundedCornerShape(2.dp))
-                                            .background(Color.Transparent)
-                                    )
-                                }
-                            }
+                    Canvas(
+                        modifier = Modifier
+                            .width(totalGridWidthDp)
+                            .height(totalGridHeightDp)
+                    ) {
+                        val cellSizePx = 10.dp.toPx()
+                        val cellGapPx = 3.dp.toPx()
+                        val cornerRadiusPx = 2.dp.toPx()
+
+                        stats.forEachIndexed { index, day ->
+                            val weekIndex = index / 7
+                            val dayOfWeekIndex = index % 7
+
+                            val x = weekIndex * (cellSizePx + cellGapPx)
+                            val y = dayOfWeekIndex * (cellSizePx + cellGapPx)
+                            val color = heatmapColors.getOrElse(day.level) { Color.Transparent }
+
+                            drawRoundRect(
+                                color = color,
+                                topLeft = Offset(x, y),
+                                size = Size(cellSizePx, cellSizePx),
+                                cornerRadius = CornerRadius(cornerRadiusPx, cornerRadiusPx)
+                            )
                         }
                     }
                 }

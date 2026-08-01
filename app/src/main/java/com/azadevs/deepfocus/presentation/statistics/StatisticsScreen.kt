@@ -70,7 +70,7 @@ fun StatisticsScreen(
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
 
-            item {
+            item(key = "progress_summary", contentType = "summary") {
                 Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     Text(
                         text = stringResource(R.string.your_progress),
@@ -117,7 +117,7 @@ fun StatisticsScreen(
                 }
             }
             if (weeklyStats.isNotEmpty()) {
-                item {
+                item(key = "weekly_chart", contentType = "chart") {
                     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                         Text(
                             text = stringResource(R.string.last_7_days),
@@ -130,7 +130,7 @@ fun StatisticsScreen(
                 }
             }
 
-            item {
+            item(key = "heatmap_card", contentType = "heatmap") {
                 FocusHeatmapCard(stats = heatmapStats)
             }
         }
