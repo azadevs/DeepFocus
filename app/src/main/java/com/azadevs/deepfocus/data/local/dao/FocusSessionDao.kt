@@ -26,6 +26,7 @@ interface FocusSessionDao {
         """
         SELECT * FROM focus_sessions 
         WHERE startTime BETWEEN :start AND :end
+        ORDER BY startTime ASC
     """
     )
     fun getSessionsBetween(start: Long, end: Long): Flow<List<FocusSessionEntity>>

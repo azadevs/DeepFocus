@@ -3,6 +3,7 @@ package com.azadevs.deepfocus.presentation.statistics.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.azadevs.deepfocus.domain.model.FocusSession
+import com.azadevs.deepfocus.domain.model.SessionType
 import com.azadevs.deepfocus.domain.usecase.DeepFocusUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -47,7 +48,11 @@ class StatisticsViewModel @Inject constructor(
             initialValue = 0
         )
 
-    private val sessionsFlow = useCases.getAllSessions()
+    private val heatmapStartMillis: Long = calculateHeatmapStartMillis()
+
+    // Bounded query: loads only sessions within the 53-week heatmap window from Room DB
+    // preventing massive unbounded memory allocation and DB reads for old historical records.
+    private val sessionsFlow = useCases.getSessionsBetween(heatmapStartMillis, Long.MAX_VALUE)
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
@@ -56,9 +61,8 @@ class StatisticsViewModel @Inject constructor(
 
     val allSessions: StateFlow<List<FocusSession>> = sessionsFlow
 
-    val weeklyStats: StateFlow<List<DailyStat>> = sessionsFlow.map { sessions ->
-        calculateWeeklyStats(sessions)
-    }
+    val weeklyStats: StateFlow<List<DailyStat>> = sessionsFlow
+        .map { sessions -> calculateWeeklyStats(sessions) }
         .flowOn(Dispatchers.Default)
         .stateIn(
             scope = viewModelScope,
@@ -66,9 +70,8 @@ class StatisticsViewModel @Inject constructor(
             initialValue = emptyList()
         )
 
-    val heatmapStats: StateFlow<List<HeatmapDay>> = sessionsFlow.map { sessions ->
-        calculateHeatmapStats(sessions)
-    }
+    val heatmapStats: StateFlow<List<HeatmapDay>> = sessionsFlow
+        .map { sessions -> calculateHeatmapStats(sessions, heatmapStartMillis) }
         .flowOn(Dispatchers.Default)
         .stateIn(
             scope = viewModelScope,
@@ -76,25 +79,26 @@ class StatisticsViewModel @Inject constructor(
             initialValue = emptyList()
         )
 
-    private fun calculateHeatmapStats(sessions: List<FocusSession>): List<HeatmapDay> {
+    private fun calculateHeatmapStats(
+        sessions: List<FocusSession>,
+        startMillis: Long
+    ): List<HeatmapDay> {
         val daysList = ArrayList<HeatmapDay>(53 * 7)
-
         val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.US)
-        val sessionsByDate: Map<String, Int> = sessions
-            .filter { it.type.name == "FOCUS" }
+
+        // Single O(N) pass aggregation by formatted date
+        val minutesByDate = sessions
+            .filter { it.type == SessionType.FOCUS }
             .groupBy { sdf.format(Date(it.startTime)) }
             .mapValues { (_, list) -> list.sumOf { it.durationMinutes } }
 
-        val calendar = Calendar.getInstance()
-
-        calendar.add(Calendar.WEEK_OF_YEAR, -52)
-        while (calendar.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) {
-            calendar.add(Calendar.DAY_OF_YEAR, -1)
+        val calendar = Calendar.getInstance().apply {
+            timeInMillis = startMillis
         }
 
         repeat(53 * 7) {
             val dateStr = sdf.format(calendar.time)
-            val minutes = sessionsByDate[dateStr] ?: 0
+            val minutes = minutesByDate[dateStr] ?: 0
 
             val level = when {
                 minutes == 0 -> 0
@@ -113,34 +117,38 @@ class StatisticsViewModel @Inject constructor(
 
     private fun calculateWeeklyStats(sessions: List<FocusSession>): List<DailyStat> {
         val stats = ArrayList<DailyStat>(7)
+        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+
+        // Single O(N) pass aggregation
+        val minutesByDate = sessions
+            .filter { it.type == SessionType.FOCUS }
+            .groupBy { sdf.format(Date(it.startTime)) }
+            .mapValues { (_, list) -> list.sumOf { it.durationMinutes } }
+
         val calendar = Calendar.getInstance()
 
         for (i in 6 downTo 0) {
             calendar.timeInMillis = System.currentTimeMillis()
             calendar.add(Calendar.DAY_OF_YEAR, -i)
 
-            val startOfDay = getStartOfDay(calendar.timeInMillis)
-            val endOfDay = startOfDay + 86_400_000L - 1 // 24 * 60 * 60 * 1000
-
-            val minutes = sessions.sumOf { session ->
-                if (session.startTime in startOfDay..endOfDay && session.type.name == "FOCUS")
-                    session.durationMinutes
-                else 0
-            }
+            val dateStr = sdf.format(calendar.time)
+            val minutes = minutesByDate[dateStr] ?: 0
 
             stats.add(DailyStat(getDayName(calendar.get(Calendar.DAY_OF_WEEK)), minutes))
         }
         return stats
     }
 
-    private fun getStartOfDay(timeMs: Long): Long {
-        val calendar = Calendar.getInstance().apply {
-            timeInMillis = timeMs
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
+    private fun calculateHeatmapStartMillis(): Long {
+        val calendar = Calendar.getInstance()
+        calendar.add(Calendar.WEEK_OF_YEAR, -52)
+        while (calendar.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) {
+            calendar.add(Calendar.DAY_OF_YEAR, -1)
         }
+        calendar.set(Calendar.HOUR_OF_DAY, 0)
+        calendar.set(Calendar.MINUTE, 0)
+        calendar.set(Calendar.SECOND, 0)
+        calendar.set(Calendar.MILLISECOND, 0)
         return calendar.timeInMillis
     }
 
