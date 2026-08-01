@@ -1,4 +1,4 @@
-package com.azadevs.deepfocus.presentation.pomodoro.viemwodel
+package com.azadevs.deepfocus.presentation.pomodoro.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

@@ -61,7 +61,7 @@ import com.azadevs.deepfocus.domain.model.PomodoroPhase
 import com.azadevs.deepfocus.presentation.pomodoro.component.FlowOrb
 import com.azadevs.deepfocus.presentation.pomodoro.component.InfoPill
 import com.azadevs.deepfocus.presentation.pomodoro.component.PhaseChip
-import com.azadevs.deepfocus.presentation.pomodoro.viemwodel.PomodoroViewModel
+import com.azadevs.deepfocus.presentation.pomodoro.viewmodel.PomodoroViewModel
 import com.azadevs.deepfocus.presentation.util.DeepFocusUtils.formatTime
 import kotlin.math.max
 import kotlin.math.min
