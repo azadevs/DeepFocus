@@ -1,6 +1,12 @@
 package com.azadevs.deepfocus.presentation.pomodoro
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
@@ -110,6 +116,29 @@ fun PomodoroScreen(
     val haptic = LocalHapticFeedback.current
     val context = LocalContext.current
 
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { _ ->
+        viewModel.onStartClick()
+    }
+
+    val handleStartClick: () -> Unit = {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val hasPermission = ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+
+            if (hasPermission) {
+                viewModel.onStartClick()
+            } else {
+                permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        } else {
+            viewModel.onStartClick()
+        }
+    }
+
     LaunchedEffect(phase) {
         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
     }
@@ -159,7 +188,7 @@ fun PomodoroScreen(
                 shortTime = shortTime,
                 longTime = longTime,
                 phaseColor = phaseColor,
-                onStartClick = viewModel::onStartClick,
+                onStartClick = handleStartClick,
                 onPauseClick = viewModel::onPauseClick,
                 onResumeClick = viewModel::onResumeClick,
                 onStopClick = viewModel::onStopClick,
