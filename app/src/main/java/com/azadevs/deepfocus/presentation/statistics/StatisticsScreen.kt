@@ -34,6 +34,8 @@ import com.azadevs.deepfocus.presentation.statistics.component.SummaryCard
 import com.azadevs.deepfocus.presentation.statistics.component.WeeklyBarChart
 import com.azadevs.deepfocus.presentation.statistics.viewmodel.StatisticsViewModel
 
+import com.azadevs.deepfocus.presentation.statistics.component.TaskFocusBreakdownCard
+
 /**
  * Created by : Azamat Kalmurzaev
  * 27/02/26
@@ -49,6 +51,7 @@ fun StatisticsScreen(
     val currentStreak by viewModel.currentStreak.collectAsStateWithLifecycle()
     val bestStreak by viewModel.bestStreak.collectAsStateWithLifecycle()
     val heatmapStats by viewModel.heatmapStats.collectAsStateWithLifecycle()
+    val tasks by viewModel.tasks.collectAsStateWithLifecycle()
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -115,6 +118,12 @@ fun StatisticsScreen(
                             icon = Icons.Outlined.Timer
                         )
                     }
+                }
+            }
+
+            if (tasks.isNotEmpty()) {
+                item(key = "task_breakdown_card", contentType = "task_breakdown") {
+                    TaskFocusBreakdownCard(tasks = tasks)
                 }
             }
 

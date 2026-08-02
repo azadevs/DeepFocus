@@ -48,6 +48,13 @@ class StatisticsViewModel @Inject constructor(
             initialValue = 0
         )
 
+    val tasks: StateFlow<List<com.azadevs.deepfocus.domain.model.Task>> = useCases.getTasks()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
     private val zoneId: ZoneId = ZoneId.systemDefault()
     private val heatmapStartDate: LocalDate = calculateHeatmapStartDate(zoneId)
     private val heatmapStartMillis: Long = heatmapStartDate.atStartOfDay(zoneId).toInstant().toEpochMilli()
