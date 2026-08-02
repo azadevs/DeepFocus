@@ -44,6 +44,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.material3.Surface
 import androidx.navigation.compose.currentBackStackEntryAsState
 
 data class BottomNavItem(
@@ -91,59 +93,58 @@ fun AppBottomNavigationBar(
     val density = LocalDensity.current
     val indicatorOffsetDp = with(density) { indicatorOffset.toDp() }
 
-    Box(
+    Surface(
         modifier = modifier
             .fillMaxWidth()
             .navigationBarsPadding()
             .padding(start = 24.dp, end = 24.dp, bottom = 12.dp)
-            .height(64.dp)
-            .shadow(
-                elevation = 16.dp,
-                shape = RoundedCornerShape(24.dp),
-                spotColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
-            )
-            .background(
-                color = MaterialTheme.colorScheme.surface,
-                shape = RoundedCornerShape(24.dp)
-            ),
-        contentAlignment = Alignment.CenterStart
+            .height(64.dp),
+        shape = RoundedCornerShape(24.dp),
+        color = MaterialTheme.colorScheme.surface,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        shadowElevation = 4.dp,
+        tonalElevation = 0.dp
     ) {
-
-        if (barSize.width > 0) {
-            Box(
-                modifier = Modifier
-                    .offset(x = indicatorOffsetDp - 3.dp)
-                    .padding(bottom = 8.dp)
-                    .size(6.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primary)
-                    .align(Alignment.BottomStart)
-            )
-        }
-
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .onGloballyPositioned { coordinates ->
-                    barSize = coordinates.size
-                },
-            horizontalArrangement = Arrangement.SpaceAround,
-            verticalAlignment = Alignment.CenterVertically
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.CenterStart
         ) {
-            items.forEachIndexed { index, item ->
-                BottomBarItem(
-                    item = item,
-                    isSelected = selectedIndex == index,
-                    onClick = {
-                        navController.navigate(item.route) {
-                            popUpTo(PomodoroRoute) {
-                                saveState = true
-                            }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    }
+            if (barSize.width > 0) {
+                Box(
+                    modifier = Modifier
+                        .offset(x = indicatorOffsetDp - 3.dp)
+                        .padding(bottom = 8.dp)
+                        .size(6.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primary)
+                        .align(Alignment.BottomStart)
                 )
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .onGloballyPositioned { coordinates ->
+                        barSize = coordinates.size
+                    },
+                horizontalArrangement = Arrangement.SpaceAround,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                items.forEachIndexed { index, item ->
+                    BottomBarItem(
+                        item = item,
+                        isSelected = selectedIndex == index,
+                        onClick = {
+                            navController.navigate(item.route) {
+                                popUpTo(PomodoroRoute) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
+                    )
+                }
             }
         }
     }
