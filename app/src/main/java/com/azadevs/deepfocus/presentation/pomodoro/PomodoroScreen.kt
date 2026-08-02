@@ -74,6 +74,13 @@ import com.azadevs.deepfocus.presentation.util.DeepFocusUtils.formatTime
 import kotlin.math.max
 import kotlin.math.min
 
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import com.azadevs.deepfocus.domain.model.Task
+import com.azadevs.deepfocus.presentation.pomodoro.component.TaskSelectionBottomSheet
+import com.azadevs.deepfocus.presentation.pomodoro.component.TaskSelectorChip
+
 /**
  * Created by : Azamat Kalmurzaev
  * 24/02/2026
@@ -87,6 +94,11 @@ fun PomodoroScreen(
     val focusTime by viewModel.focusDuration.collectAsStateWithLifecycle()
     val shortTime by viewModel.shortBreakDuration.collectAsStateWithLifecycle()
     val longTime by viewModel.longBreakDuration.collectAsStateWithLifecycle()
+    val tasks by viewModel.tasks.collectAsStateWithLifecycle()
+    val selectedTask by viewModel.selectedTask.collectAsStateWithLifecycle()
+
+    var showTaskBottomSheet by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     val cycleIndex by remember { derivedStateOf { stateState.value.cycleIndex } }
     val phase by remember { derivedStateOf { stateState.value.phase } }
@@ -145,6 +157,18 @@ fun PomodoroScreen(
         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
     }
 
+    if (showTaskBottomSheet) {
+        TaskSelectionBottomSheet(
+            sheetState = sheetState,
+            tasks = tasks,
+            selectedTask = selectedTask,
+            onTaskSelect = viewModel::selectTask,
+            onTaskCreate = viewModel::addNewTask,
+            onTaskDelete = viewModel::deleteTask,
+            onDismissRequest = { showTaskBottomSheet = false }
+        )
+    }
+
     Scaffold(
         topBar = {
             PomodoroTopBar(cycleIndex = cycleIndex)
@@ -166,6 +190,8 @@ fun PomodoroScreen(
             TopSection(
                 phase = phase,
                 phaseColor = phaseColor,
+                selectedTask = selectedTask,
+                onTaskClick = { showTaskBottomSheet = true },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 8.dp)
@@ -215,7 +241,9 @@ private fun PomodoroTopBar(
         title = {
             Text(
                 text = stringResource(R.string.app_name),
-                fontWeight = FontWeight.Bold
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground
             )
         },
         colors = TopAppBarDefaults.topAppBarColors(
@@ -244,13 +272,17 @@ private fun PomodoroTopBar(
 private fun TopSection(
     phase: PomodoroPhase,
     phaseColor: Color,
+    selectedTask: Task?,
+    onTaskClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Box(
+    Column(
         modifier = modifier,
-        contentAlignment = Alignment.Center
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         PhaseChip(phase = phase, color = phaseColor)
+        Spacer(modifier = Modifier.height(10.dp))
+        TaskSelectorChip(selectedTask = selectedTask, onClick = onTaskClick)
     }
 }
 

@@ -15,6 +15,9 @@ import com.azadevs.deepfocus.domain.usecase.settings.SetFocusDurationUseCase
 import com.azadevs.deepfocus.domain.usecase.settings.SetLongBreakDurationUseCase
 import com.azadevs.deepfocus.domain.usecase.settings.SetOnboardingCompletedUseCase
 import com.azadevs.deepfocus.domain.usecase.settings.SetShortBreakDurationUseCase
+import com.azadevs.deepfocus.domain.usecase.task.DeleteTaskUseCase
+import com.azadevs.deepfocus.domain.usecase.task.GetTasksUseCase
+import com.azadevs.deepfocus.domain.usecase.task.UpsertTaskUseCase
 
 /**
  * Created by : Azamat Kalmurzaev
@@ -35,6 +38,8 @@ data class DeepFocusUseCases(
     val getCurrentStreak: GetCurrentStreakUseCase,
     val getBestStreak: GetBestStreakUseCase,
     val getOnboardingCompleted: GetOnboardingCompletedUseCase,
-    val setOnboardingCompleted: SetOnboardingCompletedUseCase
+    val setOnboardingCompleted: SetOnboardingCompletedUseCase,
+    val getTasks: GetTasksUseCase,
+    val upsertTask: UpsertTaskUseCase,
+    val deleteTask: DeleteTaskUseCase
 )
-

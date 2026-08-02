@@ -58,6 +58,13 @@ class PomodoroController @Inject constructor(
     )
     val state: StateFlow<PomodoroState> = _state.asStateFlow()
 
+    private val _selectedTask = MutableStateFlow<com.azadevs.deepfocus.domain.model.Task?>(null)
+    val selectedTask: StateFlow<com.azadevs.deepfocus.domain.model.Task?> = _selectedTask.asStateFlow()
+
+    fun selectTask(task: com.azadevs.deepfocus.domain.model.Task?) {
+        _selectedTask.value = task
+    }
+
     private var mediaPlayer: MediaPlayer? = null
 
     private var observeJob: Job? = null
@@ -190,6 +197,7 @@ class PomodoroController @Inject constructor(
         if (currentPhase == PomodoroPhase.FOCUS) {
             val endTime = System.currentTimeMillis()
             val startTime = phaseStartTime
+            val activeTask = _selectedTask.value
 
             controllerScope.launch {
                 focusRepository.upsertSession(
@@ -198,9 +206,16 @@ class PomodoroController @Inject constructor(
                         startTime = startTime,
                         endTime = endTime,
                         durationMinutes = config.focusMinutes,
-                        type = SessionType.FOCUS
+                        type = SessionType.FOCUS,
+                        taskId = activeTask?.id,
+                        taskTitle = activeTask?.title
                     )
                 )
+                if (activeTask != null) {
+                    useCases.upsertTask(
+                        activeTask.copy(totalFocusMinutes = activeTask.totalFocusMinutes + config.focusMinutes)
+                    )
+                }
             }
         }
         playAlarmSound()

@@ -71,4 +71,11 @@
 
     <string name="empty_statistics_title">No Focus Sessions Yet</string>
     <string name="empty_statistics_desc">Start your first Pomodoro session to unlock detailed productivity analytics, weekly charts, and streak badges!</string>
+
+    <string name="select_task_prompt">Select Task</string>
+    <string name="tasks_title">Focus Tasks</string>
+    <string name="new_task">New Task</string>
+    <string name="create_task">Create Task</string>
+    <string name="task_name_hint">Task name (e.g. Coding)</string>
+    <string name="no_task_selected">General Focus (No Task)</string>
 </resources>

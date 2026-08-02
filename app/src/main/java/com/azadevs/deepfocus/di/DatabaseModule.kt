@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.azadevs.deepfocus.data.local.FocusDatabase
 import com.azadevs.deepfocus.data.local.dao.FocusSessionDao
+import com.azadevs.deepfocus.data.local.dao.TaskDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,7 +29,9 @@ object DatabaseModule {
             context,
             FocusDatabase::class.java,
             "deepfocus_db"
-        ).build()
+        )
+        .fallbackToDestructiveMigration(true)
+        .build()
     }
 
     @Provides
@@ -36,5 +39,12 @@ object DatabaseModule {
         database: FocusDatabase
     ): FocusSessionDao {
         return database.focusSessionDao()
+    }
+
+    @Provides
+    fun provideTaskDao(
+        database: FocusDatabase
+    ): TaskDao {
+        return database.taskDao()
     }
 }

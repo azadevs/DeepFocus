@@ -14,5 +14,7 @@ data class FocusSessionEntity(
     val startTime: Long,
     val endTime: Long,
     val durationMinutes: Int,
-    val typeSession: String
+    val typeSession: String,
+    val taskId: Long? = null,
+    val taskTitle: String? = null
 )

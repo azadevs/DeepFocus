@@ -2,9 +2,13 @@ package com.azadevs.deepfocus.di
 
 import com.azadevs.deepfocus.data.datastore.TimerPersistenceDataStore
 import com.azadevs.deepfocus.data.repository.ProdFocusRepository
+import com.azadevs.deepfocus.data.repository.ProdFocusStreakRepository
 import com.azadevs.deepfocus.data.repository.ProdSettingsRepository
+import com.azadevs.deepfocus.data.repository.ProdTaskRepository
 import com.azadevs.deepfocus.domain.repository.FocusRepository
+import com.azadevs.deepfocus.domain.repository.FocusStreakRepository
 import com.azadevs.deepfocus.domain.repository.SettingsRepository
+import com.azadevs.deepfocus.domain.repository.TaskRepository
 import com.azadevs.deepfocus.domain.repository.TimerRepository
 import dagger.Binds
 import dagger.Module
@@ -41,6 +45,12 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindFocusStreakRepository(
-        impl: com.azadevs.deepfocus.data.repository.ProdFocusStreakRepository
-    ): com.azadevs.deepfocus.domain.repository.FocusStreakRepository
+        impl: ProdFocusStreakRepository
+    ): FocusStreakRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindTaskRepository(
+        impl: ProdTaskRepository
+    ): TaskRepository
 }

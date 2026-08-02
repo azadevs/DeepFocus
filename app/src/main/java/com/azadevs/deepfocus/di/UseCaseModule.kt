@@ -16,6 +16,9 @@ import com.azadevs.deepfocus.domain.usecase.settings.SetFocusDurationUseCase
 import com.azadevs.deepfocus.domain.usecase.settings.SetLongBreakDurationUseCase
 import com.azadevs.deepfocus.domain.usecase.settings.SetOnboardingCompletedUseCase
 import com.azadevs.deepfocus.domain.usecase.settings.SetShortBreakDurationUseCase
+import com.azadevs.deepfocus.domain.usecase.task.DeleteTaskUseCase
+import com.azadevs.deepfocus.domain.usecase.task.GetTasksUseCase
+import com.azadevs.deepfocus.domain.usecase.task.UpsertTaskUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -47,7 +50,10 @@ object UseCaseModule {
         getCurrentStreak: GetCurrentStreakUseCase,
         getBestStreak: GetBestStreakUseCase,
         getOnboardingCompleted: GetOnboardingCompletedUseCase,
-        setOnboardingCompleted: SetOnboardingCompletedUseCase
+        setOnboardingCompleted: SetOnboardingCompletedUseCase,
+        getTasks: GetTasksUseCase,
+        upsertTask: UpsertTaskUseCase,
+        deleteTask: DeleteTaskUseCase
     ): DeepFocusUseCases {
         return DeepFocusUseCases(
             upsert,
@@ -64,7 +70,10 @@ object UseCaseModule {
             getCurrentStreak,
             getBestStreak,
             getOnboardingCompleted,
-            setOnboardingCompleted
+            setOnboardingCompleted,
+            getTasks,
+            upsertTask,
+            deleteTask
         )
     }
 }

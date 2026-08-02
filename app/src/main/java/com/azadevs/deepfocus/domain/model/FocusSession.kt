@@ -9,7 +9,9 @@ data class FocusSession(
     val startTime: Long,
     val endTime: Long,
     val durationMinutes: Int,
-    val type: SessionType
+    val type: SessionType,
+    val taskId: Long? = null,
+    val taskTitle: String? = null
 )
 
 enum class SessionType {

@@ -3,6 +3,7 @@ package com.azadevs.deepfocus.presentation.pomodoro.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.azadevs.deepfocus.domain.model.PomodoroState
+import com.azadevs.deepfocus.domain.model.Task
 import com.azadevs.deepfocus.domain.pomodoro.PomodoroController
 import com.azadevs.deepfocus.domain.usecase.DeepFocusUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -10,6 +11,7 @@ import jakarta.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 /**
  * Created by : Azamat Kalmurzaev
@@ -18,7 +20,7 @@ import kotlinx.coroutines.flow.stateIn
 @HiltViewModel
 class PomodoroViewModel @Inject constructor(
     private val controller: PomodoroController,
-    useCases: DeepFocusUseCases
+    private val useCases: DeepFocusUseCases
 ) : ViewModel() {
 
     val focusDuration: StateFlow<Int> = useCases.getFocusDuration()
@@ -31,6 +33,33 @@ class PomodoroViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 15)
 
     val state: StateFlow<PomodoroState> = controller.state
+
+    val tasks: StateFlow<List<Task>> = useCases.getTasks()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val selectedTask: StateFlow<Task?> = controller.selectedTask
+
+    fun selectTask(task: Task?) {
+        controller.selectTask(task)
+    }
+
+    fun addNewTask(title: String, colorHex: String = "#FF5252") {
+        if (title.isBlank()) return
+        viewModelScope.launch {
+            val newTask = Task(title = title.trim(), colorHex = colorHex)
+            val newId = useCases.upsertTask(newTask)
+            selectTask(newTask.copy(id = newId))
+        }
+    }
+
+    fun deleteTask(task: Task) {
+        viewModelScope.launch {
+            if (selectedTask.value?.id == task.id) {
+                selectTask(null)
+            }
+            useCases.deleteTask(task)
+        }
+    }
 
     fun onPauseClick() {
         controller.pause()
