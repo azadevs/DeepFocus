@@ -68,4 +68,7 @@
     <string name="onboarding_desc_2">Build consistency by keeping your daily focus streaks alive and establishing positive habits.</string>
     <string name="onboarding_title_3">Track Your Progress</string>
     <string name="onboarding_desc_3">Analyze your growth with beautiful, real-time analytics and detailed weekly bar charts.</string>
+
+    <string name="empty_statistics_title">No Focus Sessions Yet</string>
+    <string name="empty_statistics_desc">Start your first Pomodoro session to unlock detailed productivity analytics, weekly charts, and streak badges!</string>
 </resources>

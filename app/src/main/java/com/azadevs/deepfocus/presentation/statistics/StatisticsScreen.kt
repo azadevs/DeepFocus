@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.azadevs.deepfocus.R
+import com.azadevs.deepfocus.presentation.statistics.component.EmptyStatisticsCard
 import com.azadevs.deepfocus.presentation.statistics.component.FocusHeatmapCard
 import com.azadevs.deepfocus.presentation.statistics.component.SummaryCard
 import com.azadevs.deepfocus.presentation.statistics.component.WeeklyBarChart
@@ -56,7 +57,7 @@ fun StatisticsScreen(
                 title = { Text(stringResource(R.string.statistics), fontWeight = FontWeight.Bold) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background,
-                    scrolledContainerColor = MaterialTheme.colorScheme.surface // Pastga tushganda ozgina ajralib turadi
+                    scrolledContainerColor = MaterialTheme.colorScheme.surface
                 )
             )
         }
@@ -116,7 +117,14 @@ fun StatisticsScreen(
                     }
                 }
             }
-            if (weeklyStats.isNotEmpty()) {
+
+            if (sessions.isEmpty()) {
+                item(key = "empty_statistics_state", contentType = "empty") {
+                    EmptyStatisticsCard()
+                }
+            }
+
+            if (weeklyStats.isNotEmpty() && sessions.isNotEmpty()) {
                 item(key = "weekly_chart", contentType = "chart") {
                     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                         Text(
@@ -130,8 +138,10 @@ fun StatisticsScreen(
                 }
             }
 
-            item(key = "heatmap_card", contentType = "heatmap") {
-                FocusHeatmapCard(stats = heatmapStats)
+            if (sessions.isNotEmpty()) {
+                item(key = "heatmap_card", contentType = "heatmap") {
+                    FocusHeatmapCard(stats = heatmapStats)
+                }
             }
         }
     }
