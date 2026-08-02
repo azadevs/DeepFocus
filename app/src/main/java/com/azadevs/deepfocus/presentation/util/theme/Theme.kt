@@ -9,35 +9,60 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val LightColorScheme = lightColorScheme(
-    primary = Primary,
+    primary = PrimaryLight,
     onPrimary = OnPrimary,
-    secondary = Accent,
+    primaryContainer = Color(0xFFFFEBEE),
+    onPrimaryContainer = Color(0xFFC62828),
+
+    secondary = SecondaryLight,
     onSecondary = OnPrimary,
-    tertiary = Tertiary,
+    secondaryContainer = Color(0xFFE0F7FA),
+    onSecondaryContainer = Color(0xFF006064),
+
+    tertiary = TertiaryLight,
     onTertiary = OnPrimary,
+    tertiaryContainer = Color(0xFFF3E5F5),
+    onTertiaryContainer = Color(0xFF4A148C),
+
     background = BackgroundLight,
     onBackground = OnBackgroundLight,
     surface = SurfaceLight,
     onSurface = OnBackgroundLight,
+    surfaceVariant = SurfaceVariantLight,
+    onSurfaceVariant = OnSurfaceVariantLight,
     outline = OutlineLight,
+    outlineVariant = Color(0xFFE2E8F0),
     error = Error
 )
 
 private val DarkColorScheme = darkColorScheme(
-    primary = PrimaryLight,
-    onPrimary = OnPrimary,
-    secondary = AccentLight,
-    onSecondary = OnBackgroundDark,
-    tertiary = TertiaryLight,
-    onTertiary = OnBackgroundDark,
+    primary = PrimaryDark,
+    onPrimary = Color(0xFF0F172A),
+    primaryContainer = Color(0xFF3B1A1A),
+    onPrimaryContainer = Color(0xFFFFCDD2),
+
+    secondary = SecondaryDark,
+    onSecondary = Color(0xFF0F172A),
+    secondaryContainer = Color(0xFF0D3340),
+    onSecondaryContainer = Color(0xFFB2EBF2),
+
+    tertiary = TertiaryDark,
+    onTertiary = Color(0xFF0F172A),
+    tertiaryContainer = Color(0xFF2D1642),
+    onTertiaryContainer = Color(0xFFE1BEE7),
+
     background = BackgroundDark,
     onBackground = OnBackgroundDark,
     surface = SurfaceDark,
     onSurface = OnBackgroundDark,
+    surfaceVariant = SurfaceVariantDark,
+    onSurfaceVariant = OnSurfaceVariantDark,
     outline = OutlineDark,
+    outlineVariant = Color(0xFF334155),
     error = Error
 )
 
