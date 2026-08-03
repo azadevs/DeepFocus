@@ -13,7 +13,7 @@ import com.azadevs.deepfocus.data.local.entity.TaskEntity
  */
 @Database(
     entities = [FocusSessionEntity::class, TaskEntity::class],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 abstract class FocusDatabase : RoomDatabase() {
