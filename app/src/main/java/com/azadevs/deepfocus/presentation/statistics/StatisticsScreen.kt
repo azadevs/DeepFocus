@@ -31,10 +31,10 @@ import com.azadevs.deepfocus.R
 import com.azadevs.deepfocus.presentation.statistics.component.EmptyStatisticsCard
 import com.azadevs.deepfocus.presentation.statistics.component.FocusHeatmapCard
 import com.azadevs.deepfocus.presentation.statistics.component.SummaryCard
+import com.azadevs.deepfocus.presentation.statistics.component.TaskFocusBreakdownCard
+import com.azadevs.deepfocus.presentation.statistics.component.TaskTimelineCard
 import com.azadevs.deepfocus.presentation.statistics.component.WeeklyBarChart
 import com.azadevs.deepfocus.presentation.statistics.viewmodel.StatisticsViewModel
-
-import com.azadevs.deepfocus.presentation.statistics.component.TaskFocusBreakdownCard
 
 /**
  * Created by : Azamat Kalmurzaev
@@ -52,6 +52,9 @@ fun StatisticsScreen(
     val bestStreak by viewModel.bestStreak.collectAsStateWithLifecycle()
     val heatmapStats by viewModel.heatmapStats.collectAsStateWithLifecycle()
     val tasks by viewModel.tasks.collectAsStateWithLifecycle()
+
+    val timelineFilter by viewModel.timelineFilter.collectAsStateWithLifecycle()
+    val taskTimelineStats by viewModel.taskTimelineStats.collectAsStateWithLifecycle()
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -118,6 +121,16 @@ fun StatisticsScreen(
                             icon = Icons.Outlined.Timer
                         )
                     }
+                }
+            }
+
+            if (sessions.isNotEmpty()) {
+                item(key = "task_timeline_card", contentType = "timeline") {
+                    TaskTimelineCard(
+                        timelineItems = taskTimelineStats,
+                        selectedFilter = timelineFilter,
+                        onFilterSelect = viewModel::setTimelineFilter
+                    )
                 }
             }
 

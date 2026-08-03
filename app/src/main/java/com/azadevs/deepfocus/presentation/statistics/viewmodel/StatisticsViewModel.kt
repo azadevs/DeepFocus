@@ -4,12 +4,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.azadevs.deepfocus.domain.model.FocusSession
 import com.azadevs.deepfocus.domain.model.SessionType
+import com.azadevs.deepfocus.domain.model.Task
 import com.azadevs.deepfocus.domain.usecase.DeepFocusUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -48,7 +52,7 @@ class StatisticsViewModel @Inject constructor(
             initialValue = 0
         )
 
-    val tasks: StateFlow<List<com.azadevs.deepfocus.domain.model.Task>> = useCases.getTasks()
+    val tasks: StateFlow<List<Task>> = useCases.getTasks()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
@@ -70,6 +74,23 @@ class StatisticsViewModel @Inject constructor(
 
     val allSessions: StateFlow<List<FocusSession>> = sessionsFlow
 
+    private val _timelineFilter = MutableStateFlow(TaskTimelineFilter.TODAY)
+    val timelineFilter: StateFlow<TaskTimelineFilter> = _timelineFilter.asStateFlow()
+
+    fun setTimelineFilter(filter: TaskTimelineFilter) {
+        _timelineFilter.value = filter
+    }
+
+    val taskTimelineStats: StateFlow<List<TaskTimelineItem>> = combine(sessionsFlow, tasks, _timelineFilter) { sessions, taskList, filter ->
+        calculateTaskTimelineStats(sessions, taskList, filter, zoneId)
+    }
+    .flowOn(Dispatchers.Default)
+    .stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
+
     val weeklyStats: StateFlow<List<DailyStat>> = sessionsFlow
         .map { sessions -> calculateWeeklyStats(sessions, zoneId) }
         .flowOn(Dispatchers.Default)
@@ -88,6 +109,46 @@ class StatisticsViewModel @Inject constructor(
             initialValue = emptyList()
         )
 
+    private fun calculateTaskTimelineStats(
+        sessions: List<FocusSession>,
+        tasks: List<Task>,
+        filter: TaskTimelineFilter,
+        zone: ZoneId
+    ): List<TaskTimelineItem> {
+        val today = LocalDate.now(zone)
+        val yesterday = today.minusDays(1)
+        val mondayThisWeek = today.minusDays(today.dayOfWeek.value.toLong() - 1)
+
+        val taskTitleToHex = tasks.associate { it.title to it.colorHex }
+
+        val filteredSessions = sessions.filter { session ->
+            if (session.type != SessionType.FOCUS) return@filter false
+            val sessionDate = Instant.ofEpochMilli(session.startTime).atZone(zone).toLocalDate()
+            when (filter) {
+                TaskTimelineFilter.TODAY -> sessionDate == today
+                TaskTimelineFilter.YESTERDAY -> sessionDate == yesterday
+                TaskTimelineFilter.THIS_WEEK -> !sessionDate.isBefore(mondayThisWeek)
+                TaskTimelineFilter.ALL_TIME -> true
+            }
+        }
+
+        val grouped = filteredSessions.groupBy { session ->
+            session.taskTitle ?: "General Focus"
+        }
+
+        return grouped.map { (title, sessionList) ->
+            val totalMinutes = sessionList.sumOf { it.durationMinutes }
+            val count = sessionList.size
+            val colorHex = taskTitleToHex[title] ?: "#FF5252"
+            TaskTimelineItem(
+                taskTitle = title,
+                colorHex = colorHex,
+                durationMinutes = totalMinutes,
+                sessionCount = count
+            )
+        }.sortedByDescending { it.durationMinutes }
+    }
+
     private fun calculateHeatmapStats(
         sessions: List<FocusSession>,
         startDate: LocalDate,
@@ -95,7 +156,6 @@ class StatisticsViewModel @Inject constructor(
     ): List<HeatmapDay> {
         val daysList = ArrayList<HeatmapDay>(53 * 7)
 
-        // Single O(N) pass aggregation by LocalDate (Instant to LocalDate via ZoneId)
         val minutesByDate: Map<LocalDate, Int> = sessions
             .filter { it.type == SessionType.FOCUS }
             .groupBy { Instant.ofEpochMilli(it.startTime).atZone(zone).toLocalDate() }
@@ -124,7 +184,6 @@ class StatisticsViewModel @Inject constructor(
     private fun calculateWeeklyStats(sessions: List<FocusSession>, zone: ZoneId): List<DailyStat> {
         val stats = ArrayList<DailyStat>(7)
 
-        // Single O(N) pass aggregation
         val minutesByDate: Map<LocalDate, Int> = sessions
             .filter { it.type == SessionType.FOCUS }
             .groupBy { Instant.ofEpochMilli(it.startTime).atZone(zone).toLocalDate() }
@@ -160,5 +219,19 @@ class StatisticsViewModel @Inject constructor(
         }
     }
 }
+
+enum class TaskTimelineFilter {
+    TODAY,
+    YESTERDAY,
+    THIS_WEEK,
+    ALL_TIME
+}
+
+data class TaskTimelineItem(
+    val taskTitle: String,
+    val colorHex: String,
+    val durationMinutes: Int,
+    val sessionCount: Int
+)
 
 data class DailyStat(val dayName: String, val minutes: Int)

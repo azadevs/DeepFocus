@@ -81,4 +81,13 @@
 
     <string name="tasks_focus_breakdown_title">Focus Time by Task</string>
     <string name="tasks_focus_breakdown_subtitle">Detailed breakdown of time dedicated to your tasks</string>
+
+    <string name="timeline_title">Task Activity Log</string>
+    <string name="timeline_subtitle">Detailed daily time logs by task</string>
+    <string name="filter_today">Today</string>
+    <string name="filter_yesterday">Yesterday</string>
+    <string name="filter_this_week">This Week</string>
+    <string name="filter_all_time">All Time</string>
+    <string name="timeline_empty">No focus sessions recorded for this period</string>
+    <string name="sessions_count_format">%1$d sessions</string>
 </resources>
