@@ -97,7 +97,7 @@ fun SettingsScreen(
                     .fillMaxSize()
                     .padding(padding)
                     .verticalScroll(scrollState)
-                    .padding(bottom = 110.dp)
+                    .padding(bottom = 24.dp)
                     .padding(start = 20.dp, end = 20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -150,7 +150,7 @@ fun SettingsScreen(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(bottom = 80.dp),
+                    .padding(bottom = 16.dp),
                 contentAlignment = Alignment.BottomCenter
             ) {
                 AnimatedVisibility(
