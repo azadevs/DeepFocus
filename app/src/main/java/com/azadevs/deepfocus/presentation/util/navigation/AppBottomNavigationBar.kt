@@ -3,6 +3,7 @@ package com.azadevs.deepfocus.presentation.util.navigation
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -19,13 +20,14 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.FormatListBulleted
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -35,7 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
@@ -44,10 +46,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.material3.Surface
-import androidx.compose.material.icons.filled.FormatListBulleted
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.navigation.compose.currentBackStackEntryAsState
 
 data class BottomNavItem(
@@ -62,8 +60,8 @@ fun AppBottomNavigationBar(
     modifier: Modifier = Modifier
 ) {
     val items = listOf(
+        BottomNavItem(Icons.AutoMirrored.Filled.FormatListBulleted, TasksRoute, "Tasks"),
         BottomNavItem(Icons.Default.Home, PomodoroRoute, "Home"),
-        BottomNavItem(Icons.Default.FormatListBulleted, TasksRoute, "Tasks"),
         BottomNavItem(Icons.Default.BarChart, StatisticsRoute, "Statistics"),
         BottomNavItem(Icons.Default.Settings, SettingsRoute, "Settings")
     )
@@ -133,20 +131,86 @@ fun AppBottomNavigationBar(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 items.forEachIndexed { index, item ->
-                    BottomBarItem(
-                        item = item,
-                        isSelected = selectedIndex == index,
-                        onClick = {
-                            navController.navigate(item.route) {
-                                popUpTo(PomodoroRoute) {
-                                    saveState = true
+                    if (item.route == PomodoroRoute) {
+                        CenterHomeNavItem(
+                            item = item,
+                            isSelected = selectedIndex == index,
+                            onClick = {
+                                navController.navigate(item.route) {
+                                    popUpTo(PomodoroRoute) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
                                 }
-                                launchSingleTop = true
-                                restoreState = true
                             }
-                        }
-                    )
+                        )
+                    } else {
+                        BottomBarItem(
+                            item = item,
+                            isSelected = selectedIndex == index,
+                            onClick = {
+                                navController.navigate(item.route) {
+                                    popUpTo(PomodoroRoute) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+                            }
+                        )
+                    }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun RowScope.CenterHomeNavItem(
+    item: BottomNavItem,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    val scale by animateFloatAsState(
+        targetValue = if (isSelected) 1.15f else 1.0f,
+        animationSpec = spring(
+            dampingRatio = 0.6f,
+            stiffness = Spring.StiffnessMedium
+        ),
+        label = "center_home_scale"
+    )
+
+    Box(
+        modifier = Modifier
+            .weight(1f)
+            .fillMaxHeight()
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = onClick
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Surface(
+            shape = CircleShape,
+            color = MaterialTheme.colorScheme.primary,
+            shadowElevation = 8.dp,
+            border = BorderStroke(3.dp, MaterialTheme.colorScheme.surface),
+            modifier = Modifier
+                .offset(y = (-14).dp)
+                .size(52.dp * scale)
+        ) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Icon(
+                    imageVector = item.icon,
+                    contentDescription = item.contentDesc,
+                    tint = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier.size(26.dp)
+                )
             }
         }
     }
@@ -159,7 +223,7 @@ private fun RowScope.BottomBarItem(
     onClick: () -> Unit
 ) {
     val iconScale by animateFloatAsState(
-        targetValue = if (isSelected) 1.25f else 1.0f,
+        targetValue = if (isSelected) 1.2f else 1.0f,
         animationSpec = spring(
             dampingRatio = 0.6f,
             stiffness = Spring.StiffnessMedium
@@ -181,7 +245,7 @@ private fun RowScope.BottomBarItem(
         Icon(
             imageVector = item.icon,
             contentDescription = item.contentDesc,
-            modifier = Modifier.size(28.dp * iconScale),
+            modifier = Modifier.size(26.dp * iconScale),
             tint = if (isSelected) {
                 MaterialTheme.colorScheme.primary
             } else {
