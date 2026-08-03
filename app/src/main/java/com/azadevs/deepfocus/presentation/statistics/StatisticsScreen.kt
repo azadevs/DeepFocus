@@ -31,7 +31,6 @@ import com.azadevs.deepfocus.R
 import com.azadevs.deepfocus.presentation.statistics.component.EmptyStatisticsCard
 import com.azadevs.deepfocus.presentation.statistics.component.FocusHeatmapCard
 import com.azadevs.deepfocus.presentation.statistics.component.SummaryCard
-import com.azadevs.deepfocus.presentation.statistics.component.TaskFocusBreakdownCard
 import com.azadevs.deepfocus.presentation.statistics.component.TaskTimelineCard
 import com.azadevs.deepfocus.presentation.statistics.component.WeeklyBarChart
 import com.azadevs.deepfocus.presentation.statistics.viewmodel.StatisticsViewModel
@@ -131,12 +130,6 @@ fun StatisticsScreen(
                         selectedFilter = timelineFilter,
                         onFilterSelect = viewModel::setTimelineFilter
                     )
-                }
-            }
-
-            if (tasks.isNotEmpty()) {
-                item(key = "task_breakdown_card", contentType = "task_breakdown") {
-                    TaskFocusBreakdownCard(tasks = tasks)
                 }
             }
 
