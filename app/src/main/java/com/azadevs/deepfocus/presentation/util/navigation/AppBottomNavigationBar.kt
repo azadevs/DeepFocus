@@ -47,6 +47,7 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.material3.Surface
 import androidx.compose.material.icons.filled.FormatListBulleted
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.navigation.compose.currentBackStackEntryAsState
 
 data class BottomNavItem(
@@ -96,19 +97,18 @@ fun AppBottomNavigationBar(
     val indicatorOffsetDp = with(density) { indicatorOffset.toDp() }
 
     Surface(
-        modifier = modifier
-            .fillMaxWidth()
-            .navigationBarsPadding()
-            .padding(start = 24.dp, end = 24.dp, bottom = 12.dp)
-            .height(64.dp),
-        shape = RoundedCornerShape(24.dp),
+        modifier = modifier.fillMaxWidth(),
+        shape = RectangleShape,
         color = MaterialTheme.colorScheme.surface,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-        shadowElevation = 4.dp,
-        tonalElevation = 0.dp
+        shadowElevation = 8.dp,
+        tonalElevation = 2.dp
     ) {
         Box(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .navigationBarsPadding()
+                .height(64.dp),
             contentAlignment = Alignment.CenterStart
         ) {
             if (barSize.width > 0) {
