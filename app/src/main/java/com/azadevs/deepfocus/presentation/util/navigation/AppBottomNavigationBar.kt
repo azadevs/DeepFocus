@@ -97,9 +97,9 @@ fun AppBottomNavigationBar(
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = RectangleShape,
-        color = MaterialTheme.colorScheme.surface,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-        shadowElevation = 4.dp,
+        color = MaterialTheme.colorScheme.background,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
+        shadowElevation = 0.dp,
         tonalElevation = 0.dp
     ) {
         Box(
