@@ -38,9 +38,12 @@ fun TaskEntity.toDomain(): Task {
     return Task(
         id = id,
         title = title,
+        categoryName = categoryName,
         iconName = iconName,
         colorHex = colorHex,
         totalFocusMinutes = totalFocusMinutes,
+        targetGoalMinutes = targetGoalMinutes,
+        isCompleted = isCompleted,
         createdAt = createdAt
     )
 }
@@ -49,9 +52,12 @@ fun Task.toEntity(): TaskEntity {
     return TaskEntity(
         id = id,
         title = title,
+        categoryName = categoryName,
         iconName = iconName,
         colorHex = colorHex,
         totalFocusMinutes = totalFocusMinutes,
+        targetGoalMinutes = targetGoalMinutes,
+        isCompleted = isCompleted,
         createdAt = createdAt
     )
 }

@@ -46,6 +46,7 @@ import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.material3.Surface
+import androidx.compose.material.icons.filled.FormatListBulleted
 import androidx.navigation.compose.currentBackStackEntryAsState
 
 data class BottomNavItem(
@@ -60,8 +61,9 @@ fun AppBottomNavigationBar(
     modifier: Modifier = Modifier
 ) {
     val items = listOf(
-        BottomNavItem(Icons.Default.BarChart, StatisticsRoute, "Statistics"),
         BottomNavItem(Icons.Default.Home, PomodoroRoute, "Home"),
+        BottomNavItem(Icons.Default.FormatListBulleted, TasksRoute, "Tasks"),
+        BottomNavItem(Icons.Default.BarChart, StatisticsRoute, "Statistics"),
         BottomNavItem(Icons.Default.Settings, SettingsRoute, "Settings")
     )
 

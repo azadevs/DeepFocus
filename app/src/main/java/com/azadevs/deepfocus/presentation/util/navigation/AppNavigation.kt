@@ -20,6 +20,8 @@ import com.azadevs.deepfocus.presentation.pomodoro.PomodoroScreen
 import com.azadevs.deepfocus.presentation.settings.SettingsScreen
 import com.azadevs.deepfocus.presentation.statistics.StatisticsScreen
 
+import com.azadevs.deepfocus.presentation.tasks.TasksScreen
+
 /**
  * Created by : Azamat Kalmurzaev
  * 25/02/2026
@@ -59,6 +61,9 @@ fun AppNavigation(
                 ) {
                     composable<PomodoroRoute> {
                         PomodoroScreen()
+                    }
+                    composable<TasksRoute> {
+                        TasksScreen(navController = navController)
                     }
                     composable<StatisticsRoute> {
                         StatisticsScreen()
