@@ -21,6 +21,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
+import androidx.compose.ui.text.style.TextOverflow
+
 @Composable
 fun SummaryCard(
     modifier: Modifier = Modifier,
@@ -61,14 +63,18 @@ fun SummaryCard(
                 text = value,
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Black,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = title,
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
-                fontWeight = FontWeight.Medium
+                fontWeight = FontWeight.Medium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
     }

@@ -15,4 +15,4 @@ class GetAllSessionUseCase @Inject constructor(
     operator fun invoke(): Flow<List<FocusSession>> {
         return repository.getAllSessions()
     }
-}2
+}
