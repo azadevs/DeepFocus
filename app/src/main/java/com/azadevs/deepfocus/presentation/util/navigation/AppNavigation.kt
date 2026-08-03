@@ -3,6 +3,7 @@ package com.azadevs.deepfocus.presentation.util.navigation
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -53,8 +54,12 @@ fun AppNavigation(
                 AppBottomNavigationBar(navController = navController)
             },
             containerColor = Color.Transparent
-        ) { _ ->
-            Box(modifier = Modifier.fillMaxSize()) {
+        ) { innerPadding ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+            ) {
                 NavHost(
                     navController = navController,
                     startDestination = PomodoroRoute
