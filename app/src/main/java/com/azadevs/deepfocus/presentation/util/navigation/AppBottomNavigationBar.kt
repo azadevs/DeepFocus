@@ -60,8 +60,8 @@ fun AppBottomNavigationBar(
     modifier: Modifier = Modifier
 ) {
     val items = listOf(
-        BottomNavItem(Icons.AutoMirrored.Filled.FormatListBulleted, TasksRoute, "Tasks"),
         BottomNavItem(Icons.Default.Home, PomodoroRoute, "Home"),
+        BottomNavItem(Icons.AutoMirrored.Filled.FormatListBulleted, TasksRoute, "Tasks"),
         BottomNavItem(Icons.Default.BarChart, StatisticsRoute, "Statistics"),
         BottomNavItem(Icons.Default.Settings, SettingsRoute, "Settings")
     )
@@ -69,7 +69,7 @@ fun AppBottomNavigationBar(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
-    var selectedIndex by remember { mutableIntStateOf(1) }
+    var selectedIndex by remember { mutableIntStateOf(0) }
 
     items.forEachIndexed { index, item ->
         if (currentDestination?.hierarchy?.any { it.hasRoute(item.route::class) } == true) {
@@ -99,8 +99,8 @@ fun AppBottomNavigationBar(
         shape = RectangleShape,
         color = MaterialTheme.colorScheme.surface,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-        shadowElevation = 8.dp,
-        tonalElevation = 2.dp
+        shadowElevation = 4.dp,
+        tonalElevation = 0.dp
     ) {
         Box(
             modifier = Modifier
@@ -131,86 +131,20 @@ fun AppBottomNavigationBar(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 items.forEachIndexed { index, item ->
-                    if (item.route == PomodoroRoute) {
-                        CenterHomeNavItem(
-                            item = item,
-                            isSelected = selectedIndex == index,
-                            onClick = {
-                                navController.navigate(item.route) {
-                                    popUpTo(PomodoroRoute) {
-                                        saveState = true
-                                    }
-                                    launchSingleTop = true
-                                    restoreState = true
+                    BottomBarItem(
+                        item = item,
+                        isSelected = selectedIndex == index,
+                        onClick = {
+                            navController.navigate(item.route) {
+                                popUpTo(PomodoroRoute) {
+                                    saveState = true
                                 }
+                                launchSingleTop = true
+                                restoreState = true
                             }
-                        )
-                    } else {
-                        BottomBarItem(
-                            item = item,
-                            isSelected = selectedIndex == index,
-                            onClick = {
-                                navController.navigate(item.route) {
-                                    popUpTo(PomodoroRoute) {
-                                        saveState = true
-                                    }
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
-                            }
-                        )
-                    }
+                        }
+                    )
                 }
-            }
-        }
-    }
-}
-
-@Composable
-private fun RowScope.CenterHomeNavItem(
-    item: BottomNavItem,
-    isSelected: Boolean,
-    onClick: () -> Unit
-) {
-    val scale by animateFloatAsState(
-        targetValue = if (isSelected) 1.15f else 1.0f,
-        animationSpec = spring(
-            dampingRatio = 0.6f,
-            stiffness = Spring.StiffnessMedium
-        ),
-        label = "center_home_scale"
-    )
-
-    Box(
-        modifier = Modifier
-            .weight(1f)
-            .fillMaxHeight()
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onClick = onClick
-            ),
-        contentAlignment = Alignment.Center
-    ) {
-        Surface(
-            shape = CircleShape,
-            color = MaterialTheme.colorScheme.primary,
-            shadowElevation = 8.dp,
-            border = BorderStroke(3.dp, MaterialTheme.colorScheme.surface),
-            modifier = Modifier
-                .offset(y = (-14).dp)
-                .size(52.dp * scale)
-        ) {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier.fillMaxSize()
-            ) {
-                Icon(
-                    imageVector = item.icon,
-                    contentDescription = item.contentDesc,
-                    tint = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier.size(26.dp)
-                )
             }
         }
     }
@@ -249,7 +183,7 @@ private fun RowScope.BottomBarItem(
             tint = if (isSelected) {
                 MaterialTheme.colorScheme.primary
             } else {
-                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
+                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
             }
         )
     }
