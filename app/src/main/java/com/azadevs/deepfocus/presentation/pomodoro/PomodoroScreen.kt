@@ -163,8 +163,6 @@ fun PomodoroScreen(
             tasks = tasks,
             selectedTask = selectedTask,
             onTaskSelect = viewModel::selectTask,
-            onTaskCreate = viewModel::addNewTask,
-            onTaskDelete = viewModel::deleteTask,
             onDismissRequest = { showTaskBottomSheet = false }
         )
     }
