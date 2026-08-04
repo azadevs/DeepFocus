@@ -114,7 +114,7 @@ fun TaskItemCard(
                             fontWeight = FontWeight.Bold,
                             color = if (task.isCompleted) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface,
                             textDecoration = if (task.isCompleted) TextDecoration.LineThrough else TextDecoration.None,
-                            maxLines = 1,
+                            maxLines = 2,
                             overflow = TextOverflow.Ellipsis
                         )
                         Spacer(modifier = Modifier.height(2.dp))
