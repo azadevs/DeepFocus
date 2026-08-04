@@ -54,11 +54,9 @@ fun AppNavigation(
                 AppBottomNavigationBar(navController = navController)
             },
             containerColor = Color.Transparent
-        ) { innerPadding ->
+        ) { _ ->
             Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(bottom = innerPadding.calculateBottomPadding())
+                modifier = Modifier.fillMaxSize()
             ) {
                 NavHost(
                     navController = navController,
