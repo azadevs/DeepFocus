@@ -33,6 +33,10 @@ class MainActivity : ComponentActivity() {
             viewModel.isOnboardingCompleted.value == null
         }
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            window.isNavigationBarContrastEnforced = false
+        }
+
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.auto(
                 android.graphics.Color.TRANSPARENT,
