@@ -33,7 +33,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -194,12 +193,13 @@ class PomodoroController @Inject constructor(
 
     private fun handlePhaseFinished() {
         val currentPhase = _state.value.phase
-        val startTime = System.currentTimeMillis() - durationFor(currentPhase)
-        val endTime = System.currentTimeMillis()
 
-        controllerScope.launch {
-            if (currentPhase == PomodoroPhase.FOCUS) {
-                val activeTask = _selectedTask.value
+        if (currentPhase == PomodoroPhase.FOCUS) {
+            val endTime = System.currentTimeMillis()
+            val startTime = phaseStartTime
+            val activeTask = _selectedTask.value
+
+            controllerScope.launch {
                 focusRepository.upsertSession(
                     FocusSession(
                         id = 0L,
@@ -217,8 +217,8 @@ class PomodoroController @Inject constructor(
                     )
                 }
             }
-            playAlarmSound()
         }
+        playAlarmSound()
         moveToNextPhase()
     }
 
@@ -254,7 +254,7 @@ class PomodoroController @Inject constructor(
         )
     }
 
-    private suspend fun playAlarmSound() = withContext(Dispatchers.Main) {
+    private fun playAlarmSound() {
         try {
             var alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
             if (alarmUri == null) {
@@ -274,7 +274,7 @@ class PomodoroController @Inject constructor(
                 audioManager.requestAudioFocus(audioFocusRequest!!)
             }
 
-            mediaPlayer = MediaPlayer.create(context, alarmUri)?.apply {
+            mediaPlayer = MediaPlayer.create(context, alarmUri).apply {
                 isLooping = true
                 start()
             }
