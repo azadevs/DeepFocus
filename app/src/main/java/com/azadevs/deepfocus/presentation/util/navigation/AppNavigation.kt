@@ -54,14 +54,12 @@ fun AppNavigation(
                 AppBottomNavigationBar(navController = navController)
             },
             containerColor = Color.Transparent
-        ) { _ ->
-            Box(
-                modifier = Modifier.fillMaxSize()
+        ) { innerPadding ->
+            NavHost(
+                navController = navController,
+                startDestination = PomodoroRoute,
+                modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding())
             ) {
-                NavHost(
-                    navController = navController,
-                    startDestination = PomodoroRoute
-                ) {
                     composable<PomodoroRoute> {
                         PomodoroScreen()
                     }
@@ -75,7 +73,6 @@ fun AppNavigation(
                         SettingsScreen()
                     }
                 }
-            }
         }
     }
 }
