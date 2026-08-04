@@ -180,7 +180,6 @@ fun PomodoroScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
                 .verticalScroll(scrollState)
-                .padding(bottom = 110.dp)
                 .padding(horizontal = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
@@ -207,6 +206,8 @@ fun PomodoroScreen(
                     .aspectRatio(1f)
             )
 
+            Spacer(modifier = Modifier.height(24.dp))
+
             BottomSection(
                 isRinging = isRinging,
                 canStart = canStart,
@@ -222,7 +223,9 @@ fun PomodoroScreen(
                 onStopClick = viewModel::onStopClick,
                 onSkipClick = viewModel::onSkipClick,
                 onStopAlarmClick = viewModel::onStopAlarmClick,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp)
             )
         }
     }
