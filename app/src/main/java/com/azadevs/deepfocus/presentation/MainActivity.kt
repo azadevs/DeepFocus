@@ -12,6 +12,7 @@ import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.core.view.WindowCompat
 import com.azadevs.deepfocus.domain.pomodoro.PomodoroController
 import com.azadevs.deepfocus.presentation.util.navigation.AppNavigation
 import com.azadevs.deepfocus.presentation.util.theme.DeepFocusTheme
@@ -33,9 +34,12 @@ class MainActivity : ComponentActivity() {
             viewModel.isOnboardingCompleted.value == null
         }
 
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             window.isNavigationBarContrastEnforced = false
         }
+        window.navigationBarColor = android.graphics.Color.TRANSPARENT
+        window.statusBarColor = android.graphics.Color.TRANSPARENT
 
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.auto(
