@@ -207,7 +207,7 @@ fun PomodoroScreen(
                     .aspectRatio(1f)
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             BottomSection(
                 isRinging = isRinging,
