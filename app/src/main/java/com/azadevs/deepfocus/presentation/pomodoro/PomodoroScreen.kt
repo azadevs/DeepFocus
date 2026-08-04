@@ -186,8 +186,6 @@ fun PomodoroScreen(
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             TopSection(
-                phase = phase,
-                phaseColor = phaseColor,
                 selectedTask = selectedTask,
                 onTaskClick = { showTaskBottomSheet = true },
                 modifier = Modifier
@@ -272,8 +270,6 @@ private fun PomodoroTopBar(
 
 @Composable
 private fun TopSection(
-    phase: PomodoroPhase,
-    phaseColor: Color,
     selectedTask: Task?,
     onTaskClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -282,8 +278,6 @@ private fun TopSection(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        PhaseChip(phase = phase, color = phaseColor)
-        Spacer(modifier = Modifier.height(10.dp))
         TaskSelectorChip(selectedTask = selectedTask, onClick = onTaskClick)
     }
 }
@@ -325,8 +319,12 @@ private fun TimerSection(
             isPulsing = isRunningProvider()
         )
 
-        // Countdown text overlay
+        // Countdown text & phase indicator overlay inside the ring
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            PhaseChip(phase = phaseProvider(), color = phaseColor)
+
+            Spacer(modifier = Modifier.height(10.dp))
+
             Text(
                 text = formatTime(remainingMillisProvider()),
                 modifier = Modifier.scale(scale),
