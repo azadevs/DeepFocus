@@ -201,7 +201,7 @@ fun PomodoroScreen(
                 phaseColor = phaseColor,
                 context = context,
                 modifier = Modifier
-                    .fillMaxWidth(fraction = 0.78f)
+                    .fillMaxWidth(fraction = 0.86f)
                     .aspectRatio(1f)
             )
 
