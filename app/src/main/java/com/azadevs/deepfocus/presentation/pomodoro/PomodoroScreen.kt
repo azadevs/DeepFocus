@@ -183,7 +183,7 @@ fun PomodoroScreen(
                 .padding(bottom = 80.dp)
                 .padding(horizontal = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween
+            verticalArrangement = Arrangement.Top
         ) {
             TopSection(
                 selectedTask = selectedTask,
@@ -192,6 +192,8 @@ fun PomodoroScreen(
                     .fillMaxWidth()
                     .padding(top = 4.dp)
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             TimerSection(
                 remainingMillisProvider = { stateState.value.remainingMillis },
@@ -205,7 +207,7 @@ fun PomodoroScreen(
                     .aspectRatio(1f)
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(2.dp))
 
             BottomSection(
                 isRinging = isRinging,
