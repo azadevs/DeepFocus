@@ -193,7 +193,7 @@ fun PomodoroScreen(
                     .padding(top = 4.dp)
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
             TimerSection(
                 remainingMillisProvider = { stateState.value.remainingMillis },
@@ -207,7 +207,7 @@ fun PomodoroScreen(
                     .aspectRatio(1f)
             )
 
-            Spacer(modifier = Modifier.height(2.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             BottomSection(
                 isRinging = isRinging,
