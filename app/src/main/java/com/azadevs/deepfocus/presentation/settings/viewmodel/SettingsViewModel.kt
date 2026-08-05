@@ -28,10 +28,19 @@ class SettingsViewModel @Inject constructor(
     private val _longBreakMinutes = MutableStateFlow(15)
     val longBreakMinutes: StateFlow<Int> = _longBreakMinutes.asStateFlow()
 
+    private val _soundEnabled = MutableStateFlow(true)
+    val soundEnabled: StateFlow<Boolean> = _soundEnabled.asStateFlow()
+
+    private val _vibrationEnabled = MutableStateFlow(true)
+    val vibrationEnabled: StateFlow<Boolean> = _vibrationEnabled.asStateFlow()
+
+    private val _autoStartBreaks = MutableStateFlow(false)
+    val autoStartBreaks: StateFlow<Boolean> = _autoStartBreaks.asStateFlow()
+
     init {
         viewModelScope.launch {
             useCases.getFocusDuration().collect { duration ->
-                duration.let { _focusMinutes.value = it }
+                _focusMinutes.value = duration
             }
         }
         viewModelScope.launch {
@@ -65,5 +74,26 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             useCases.setLongBreakDuration(minutes)
         }
+    }
+
+    fun toggleSound(enabled: Boolean) {
+        _soundEnabled.value = enabled
+    }
+
+    fun toggleVibration(enabled: Boolean) {
+        _vibrationEnabled.value = enabled
+    }
+
+    fun toggleAutoStartBreaks(enabled: Boolean) {
+        _autoStartBreaks.value = enabled
+    }
+
+    fun resetToDefaults() {
+        updateFocusDuration(25)
+        updateShortBreakDuration(5)
+        updateLongBreakDuration(15)
+        _soundEnabled.value = true
+        _vibrationEnabled.value = true
+        _autoStartBreaks.value = false
     }
 }
