@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.CircleShape
@@ -203,6 +204,7 @@ fun PomodoroScreen(
                 phaseColor = phaseColor,
                 context = context,
                 modifier = Modifier
+                    .widthIn(max = 400.dp)
                     .fillMaxWidth(fraction = 0.86f)
                     .aspectRatio(1f)
             )
@@ -224,7 +226,9 @@ fun PomodoroScreen(
                 onStopClick = viewModel::onStopClick,
                 onSkipClick = viewModel::onSkipClick,
                 onStopAlarmClick = viewModel::onStopAlarmClick,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .widthIn(max = 400.dp)
+                    .fillMaxWidth()
             )
         }
     }
@@ -292,14 +296,6 @@ private fun TimerSection(
     context: Context,
     modifier: Modifier = Modifier
 ) {
-    val total = max(1L, phaseDurationMillisProvider())
-    val remaining = min(total, max(0L, remainingMillisProvider()))
-    val rawProgress = 1f - (remaining.toFloat() / total.toFloat())
-
-    val progress by animateFloatAsState(
-        targetValue = rawProgress.coerceIn(0f, 1f),
-        label = "progress"
-    )
     val scale by animateFloatAsState(
         targetValue = if (isRunningProvider()) 1.05f else 1f,
         animationSpec = spring(dampingRatio = 0.6f, stiffness = 300f),
@@ -311,7 +307,11 @@ private fun TimerSection(
         contentAlignment = Alignment.Center
     ) {
         FlowOrb(
-            progressProvider = { progress },
+            progressProvider = {
+                val total = max(1L, phaseDurationMillisProvider())
+                val remaining = min(total, max(0L, remainingMillisProvider()))
+                (1f - (remaining.toFloat() / total.toFloat())).coerceIn(0f, 1f)
+            },
             color = phaseColor,
             modifier = Modifier.fillMaxSize(),
             strokeWidth = 12.dp,
@@ -325,12 +325,9 @@ private fun TimerSection(
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            Text(
-                text = formatTime(remainingMillisProvider()),
-                modifier = Modifier.scale(scale),
-                style = MaterialTheme.typography.displayLarge,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground
+            CountdownText(
+                remainingMillisProvider = remainingMillisProvider,
+                scaleProvider = { scale }
             )
 
             Spacer(modifier = Modifier.height(6.dp))
@@ -342,6 +339,22 @@ private fun TimerSection(
             )
         }
     }
+}
+
+@Composable
+private fun CountdownText(
+    remainingMillisProvider: () -> Long,
+    scaleProvider: () -> Float
+) {
+    Text(
+        text = formatTime(remainingMillisProvider()),
+        modifier = Modifier.scale(scaleProvider()),
+        style = MaterialTheme.typography.displayLarge.copy(
+            fontFeatureSettings = "tnum"
+        ),
+        fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colorScheme.onBackground
+    )
 }
 
 @Composable
