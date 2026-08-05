@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -82,16 +83,18 @@ fun SettingsScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .systemBarsPadding()
+                .systemBarsPadding(),
+            contentAlignment = Alignment.TopCenter
         ) {
             val scrollState = rememberScrollState()
             Column(
                 modifier = Modifier
+                    .widthIn(max = 600.dp)
                     .fillMaxSize()
                     .padding(padding)
                     .verticalScroll(scrollState)
                     .padding(bottom = 96.dp)
-                    .padding(horizontal = 16.dp),
+                    .padding(horizontal = 20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 // Section 1: Timer Intervals
