@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun SettingsSectionHeader(
@@ -28,7 +29,7 @@ fun SettingsSectionHeader(
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            letterSpacing = androidx.compose.ui.unit.sp(1.2f)
+            letterSpacing = 1.2.sp
         )
     }
 }
