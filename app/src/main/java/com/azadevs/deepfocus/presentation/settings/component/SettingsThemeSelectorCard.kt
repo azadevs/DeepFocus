@@ -90,7 +90,7 @@ fun SettingsThemeSelectorCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .horizontalScroll(rememberScrollState()),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)
         ) {
             AppThemeMode.entries.forEach { mode ->
                 val isSelected = mode == selectedTheme
