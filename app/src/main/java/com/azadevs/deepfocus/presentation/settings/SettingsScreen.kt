@@ -20,16 +20,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.VolumeUp
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.outlined.AutoMode
 import androidx.compose.material.icons.outlined.Coffee
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.NotificationsActive
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.SelfImprovement
 import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material.icons.outlined.Vibration
-import androidx.compose.material.icons.automirrored.outlined.VolumeUp
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -59,6 +58,7 @@ import com.azadevs.deepfocus.R
 import com.azadevs.deepfocus.presentation.settings.component.SettingSliderCard
 import com.azadevs.deepfocus.presentation.settings.component.SettingsSectionHeader
 import com.azadevs.deepfocus.presentation.settings.component.SettingsSwitchCard
+import com.azadevs.deepfocus.presentation.settings.component.SettingsThemeSelectorCard
 import com.azadevs.deepfocus.presentation.settings.viewmodel.SettingsViewModel
 import kotlinx.coroutines.delay
 
@@ -77,6 +77,7 @@ fun SettingsScreen(
     val soundEnabled by viewModel.soundEnabled.collectAsStateWithLifecycle()
     val vibrationEnabled by viewModel.vibrationEnabled.collectAsStateWithLifecycle()
     val autoStartBreaks by viewModel.autoStartBreaks.collectAsStateWithLifecycle()
+    val themeMode by viewModel.themeMode.collectAsStateWithLifecycle()
     
     var showSavedIndicator by remember { mutableStateOf(false) }
     var saveIndicatorTrigger by remember { mutableIntStateOf(0) }
@@ -213,7 +214,30 @@ fun SettingsScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Section 3: About & System
+                // Section 3: Theme & Personalization
+                SettingsSectionHeader(title = "Theme & Personalization", emoji = "🎨")
+
+                Surface(
+                    shape = RoundedCornerShape(24.dp),
+                    color = MaterialTheme.colorScheme.surfaceVariant,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column {
+                        SettingsThemeSelectorCard(
+                            selectedTheme = themeMode,
+                            onThemeSelected = {
+                                viewModel.setThemeMode(it)
+                                saveIndicatorTrigger++
+                            },
+                            showDivider = false
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Section 4: About & System
                 SettingsSectionHeader(title = "About & Reset", emoji = "ℹ️")
 
                 Surface(

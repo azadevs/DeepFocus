@@ -3,6 +3,7 @@ package com.azadevs.deepfocus.presentation.settings.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.azadevs.deepfocus.domain.usecase.DeepFocusUseCases
+import com.azadevs.deepfocus.presentation.settings.component.AppThemeMode
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -36,6 +37,9 @@ class SettingsViewModel @Inject constructor(
 
     private val _autoStartBreaks = MutableStateFlow(false)
     val autoStartBreaks: StateFlow<Boolean> = _autoStartBreaks.asStateFlow()
+
+    private val _themeMode = MutableStateFlow(AppThemeMode.SYSTEM)
+    val themeMode: StateFlow<AppThemeMode> = _themeMode.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -88,6 +92,10 @@ class SettingsViewModel @Inject constructor(
         _autoStartBreaks.value = enabled
     }
 
+    fun setThemeMode(mode: AppThemeMode) {
+        _themeMode.value = mode
+    }
+
     fun resetToDefaults() {
         updateFocusDuration(25)
         updateShortBreakDuration(5)
@@ -95,5 +103,6 @@ class SettingsViewModel @Inject constructor(
         _soundEnabled.value = true
         _vibrationEnabled.value = true
         _autoStartBreaks.value = false
+        _themeMode.value = AppThemeMode.SYSTEM
     }
 }
