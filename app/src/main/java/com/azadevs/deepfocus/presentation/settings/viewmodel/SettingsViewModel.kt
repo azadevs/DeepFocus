@@ -57,6 +57,30 @@ class SettingsViewModel @Inject constructor(
                 _longBreakMinutes.value = duration
             }
         }
+        viewModelScope.launch {
+            useCases.getSoundEnabled().collect { enabled ->
+                _soundEnabled.value = enabled
+            }
+        }
+        viewModelScope.launch {
+            useCases.getVibrationEnabled().collect { enabled ->
+                _vibrationEnabled.value = enabled
+            }
+        }
+        viewModelScope.launch {
+            useCases.getAutoStartBreaks().collect { enabled ->
+                _autoStartBreaks.value = enabled
+            }
+        }
+        viewModelScope.launch {
+            useCases.getThemeMode().collect { modeStr ->
+                _themeMode.value = try {
+                    AppThemeMode.valueOf(modeStr)
+                } catch (e: Exception) {
+                    AppThemeMode.SYSTEM
+                }
+            }
+        }
     }
 
     fun updateFocusDuration(minutes: Int) {
@@ -82,27 +106,39 @@ class SettingsViewModel @Inject constructor(
 
     fun toggleSound(enabled: Boolean) {
         _soundEnabled.value = enabled
+        viewModelScope.launch {
+            useCases.setSoundEnabled(enabled)
+        }
     }
 
     fun toggleVibration(enabled: Boolean) {
         _vibrationEnabled.value = enabled
+        viewModelScope.launch {
+            useCases.setVibrationEnabled(enabled)
+        }
     }
 
     fun toggleAutoStartBreaks(enabled: Boolean) {
         _autoStartBreaks.value = enabled
+        viewModelScope.launch {
+            useCases.setAutoStartBreaks(enabled)
+        }
     }
 
     fun setThemeMode(mode: AppThemeMode) {
         _themeMode.value = mode
+        viewModelScope.launch {
+            useCases.setThemeMode(mode.name)
+        }
     }
 
     fun resetToDefaults() {
         updateFocusDuration(25)
         updateShortBreakDuration(5)
         updateLongBreakDuration(15)
-        _soundEnabled.value = true
-        _vibrationEnabled.value = true
-        _autoStartBreaks.value = false
-        _themeMode.value = AppThemeMode.SYSTEM
+        toggleSound(true)
+        toggleVibration(true)
+        toggleAutoStartBreaks(false)
+        setThemeMode(AppThemeMode.SYSTEM)
     }
 }

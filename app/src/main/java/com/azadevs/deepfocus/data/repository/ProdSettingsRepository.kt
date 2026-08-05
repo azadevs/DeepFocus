@@ -32,4 +32,20 @@ class ProdSettingsRepository @Inject constructor(
     override suspend fun setOnboardingCompleted(completed: Boolean) =
         dataStore.setOnboardingCompleted(completed)
 
+    override fun isSoundEnabled(): Flow<Boolean> = dataStore.isSoundEnabled
+
+    override suspend fun setSoundEnabled(enabled: Boolean) = dataStore.setSoundEnabled(enabled)
+
+    override fun isVibrationEnabled(): Flow<Boolean> = dataStore.isVibrationEnabled
+
+    override suspend fun setVibrationEnabled(enabled: Boolean) = dataStore.setVibrationEnabled(enabled)
+
+    override fun isAutoStartBreaks(): Flow<Boolean> = dataStore.autoStartBreaks
+
+    override suspend fun setAutoStartBreaks(enabled: Boolean) = dataStore.setAutoStartBreaks(enabled)
+
+    override fun getThemeMode(): Flow<String> = dataStore.themeMode
+
+    override suspend fun setThemeMode(mode: String) = dataStore.setThemeMode(mode)
+
 }

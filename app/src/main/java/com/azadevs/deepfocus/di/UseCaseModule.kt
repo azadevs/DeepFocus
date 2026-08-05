@@ -19,6 +19,14 @@ import com.azadevs.deepfocus.domain.usecase.settings.SetShortBreakDurationUseCas
 import com.azadevs.deepfocus.domain.usecase.task.DeleteTaskUseCase
 import com.azadevs.deepfocus.domain.usecase.task.GetTasksUseCase
 import com.azadevs.deepfocus.domain.usecase.task.UpsertTaskUseCase
+import com.azadevs.deepfocus.domain.usecase.settings.GetSoundEnabledUseCase
+import com.azadevs.deepfocus.domain.usecase.settings.SetSoundEnabledUseCase
+import com.azadevs.deepfocus.domain.usecase.settings.GetVibrationEnabledUseCase
+import com.azadevs.deepfocus.domain.usecase.settings.SetVibrationEnabledUseCase
+import com.azadevs.deepfocus.domain.usecase.settings.GetAutoStartBreaksUseCase
+import com.azadevs.deepfocus.domain.usecase.settings.SetAutoStartBreaksUseCase
+import com.azadevs.deepfocus.domain.usecase.settings.GetThemeModeUseCase
+import com.azadevs.deepfocus.domain.usecase.settings.SetThemeModeUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -53,7 +61,15 @@ object UseCaseModule {
         setOnboardingCompleted: SetOnboardingCompletedUseCase,
         getTasks: GetTasksUseCase,
         upsertTask: UpsertTaskUseCase,
-        deleteTask: DeleteTaskUseCase
+        deleteTask: DeleteTaskUseCase,
+        getSoundEnabled: GetSoundEnabledUseCase,
+        setSoundEnabled: SetSoundEnabledUseCase,
+        getVibrationEnabled: GetVibrationEnabledUseCase,
+        setVibrationEnabled: SetVibrationEnabledUseCase,
+        getAutoStartBreaks: GetAutoStartBreaksUseCase,
+        setAutoStartBreaks: SetAutoStartBreaksUseCase,
+        getThemeMode: GetThemeModeUseCase,
+        setThemeMode: SetThemeModeUseCase
     ): DeepFocusUseCases {
         return DeepFocusUseCases(
             upsert,
@@ -73,7 +89,15 @@ object UseCaseModule {
             setOnboardingCompleted,
             getTasks,
             upsertTask,
-            deleteTask
+            deleteTask,
+            getSoundEnabled,
+            setSoundEnabled,
+            getVibrationEnabled,
+            setVibrationEnabled,
+            getAutoStartBreaks,
+            setAutoStartBreaks,
+            getThemeMode,
+            setThemeMode
         )
     }
 }

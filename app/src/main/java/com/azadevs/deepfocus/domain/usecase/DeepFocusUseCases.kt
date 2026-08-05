@@ -18,6 +18,14 @@ import com.azadevs.deepfocus.domain.usecase.settings.SetShortBreakDurationUseCas
 import com.azadevs.deepfocus.domain.usecase.task.DeleteTaskUseCase
 import com.azadevs.deepfocus.domain.usecase.task.GetTasksUseCase
 import com.azadevs.deepfocus.domain.usecase.task.UpsertTaskUseCase
+import com.azadevs.deepfocus.domain.usecase.settings.GetSoundEnabledUseCase
+import com.azadevs.deepfocus.domain.usecase.settings.SetSoundEnabledUseCase
+import com.azadevs.deepfocus.domain.usecase.settings.GetVibrationEnabledUseCase
+import com.azadevs.deepfocus.domain.usecase.settings.SetVibrationEnabledUseCase
+import com.azadevs.deepfocus.domain.usecase.settings.GetAutoStartBreaksUseCase
+import com.azadevs.deepfocus.domain.usecase.settings.SetAutoStartBreaksUseCase
+import com.azadevs.deepfocus.domain.usecase.settings.GetThemeModeUseCase
+import com.azadevs.deepfocus.domain.usecase.settings.SetThemeModeUseCase
 
 /**
  * Created by : Azamat Kalmurzaev
@@ -41,5 +49,13 @@ data class DeepFocusUseCases(
     val setOnboardingCompleted: SetOnboardingCompletedUseCase,
     val getTasks: GetTasksUseCase,
     val upsertTask: UpsertTaskUseCase,
-    val deleteTask: DeleteTaskUseCase
+    val deleteTask: DeleteTaskUseCase,
+    val getSoundEnabled: GetSoundEnabledUseCase,
+    val setSoundEnabled: SetSoundEnabledUseCase,
+    val getVibrationEnabled: GetVibrationEnabledUseCase,
+    val setVibrationEnabled: SetVibrationEnabledUseCase,
+    val getAutoStartBreaks: GetAutoStartBreaksUseCase,
+    val setAutoStartBreaks: SetAutoStartBreaksUseCase,
+    val getThemeMode: GetThemeModeUseCase,
+    val setThemeMode: SetThemeModeUseCase
 )

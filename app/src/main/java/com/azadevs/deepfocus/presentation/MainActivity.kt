@@ -13,7 +13,12 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.foundation.isSystemInDarkTheme
 import com.azadevs.deepfocus.domain.pomodoro.PomodoroController
+import com.azadevs.deepfocus.presentation.settings.component.AppThemeMode
 import com.azadevs.deepfocus.presentation.util.navigation.AppNavigation
 import com.azadevs.deepfocus.presentation.util.theme.DeepFocusTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -34,19 +39,32 @@ class MainActivity : ComponentActivity() {
             viewModel.isOnboardingCompleted.value == null
         }
 
-        enableEdgeToEdge(
-            statusBarStyle = SystemBarStyle.auto(
-                android.graphics.Color.TRANSPARENT,
-                android.graphics.Color.TRANSPARENT
-            ),
-            navigationBarStyle = SystemBarStyle.auto(
-                android.graphics.Color.TRANSPARENT,
-                android.graphics.Color.TRANSPARENT
-            )
-        )
         requestNotificationPermission()
+
         setContent {
-            DeepFocusTheme {
+            val themeMode by viewModel.themeMode.collectAsStateWithLifecycle()
+            val isDarkTheme = when (themeMode) {
+                AppThemeMode.LIGHT -> false
+                AppThemeMode.DARK -> true
+                AppThemeMode.SYSTEM -> isSystemInDarkTheme()
+            }
+
+            LaunchedEffect(isDarkTheme) {
+                enableEdgeToEdge(
+                    statusBarStyle = if (isDarkTheme) {
+                        SystemBarStyle.dark(android.graphics.Color.TRANSPARENT)
+                    } else {
+                        SystemBarStyle.light(android.graphics.Color.TRANSPARENT, android.graphics.Color.TRANSPARENT)
+                    },
+                    navigationBarStyle = if (isDarkTheme) {
+                        SystemBarStyle.dark(android.graphics.Color.TRANSPARENT)
+                    } else {
+                        SystemBarStyle.light(android.graphics.Color.TRANSPARENT, android.graphics.Color.TRANSPARENT)
+                    }
+                )
+            }
+
+            DeepFocusTheme(darkTheme = isDarkTheme) {
                 AppNavigation(viewModel = viewModel)
             }
         }
