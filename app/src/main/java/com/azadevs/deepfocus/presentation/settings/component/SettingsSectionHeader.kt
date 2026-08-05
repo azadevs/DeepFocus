@@ -16,24 +16,19 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun SettingsSectionHeader(
     title: String,
-    emoji: String
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 4.dp, bottom = 8.dp, top = 16.dp)
+            .padding(start = 12.dp, bottom = 8.dp, top = 24.dp)
     ) {
         Text(
-            text = emoji,
-            style = MaterialTheme.typography.titleMedium
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.ExtraBold,
-            color = MaterialTheme.colorScheme.primary
+            text = title.uppercase(),
+            style = MaterialTheme.typography.labelMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            letterSpacing = androidx.compose.ui.unit.sp(1.2f)
         )
     }
 }

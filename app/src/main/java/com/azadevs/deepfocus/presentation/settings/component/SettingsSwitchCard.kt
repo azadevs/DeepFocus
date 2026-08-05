@@ -61,7 +61,7 @@ fun SettingsSwitchCard(
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.SemiBold
             )
             if (subtitle != null) {
                 Text(
@@ -87,11 +87,4 @@ fun SettingsSwitchCard(
         )
     }
 
-    if (showDivider) {
-        HorizontalDivider(
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f),
-            thickness = 1.dp,
-            modifier = Modifier.padding(horizontal = 20.dp)
-        )
-    }
-}
+

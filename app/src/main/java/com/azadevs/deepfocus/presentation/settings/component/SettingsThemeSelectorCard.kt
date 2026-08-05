@@ -71,7 +71,7 @@ fun SettingsThemeSelectorCard(
                 Text(
                     text = "App Theme Mode",
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.SemiBold
                 )
                 Text(
                     text = "Customize app color appearance",
@@ -119,14 +119,6 @@ fun SettingsThemeSelectorCard(
                     modifier = Modifier.weight(1f)
                 )
             }
-        }
-
-        if (showDivider) {
-            HorizontalDivider(
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f),
-                thickness = 1.dp,
-                modifier = Modifier.padding(top = 16.dp)
-            )
         }
     }
 }

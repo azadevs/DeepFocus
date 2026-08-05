@@ -75,7 +75,7 @@ fun SettingSliderCard(
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.weight(1f)
             )
             AnimatedContent(
@@ -123,13 +123,5 @@ fun SettingSliderCard(
         )
         
         Spacer(modifier = Modifier.height(8.dp))
-        
-        if (showDivider) {
-             HorizontalDivider(
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f),
-                thickness = 1.dp,
-                modifier = Modifier.padding(top = 8.dp)
-             )
-        }
     }
 }

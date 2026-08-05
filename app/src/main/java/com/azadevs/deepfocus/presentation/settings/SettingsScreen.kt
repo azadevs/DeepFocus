@@ -1,10 +1,6 @@
 package com.azadevs.deepfocus.presentation.settings
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
+
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,7 +17,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.VolumeUp
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.outlined.AutoMode
 import androidx.compose.material.icons.outlined.Coffee
 import androidx.compose.material.icons.outlined.Info
@@ -40,12 +35,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -60,7 +50,6 @@ import com.azadevs.deepfocus.presentation.settings.component.SettingsSectionHead
 import com.azadevs.deepfocus.presentation.settings.component.SettingsSwitchCard
 import com.azadevs.deepfocus.presentation.settings.component.SettingsThemeSelectorCard
 import com.azadevs.deepfocus.presentation.settings.viewmodel.SettingsViewModel
-import kotlinx.coroutines.delay
 
 /**
  * Created by : Azamat Kalmurzaev
@@ -79,17 +68,6 @@ fun SettingsScreen(
     val autoStartBreaks by viewModel.autoStartBreaks.collectAsStateWithLifecycle()
     val themeMode by viewModel.themeMode.collectAsStateWithLifecycle()
     
-    var showSavedIndicator by remember { mutableStateOf(false) }
-    var saveIndicatorTrigger by remember { mutableIntStateOf(0) }
-
-    LaunchedEffect(saveIndicatorTrigger) {
-        if (saveIndicatorTrigger > 0) {
-            showSavedIndicator = true
-            delay(1500)
-            showSavedIndicator = false
-        }
-    }
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -113,16 +91,15 @@ fun SettingsScreen(
                     .padding(padding)
                     .verticalScroll(scrollState)
                     .padding(bottom = 96.dp)
-                    .padding(horizontal = 20.dp),
+                    .padding(horizontal = 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 // Section 1: Timer Intervals
-                SettingsSectionHeader(title = "Timer Intervals", emoji = "⏱️")
+                SettingsSectionHeader(title = "Timer Intervals")
 
                 Surface(
-                    shape = RoundedCornerShape(24.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant,
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                    shape = RoundedCornerShape(20.dp),
+                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column {
@@ -134,7 +111,6 @@ fun SettingsScreen(
                             range = 10f..60f,
                             onValueChange = { 
                                 viewModel.updateFocusDuration(it)
-                                saveIndicatorTrigger++
                             }
                         )
                         SettingSliderCard(
@@ -145,7 +121,6 @@ fun SettingsScreen(
                             range = 1f..15f,
                             onValueChange = { 
                                 viewModel.updateShortBreakDuration(it)
-                                saveIndicatorTrigger++
                             }
                         )
                         SettingSliderCard(
@@ -157,7 +132,6 @@ fun SettingsScreen(
                             showDivider = false,
                             onValueChange = { 
                                 viewModel.updateLongBreakDuration(it)
-                                saveIndicatorTrigger++
                             }
                         )
                     }
@@ -166,12 +140,11 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // Section 2: Notifications & Sound
-                SettingsSectionHeader(title = "Notifications & Sound", emoji = "🔔")
+                SettingsSectionHeader(title = "Notifications & Sound")
 
                 Surface(
-                    shape = RoundedCornerShape(24.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant,
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                    shape = RoundedCornerShape(20.dp),
+                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column {
@@ -183,7 +156,6 @@ fun SettingsScreen(
                             checked = soundEnabled,
                             onCheckedChange = {
                                 viewModel.toggleSound(it)
-                                saveIndicatorTrigger++
                             }
                         )
                         SettingsSwitchCard(
@@ -194,7 +166,6 @@ fun SettingsScreen(
                             checked = vibrationEnabled,
                             onCheckedChange = {
                                 viewModel.toggleVibration(it)
-                                saveIndicatorTrigger++
                             }
                         )
                         SettingsSwitchCard(
@@ -206,7 +177,6 @@ fun SettingsScreen(
                             showDivider = false,
                             onCheckedChange = {
                                 viewModel.toggleAutoStartBreaks(it)
-                                saveIndicatorTrigger++
                             }
                         )
                     }
@@ -215,12 +185,11 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // Section 3: Theme & Personalization
-                SettingsSectionHeader(title = "Theme & Personalization", emoji = "🎨")
+                SettingsSectionHeader(title = "Theme & Personalization")
 
                 Surface(
-                    shape = RoundedCornerShape(24.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant,
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                    shape = RoundedCornerShape(20.dp),
+                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column {
@@ -228,7 +197,6 @@ fun SettingsScreen(
                             selectedTheme = themeMode,
                             onThemeSelected = {
                                 viewModel.setThemeMode(it)
-                                saveIndicatorTrigger++
                             },
                             showDivider = false
                         )
@@ -238,12 +206,11 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // Section 4: About & System
-                SettingsSectionHeader(title = "About & Reset", emoji = "ℹ️")
+                SettingsSectionHeader(title = "About & Reset")
 
                 Surface(
-                    shape = RoundedCornerShape(24.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant,
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                    shape = RoundedCornerShape(20.dp),
+                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(
@@ -285,7 +252,6 @@ fun SettingsScreen(
                         OutlinedButton(
                             onClick = {
                                 viewModel.resetToDefaults()
-                                saveIndicatorTrigger++
                             },
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(14.dp),
@@ -308,40 +274,6 @@ fun SettingsScreen(
                 }
             }
 
-            // Animated Settings Saved Toast Notification
-            AnimatedVisibility(
-                visible = showSavedIndicator,
-                enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
-                exit = slideOutVertically(targetOffsetY = { -it }) + fadeOut(),
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .padding(top = 8.dp)
-            ) {
-                Surface(
-                    shape = RoundedCornerShape(20.dp),
-                    color = MaterialTheme.colorScheme.primaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    tonalElevation = 6.dp,
-                    shadowElevation = 4.dp
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.CheckCircle,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "Settings Saved ✨",
-                            style = MaterialTheme.typography.labelLarge,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                }
-            }
         }
     }
 }
