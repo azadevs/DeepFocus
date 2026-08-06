@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:name=".application.DeepFocusApp"
@@ -47,6 +48,14 @@
             android:showOnLockScreen="true"
             android:launchMode="singleInstance"
             android:theme="@style/Theme.DeepFocus" />
+
+        <receiver
+            android:name=".presentation.service.BootCompletedReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
 
     </application>
 
