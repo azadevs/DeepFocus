@@ -10,7 +10,6 @@ import android.content.pm.ServiceInfo
 
 import android.os.Build
 import android.os.IBinder
-import android.os.PowerManager
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.azadevs.deepfocus.R
@@ -37,7 +36,7 @@ class FocusForegroundService : Service() {
     @Inject
     lateinit var controller: PomodoroController
 
-    private var wakeLock: PowerManager.WakeLock? = null
+
 
 
     private val serviceScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
@@ -65,24 +64,10 @@ class FocusForegroundService : Service() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createNotificationChannel()
         }
-        acquireWakeLock()
         observeTimer()
     }
 
-    private fun acquireWakeLock() {
-        val powerManager = getSystemService(POWER_SERVICE) as PowerManager
-        wakeLock = powerManager.newWakeLock(
-            PowerManager.PARTIAL_WAKE_LOCK,
-            "DeepFocus::TimerWakeLock"
-        )
-        wakeLock?.acquire()
-    }
 
-    private fun releaseWakeLock() {
-        if (wakeLock?.isHeld == true) {
-            wakeLock?.release()
-        }
-    }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
@@ -366,6 +351,5 @@ class FocusForegroundService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         serviceScope.cancel()
-        releaseWakeLock()
     }
 }
