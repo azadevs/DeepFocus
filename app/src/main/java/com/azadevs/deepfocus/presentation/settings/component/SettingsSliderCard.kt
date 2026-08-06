@@ -105,6 +105,10 @@ fun SettingSliderCard(
         Spacer(modifier = Modifier.height(4.dp))
 
         Slider(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 56.dp)
+                .height(36.dp),
             value = value.toFloat(),
             onValueChange = { newValue ->
                 val intValue = newValue.toInt()
