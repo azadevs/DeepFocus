@@ -179,6 +179,7 @@ class FocusForegroundService : Service() {
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(getString(R.string.notification_timer_title))
             .setOngoing(true)
+            .setOnlyAlertOnce(true)
             .setContentIntent(activityPendingIntent)
             .setDeleteIntent(deletePendingIntent)
             .setAutoCancel(false)
