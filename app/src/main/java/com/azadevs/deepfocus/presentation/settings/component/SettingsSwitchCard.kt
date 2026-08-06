@@ -86,4 +86,11 @@ fun SettingsSwitchCard(
             )
         )
     }
+    if (showDivider) {
+        HorizontalDivider(
+            modifier = Modifier.padding(horizontal = 20.dp),
+            thickness = 1.dp,
+            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+        )
+    }
 }

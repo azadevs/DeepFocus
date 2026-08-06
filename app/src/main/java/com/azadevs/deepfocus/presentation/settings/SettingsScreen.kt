@@ -102,7 +102,9 @@ fun SettingsScreen(
 
                 Surface(
                     shape = RoundedCornerShape(20.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                    color = MaterialTheme.colorScheme.surface,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
+                    shadowElevation = 2.dp,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column {
@@ -119,7 +121,7 @@ fun SettingsScreen(
                         SettingSliderCard(
                             title = stringResource(R.string.short_break),
                             icon = Icons.Outlined.Coffee,
-                            iconBgColor = Color(0xFFFF9800),
+                            iconBgColor = MaterialTheme.colorScheme.primary,
                             value = shortMins,
                             range = 1f..15f,
                             onValueChange = { 
@@ -129,7 +131,7 @@ fun SettingsScreen(
                         SettingSliderCard(
                             title = stringResource(R.string.long_break),
                             icon = Icons.Outlined.SelfImprovement,
-                            iconBgColor = Color(0xFF4CAF50),
+                            iconBgColor = MaterialTheme.colorScheme.primary,
                             value = longMins,
                             range = 5f..30f,
                             showDivider = false,
@@ -147,7 +149,9 @@ fun SettingsScreen(
 
                 Surface(
                     shape = RoundedCornerShape(20.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                    color = MaterialTheme.colorScheme.surface,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
+                    shadowElevation = 2.dp,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column {
@@ -155,7 +159,7 @@ fun SettingsScreen(
                             title = "Sound Alert",
                             subtitle = "Play audio chime when timer finishes",
                             icon = Icons.AutoMirrored.Outlined.VolumeUp,
-                            iconBgColor = Color(0xFF2196F3),
+                            iconBgColor = MaterialTheme.colorScheme.primary,
                             checked = soundEnabled,
                             onCheckedChange = {
                                 viewModel.toggleSound(it)
@@ -165,7 +169,7 @@ fun SettingsScreen(
                             title = "Vibration Alert",
                             subtitle = "Vibrate phone on phase completion",
                             icon = Icons.Outlined.Vibration,
-                            iconBgColor = Color(0xFF9C27B0),
+                            iconBgColor = MaterialTheme.colorScheme.primary,
                             checked = vibrationEnabled,
                             onCheckedChange = {
                                 viewModel.toggleVibration(it)
@@ -175,7 +179,7 @@ fun SettingsScreen(
                             title = "Auto-Start Breaks",
                             subtitle = "Start break timer automatically",
                             icon = Icons.Outlined.AutoMode,
-                            iconBgColor = Color(0xFF00BCD4),
+                            iconBgColor = MaterialTheme.colorScheme.primary,
                             checked = autoStartBreaks,
                             showDivider = false,
                             onCheckedChange = {
@@ -192,7 +196,9 @@ fun SettingsScreen(
 
                 Surface(
                     shape = RoundedCornerShape(20.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                    color = MaterialTheme.colorScheme.surface,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
+                    shadowElevation = 2.dp,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column {
@@ -213,7 +219,9 @@ fun SettingsScreen(
 
                 Surface(
                     shape = RoundedCornerShape(20.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                    color = MaterialTheme.colorScheme.surface,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
+                    shadowElevation = 2.dp,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(
