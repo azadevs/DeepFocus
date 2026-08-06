@@ -22,7 +22,7 @@ fun SettingsSectionHeader(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 12.dp, bottom = 8.dp, top = 24.dp)
+            .padding(start = 20.dp, end = 20.dp, top = 16.dp, bottom = 4.dp)
     ) {
         Text(
             text = title.uppercase(),

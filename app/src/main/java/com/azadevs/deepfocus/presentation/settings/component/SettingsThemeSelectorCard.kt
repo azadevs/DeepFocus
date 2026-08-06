@@ -51,21 +51,21 @@ fun SettingsThemeSelectorCard(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp, vertical = 16.dp)
+            .padding(horizontal = 20.dp, vertical = 12.dp)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
             Surface(
-                shape = RoundedCornerShape(12.dp),
-                color = Color(0xFFFF5722).copy(alpha = 0.2f),
-                modifier = Modifier.size(44.dp)
+                shape = RoundedCornerShape(10.dp),
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
+                modifier = Modifier.size(40.dp)
             ) {
                 Icon(
                     imageVector = Icons.Outlined.Palette,
                     contentDescription = null,
-                    tint = Color(0xFFFF5722),
+                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.padding(10.dp)
                 )
             }

@@ -97,8 +97,6 @@ fun SettingsScreen(
                     .padding(horizontal = 20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                SettingsSectionHeader(title = "Timer")
-
                 Surface(
                     shape = RoundedCornerShape(20.dp),
                     color = MaterialTheme.colorScheme.surface,
@@ -107,38 +105,25 @@ fun SettingsScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column {
+                        // Section 1: Timer
+                        SettingsSectionHeader(title = "Timer")
                         SettingsNavigationCard(
                             title = "Timer Intervals",
                             icon = Icons.Outlined.Timer,
                             iconBgColor = MaterialTheme.colorScheme.primary,
-                            showDivider = false,
+                            showDivider = true,
                             onClick = { navController.navigate(TimerSettingsRoute) }
                         )
-                    }
-                }
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Section 2: Notifications & Sound
-                SettingsSectionHeader(title = "Notifications & Sound")
-
-                Surface(
-                    shape = RoundedCornerShape(20.dp),
-                    color = MaterialTheme.colorScheme.surface,
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
-                    shadowElevation = 2.dp,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column {
+                        // Section 2: Notifications & Sound
+                        SettingsSectionHeader(title = "Notifications & Sound")
                         SettingsSwitchCard(
                             title = "Sound Alert",
                             subtitle = "Play audio chime when timer finishes",
                             icon = Icons.AutoMirrored.Outlined.VolumeUp,
                             iconBgColor = MaterialTheme.colorScheme.primary,
                             checked = soundEnabled,
-                            onCheckedChange = {
-                                viewModel.toggleSound(it)
-                            }
+                            onCheckedChange = { viewModel.toggleSound(it) }
                         )
                         SettingsSwitchCard(
                             title = "Vibration Alert",
@@ -146,9 +131,7 @@ fun SettingsScreen(
                             icon = Icons.Outlined.Vibration,
                             iconBgColor = MaterialTheme.colorScheme.primary,
                             checked = vibrationEnabled,
-                            onCheckedChange = {
-                                viewModel.toggleVibration(it)
-                            }
+                            onCheckedChange = { viewModel.toggleVibration(it) }
                         )
                         SettingsSwitchCard(
                             title = "Auto-Start Breaks",
@@ -156,38 +139,19 @@ fun SettingsScreen(
                             icon = Icons.Outlined.AutoMode,
                             iconBgColor = MaterialTheme.colorScheme.primary,
                             checked = autoStartBreaks,
-                            showDivider = false,
-                            onCheckedChange = {
-                                viewModel.toggleAutoStartBreaks(it)
-                            }
+                            showDivider = true,
+                            onCheckedChange = { viewModel.toggleAutoStartBreaks(it) }
                         )
-                    }
-                }
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Section 3: Theme & Personalization
-                SettingsSectionHeader(title = "Theme & Personalization")
-
-                Surface(
-                    shape = RoundedCornerShape(20.dp),
-                    color = MaterialTheme.colorScheme.surface,
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
-                    shadowElevation = 2.dp,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column {
+                        // Section 3: Theme & Personalization
+                        SettingsSectionHeader(title = "Theme & Personalization")
                         SettingsThemeSelectorCard(
                             selectedTheme = themeMode,
-                            onThemeSelected = {
-                                viewModel.setThemeMode(it)
-                            },
+                            onThemeSelected = { viewModel.setThemeMode(it) },
                             showDivider = false
                         )
                     }
                 }
-
-                Spacer(modifier = Modifier.height(16.dp))
 
                 Spacer(modifier = Modifier.height(32.dp))
 
