@@ -214,75 +214,13 @@ fun SettingsScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Section 4: About & System
-                SettingsSectionHeader(title = "About & Reset")
+                Spacer(modifier = Modifier.height(32.dp))
 
-                Surface(
-                    shape = RoundedCornerShape(20.dp),
-                    color = MaterialTheme.colorScheme.surface,
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
-                    shadowElevation = 2.dp,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column(
-                        modifier = Modifier.padding(20.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Surface(
-                                shape = RoundedCornerShape(12.dp),
-                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
-                                modifier = Modifier.padding(end = 12.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Outlined.Info,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.padding(10.dp)
-                                )
-                            }
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    text = "DeepFocus",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                Text(
-                                    text = "v1.0.0 • Developed by Azadevs",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        OutlinedButton(
-                            onClick = {
-                                viewModel.resetToDefaults()
-                            },
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(14.dp),
-                            colors = ButtonDefaults.outlinedButtonColors(
-                                contentColor = MaterialTheme.colorScheme.primary
-                            ),
-                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Outlined.Refresh,
-                                contentDescription = null
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = "Reset All Settings to Defaults",
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    }
-                }
+                Text(
+                    text = "DeepFocus v1.0.0",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                )
             }
 
         }
