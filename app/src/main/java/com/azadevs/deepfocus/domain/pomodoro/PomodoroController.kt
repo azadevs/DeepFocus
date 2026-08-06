@@ -77,6 +77,7 @@ class PomodoroController @Inject constructor(
     init {
         observeTimer()
         observeSettings()
+        restoreTimerState()
     }
 
     private fun observeSettings() {
@@ -108,16 +109,22 @@ class PomodoroController @Inject constructor(
     }
 
     fun start() {
-        val duration = durationFor(_state.value.phase)
+        val currentState = _state.value
+        val duration = durationFor(currentState.phase)
         phaseStartTime = System.currentTimeMillis()
 
-        _state.value = _state.value.copy(
+        _state.value = currentState.copy(
             remainingMillis = duration,
             phaseDurationMillis = duration,
             isRunning = true
         )
 
         timerManager.start(controllerScope, duration)
+
+        controllerScope.launch(Dispatchers.IO) {
+            timerManager.repo.savePhase(currentState.phase.name)
+            timerManager.repo.saveCycleIndex(currentState.cycleIndex)
+        }
 
         val intent = Intent(context, FocusForegroundService::class.java).apply {
             action = FocusForegroundService.ACTION_START
@@ -345,5 +352,44 @@ class PomodoroController @Inject constructor(
         timerManager.stop(controllerScope)
         
         moveToNextPhase()
+    }
+
+    private fun restoreTimerState() {
+        controllerScope.launch {
+            if (!timerManager.repo.isRunning()) return@launch
+
+            val savedEndTime = timerManager.repo.getSavedEndTime() ?: return@launch
+            val remaining = savedEndTime - System.currentTimeMillis()
+
+            if (remaining <= 0L) {
+                timerManager.repo.clear()
+                return@launch
+            }
+
+            val phaseName = timerManager.repo.getSavedPhase()
+            val phase = phaseName?.let {
+                try { PomodoroPhase.valueOf(it) } catch (_: Exception) { null }
+            } ?: PomodoroPhase.FOCUS
+
+            val cycleIndex = timerManager.repo.getSavedCycleIndex() ?: 1
+            val totalDuration = durationFor(phase)
+
+            _state.value = PomodoroState(
+                phase = phase,
+                cycleIndex = cycleIndex,
+                remainingMillis = remaining,
+                phaseDurationMillis = totalDuration,
+                isRunning = true,
+                isRinging = false
+            )
+
+            phaseStartTime = savedEndTime - totalDuration
+            timerManager.restoreIfNeeded(controllerScope)
+
+            val intent = Intent(context, FocusForegroundService::class.java).apply {
+                action = FocusForegroundService.ACTION_START
+            }
+            ContextCompat.startForegroundService(context, intent)
+        }
     }
 }

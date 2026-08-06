@@ -13,7 +13,7 @@ import javax.inject.Singleton
  */
 @Singleton
 class TimerManager @Inject constructor(
-    private val repo: TimerRepository
+    internal val repo: TimerRepository
 ) {
     private val engine = TimerEngine()
 

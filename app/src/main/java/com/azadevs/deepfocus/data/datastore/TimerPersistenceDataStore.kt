@@ -7,6 +7,7 @@ import com.azadevs.deepfocus.domain.repository.TimerRepository
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 import javax.inject.Singleton
+
 private val Context.timerDataStore by preferencesDataStore("timer_store")
 
 @Singleton
@@ -17,6 +18,8 @@ class TimerPersistenceDataStore @Inject constructor(
     private object Keys {
         val END_TIME = longPreferencesKey("end_time")
         val IS_RUNNING = booleanPreferencesKey("is_running")
+        val PHASE = stringPreferencesKey("phase")
+        val CYCLE_INDEX = intPreferencesKey("cycle_index")
     }
 
     override suspend fun saveEndTime(endTimeMillis: Long) {
@@ -26,10 +29,24 @@ class TimerPersistenceDataStore @Inject constructor(
         }
     }
 
+    override suspend fun savePhase(phase: String) {
+        context.timerDataStore.edit {
+            it[Keys.PHASE] = phase
+        }
+    }
+
+    override suspend fun saveCycleIndex(cycleIndex: Int) {
+        context.timerDataStore.edit {
+            it[Keys.CYCLE_INDEX] = cycleIndex
+        }
+    }
+
     override suspend fun clear() {
         context.timerDataStore.edit {
             it.remove(Keys.END_TIME)
             it.remove(Keys.IS_RUNNING)
+            it.remove(Keys.PHASE)
+            it.remove(Keys.CYCLE_INDEX)
         }
     }
 
@@ -38,8 +55,18 @@ class TimerPersistenceDataStore @Inject constructor(
         return prefs[Keys.END_TIME]
     }
 
+    override suspend fun getSavedPhase(): String? {
+        val prefs = context.timerDataStore.data.first()
+        return prefs[Keys.PHASE]
+    }
+
+    override suspend fun getSavedCycleIndex(): Int? {
+        val prefs = context.timerDataStore.data.first()
+        return prefs[Keys.CYCLE_INDEX]
+    }
+
     override suspend fun isRunning(): Boolean {
         val prefs = context.timerDataStore.data.first()
         return prefs[Keys.IS_RUNNING] ?: false
     }
-}
+}
