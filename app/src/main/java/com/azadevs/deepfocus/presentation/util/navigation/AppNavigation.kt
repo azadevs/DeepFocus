@@ -17,6 +17,7 @@ import com.azadevs.deepfocus.presentation.MainViewModel
 import com.azadevs.deepfocus.presentation.onboarding.OnboardingScreen
 import com.azadevs.deepfocus.presentation.pomodoro.PomodoroScreen
 import com.azadevs.deepfocus.presentation.settings.SettingsScreen
+import com.azadevs.deepfocus.presentation.settings.TimerIntervalsScreen
 import com.azadevs.deepfocus.presentation.statistics.StatisticsScreen
 import com.azadevs.deepfocus.presentation.tasks.TasksScreen
 
@@ -57,7 +58,10 @@ fun AppNavigation(
                     StatisticsScreen()
                 }
                 composable<SettingsRoute> {
-                    SettingsScreen()
+                    SettingsScreen(navController = navController)
+                }
+                composable<TimerSettingsRoute> {
+                    TimerIntervalsScreen(navController = navController)
                 }
             }
 

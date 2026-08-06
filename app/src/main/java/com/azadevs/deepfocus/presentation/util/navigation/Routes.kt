@@ -18,3 +18,6 @@ object StatisticsRoute
 
 @Serializable
 object SettingsRoute
+
+@Serializable
+object TimerSettingsRoute

@@ -45,12 +45,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import com.azadevs.deepfocus.R
-import com.azadevs.deepfocus.presentation.settings.component.SettingSliderCard
+import com.azadevs.deepfocus.presentation.settings.component.SettingsNavigationCard
 import com.azadevs.deepfocus.presentation.settings.component.SettingsSectionHeader
 import com.azadevs.deepfocus.presentation.settings.component.SettingsSwitchCard
 import com.azadevs.deepfocus.presentation.settings.component.SettingsThemeSelectorCard
 import com.azadevs.deepfocus.presentation.settings.viewmodel.SettingsViewModel
+import com.azadevs.deepfocus.presentation.util.navigation.TimerSettingsRoute
 
 /**
  * Created by : Azamat Kalmurzaev
@@ -59,11 +61,9 @@ import com.azadevs.deepfocus.presentation.settings.viewmodel.SettingsViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
+    navController: NavController,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
-    val focusMins by viewModel.focusMinutes.collectAsStateWithLifecycle()
-    val shortMins by viewModel.shortBreakMinutes.collectAsStateWithLifecycle()
-    val longMins by viewModel.longBreakMinutes.collectAsStateWithLifecycle()
     val soundEnabled by viewModel.soundEnabled.collectAsStateWithLifecycle()
     val vibrationEnabled by viewModel.vibrationEnabled.collectAsStateWithLifecycle()
     val autoStartBreaks by viewModel.autoStartBreaks.collectAsStateWithLifecycle()
@@ -97,8 +97,7 @@ fun SettingsScreen(
                     .padding(horizontal = 20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Section 1: Timer Intervals
-                SettingsSectionHeader(title = "Timer Intervals")
+                SettingsSectionHeader(title = "Timer")
 
                 Surface(
                     shape = RoundedCornerShape(20.dp),
@@ -108,36 +107,12 @@ fun SettingsScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column {
-                        SettingSliderCard(
-                            title = stringResource(R.string.focus_time),
+                        SettingsNavigationCard(
+                            title = "Timer Intervals",
                             icon = Icons.Outlined.Timer,
                             iconBgColor = MaterialTheme.colorScheme.primary,
-                            value = focusMins,
-                            range = 10f..60f,
-                            onValueChange = { 
-                                viewModel.updateFocusDuration(it)
-                            }
-                        )
-                        SettingSliderCard(
-                            title = stringResource(R.string.short_break),
-                            icon = Icons.Outlined.Coffee,
-                            iconBgColor = MaterialTheme.colorScheme.primary,
-                            value = shortMins,
-                            range = 1f..15f,
-                            onValueChange = { 
-                                viewModel.updateShortBreakDuration(it)
-                            }
-                        )
-                        SettingSliderCard(
-                            title = stringResource(R.string.long_break),
-                            icon = Icons.Outlined.SelfImprovement,
-                            iconBgColor = MaterialTheme.colorScheme.primary,
-                            value = longMins,
-                            range = 5f..30f,
                             showDivider = false,
-                            onValueChange = { 
-                                viewModel.updateLongBreakDuration(it)
-                            }
+                            onClick = { navController.navigate(TimerSettingsRoute) }
                         )
                     }
                 }
