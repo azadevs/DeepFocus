@@ -2,6 +2,7 @@ package com.azadevs.deepfocus.presentation.tasks
 
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -89,11 +91,16 @@ fun TasksScreen(
             }
         }
     ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.TopCenter
         ) {
+            Column(
+                modifier = Modifier
+                    .widthIn(max = 600.dp)
+                    .fillMaxSize()
+                    .padding(padding)
+            ) {
             // Category Filter Row
             Row(
                 modifier = Modifier
@@ -142,7 +149,7 @@ fun TasksScreen(
                         .padding(horizontal = 20.dp)
                 ) {
                     Text(
-                        text = "No tasks found in this category. Click + to add your first task!",
+                        text = stringResource(R.string.empty_tasks_category),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center,
@@ -175,6 +182,7 @@ fun TasksScreen(
                         )
                     }
                 }
+            }
             }
         }
     }

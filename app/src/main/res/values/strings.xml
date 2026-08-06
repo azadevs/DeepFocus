@@ -78,6 +78,7 @@
     <string name="create_task">Create Task</string>
     <string name="task_name_hint">Task name (e.g. Coding)</string>
     <string name="no_task_selected">General Focus (No Task)</string>
+    <string name="empty_tasks_category">No tasks found in this category. Click + to add your first task!</string>
 
     <string name="tasks_focus_breakdown_title">Focus Time by Task</string>
     <string name="tasks_focus_breakdown_subtitle">Detailed breakdown of time dedicated to your tasks</string>
