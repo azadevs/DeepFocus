@@ -43,10 +43,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.azadevs.deepfocus.presentation.settings.component.WheelNumberPicker
 import com.azadevs.deepfocus.presentation.settings.viewmodel.SettingsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -180,19 +180,10 @@ fun TimerIntervalsScreen(
                 
                 var currentValue by remember { mutableIntStateOf(pickerValue) }
                 
-                AndroidView(
-                    factory = { context ->
-                        NumberPicker(context).apply {
-                            minValue = pickerRange.first
-                            maxValue = pickerRange.last
-                            value = currentValue
-                            wrapSelectorWheel = false
-                            setOnValueChangedListener { _, _, newVal ->
-                                currentValue = newVal
-                            }
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth()
+                WheelNumberPicker(
+                    items = pickerRange.toList(),
+                    initialValue = currentValue,
+                    onValueChange = { currentValue = it }
                 )
                 
                 Spacer(modifier = Modifier.height(32.dp))
