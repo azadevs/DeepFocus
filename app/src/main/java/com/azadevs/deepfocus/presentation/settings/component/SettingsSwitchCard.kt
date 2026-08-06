@@ -40,12 +40,12 @@ fun SettingsSwitchCard(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp, vertical = 14.dp)
+            .padding(horizontal = 20.dp, vertical = 12.dp)
     ) {
         Surface(
-            shape = RoundedCornerShape(12.dp),
-            color = iconBgColor.copy(alpha = 0.2f),
-            modifier = Modifier.size(44.dp)
+            shape = RoundedCornerShape(10.dp),
+            color = iconBgColor.copy(alpha = 0.15f),
+            modifier = Modifier.size(40.dp)
         ) {
             Icon(
                 imageVector = icon,

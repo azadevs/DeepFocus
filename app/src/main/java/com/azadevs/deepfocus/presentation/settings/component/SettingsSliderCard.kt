@@ -53,22 +53,22 @@ fun SettingSliderCard(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp, vertical = 16.dp)
+            .padding(horizontal = 20.dp, vertical = 12.dp)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
             Surface(
-                shape = RoundedCornerShape(12.dp),
-                color = iconBgColor.copy(alpha = 0.2f),
-                modifier = Modifier.size(48.dp)
+                shape = RoundedCornerShape(10.dp),
+                color = iconBgColor.copy(alpha = 0.15f),
+                modifier = Modifier.size(40.dp)
             ) {
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
                     tint = iconBgColor,
-                    modifier = Modifier.padding(12.dp)
+                    modifier = Modifier.padding(10.dp)
                 )
             }
             Spacer(modifier = Modifier.width(16.dp))
@@ -95,14 +95,14 @@ fun SettingSliderCard(
             ) { targetValue ->
                 Text(
                     text = "$targetValue min",
-                    style = MaterialTheme.typography.titleLarge,
+                    style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.ExtraBold
+                    fontWeight = FontWeight.Bold
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(4.dp))
 
         Slider(
             value = value.toFloat(),
@@ -121,8 +121,6 @@ fun SettingSliderCard(
                 inactiveTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
             )
         )
-        
-        Spacer(modifier = Modifier.height(8.dp))
     }
     if (showDivider) {
         HorizontalDivider(
