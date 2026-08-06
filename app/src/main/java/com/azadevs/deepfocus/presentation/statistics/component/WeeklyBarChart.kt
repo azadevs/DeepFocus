@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.res.stringResource
@@ -47,14 +48,15 @@ fun WeeklyBarChart(stats: List<DailyStat>) {
         label = "chart_anim"
     )
 
-    val barColor = MaterialTheme.colorScheme.primary
+    val primaryColor = MaterialTheme.colorScheme.primary
+    val primaryContainer = MaterialTheme.colorScheme.primaryContainer
     val trackColor = MaterialTheme.colorScheme.surfaceVariant
     val textColor = MaterialTheme.colorScheme.onSurfaceVariant
     val gridColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
 
     val textMeasurer = rememberTextMeasurer()
     val textStyle = MaterialTheme.typography.labelMedium.copy(color = textColor, fontWeight = FontWeight.Medium)
-    val valStyle = textStyle.copy(fontWeight = FontWeight.Bold, color = barColor)
+    val valStyle = textStyle.copy(fontWeight = FontWeight.Bold, color = primaryColor)
 
     val dayLayouts = remember(stats, textStyle) {
         stats.map { textMeasurer.measure(it.dayName, textStyle) }
@@ -117,10 +119,15 @@ fun WeeklyBarChart(stats: List<DailyStat>) {
                 val fillHeight = (stat.minutes.toFloat() / maxMinutes) * chartHeight * animationProgress
                 val yPos = chartHeight - fillHeight
 
-                // Asosiy Ustun (Solid color)
+                // Asosiy Ustun (Gradient color)
                 if (fillHeight > 0) {
+                    val gradientBrush = Brush.verticalGradient(
+                        colors = listOf(primaryColor, primaryContainer),
+                        startY = yPos,
+                        endY = yPos + fillHeight
+                    )
                     drawRoundRect(
-                        color = barColor,
+                        brush = gradientBrush,
                         topLeft = Offset(xPos, yPos),
                         size = Size(barWidth, fillHeight),
                         cornerRadius = CornerRadius(50f, 50f)
