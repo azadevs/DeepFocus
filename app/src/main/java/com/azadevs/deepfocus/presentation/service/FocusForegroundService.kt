@@ -86,7 +86,12 @@ class FocusForegroundService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
-        when (intent?.action) {
+        if (intent?.action == null) {
+            stopSelf()
+            return START_NOT_STICKY
+        }
+
+        when (intent.action) {
             ACTION_START, ACTION_FOREGROUND -> {
                 if (!isForegroundStarted) {
                     try {
@@ -135,7 +140,7 @@ class FocusForegroundService : Service() {
             }
         }
 
-        return START_STICKY
+        return START_NOT_STICKY
     }
 
 
