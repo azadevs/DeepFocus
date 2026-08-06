@@ -1,8 +1,8 @@
 package com.azadevs.deepfocus.presentation.settings
 
 import android.widget.NumberPicker
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,8 +10,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.Coffee
+import androidx.compose.material.icons.outlined.SelfImprovement
+import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -33,6 +39,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -77,15 +85,30 @@ fun TimerIntervalsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
+                .padding(horizontal = 20.dp)
                 .padding(top = 16.dp)
         ) {
+            Text(
+                text = "Customize Durations",
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 12.dp, start = 8.dp)
+            )
+
             Surface(
-                color = MaterialTheme.colorScheme.background
+                shape = RoundedCornerShape(20.dp),
+                color = MaterialTheme.colorScheme.surface,
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
+                shadowElevation = 2.dp,
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Column {
                     TimerItem(
                         title = "Focus Time",
                         value = focusMins,
+                        icon = Icons.Outlined.Timer,
+                        iconBgColor = MaterialTheme.colorScheme.primary,
                         onClick = {
                             pickerTitle = "Focus Time"
                             pickerValue = focusMins
@@ -97,6 +120,8 @@ fun TimerIntervalsScreen(
                     TimerItem(
                         title = "Short Break",
                         value = shortMins,
+                        icon = Icons.Outlined.Coffee,
+                        iconBgColor = MaterialTheme.colorScheme.primary,
                         onClick = {
                             pickerTitle = "Short Break"
                             pickerValue = shortMins
@@ -108,6 +133,8 @@ fun TimerIntervalsScreen(
                     TimerItem(
                         title = "Long Break",
                         value = longMins,
+                        icon = Icons.Outlined.SelfImprovement,
+                        iconBgColor = MaterialTheme.colorScheme.primary,
                         showDivider = false,
                         onClick = {
                             pickerTitle = "Long Break"
@@ -119,6 +146,15 @@ fun TimerIntervalsScreen(
                     )
                 }
             }
+            
+            Spacer(modifier = Modifier.height(24.dp))
+            
+            Text(
+                text = "Changes are applied to the next session.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                modifier = Modifier.padding(start = 8.dp)
+            )
         }
     }
 
@@ -168,7 +204,7 @@ fun TimerIntervalsScreen(
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Save")
+                    Text("Save", fontWeight = FontWeight.Bold)
                 }
             }
         }
@@ -179,31 +215,51 @@ fun TimerIntervalsScreen(
 private fun TimerItem(
     title: String,
     value: Int,
+    icon: ImageVector,
+    iconBgColor: Color,
     showDivider: Boolean = true,
     onClick: () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-    ) {
+    Column {
         Row(
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+                .clickable(onClick = onClick)
+                .padding(horizontal = 20.dp, vertical = 12.dp)
         ) {
+            Surface(
+                shape = RoundedCornerShape(10.dp),
+                color = iconBgColor.copy(alpha = 0.15f),
+                modifier = Modifier.size(40.dp)
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = iconBgColor,
+                    modifier = Modifier.padding(10.dp)
+                )
+            }
+            Spacer(modifier = Modifier.width(16.dp))
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleMedium
-            )
-            Text(
-                text = "$value min",
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.weight(1f)
             )
+            
+            Surface(
+                shape = RoundedCornerShape(16.dp),
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+            ) {
+                Text(
+                    text = "$value min",
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                )
+            }
         }
         if (showDivider) {
             HorizontalDivider(
