@@ -40,4 +40,8 @@ interface SettingsRepository {
 
     suspend fun setThemeMode(mode: String)
 
+    fun getAmbientSoundMode(): Flow<String>
+
+    suspend fun setAmbientSoundMode(mode: String)
+
 }

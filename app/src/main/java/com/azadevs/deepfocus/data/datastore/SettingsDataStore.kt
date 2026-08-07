@@ -27,6 +27,7 @@ class SettingsDataStore(
         val VIBRATION_ENABLED = booleanPreferencesKey("vibration_enabled")
         val AUTO_START_BREAKS = booleanPreferencesKey("auto_start_breaks")
         val THEME_MODE = stringPreferencesKey("theme_mode")
+        val AMBIENT_SOUND_MODE = stringPreferencesKey("ambient_sound_mode")
     }
 
     val focusDuration = context.dataStore.data.map { preferences ->
@@ -106,6 +107,16 @@ class SettingsDataStore(
     suspend fun setThemeMode(value: String) {
         context.dataStore.edit { preferences ->
             preferences[Keys.THEME_MODE] = value
+        }
+    }
+
+    val ambientSoundMode = context.dataStore.data.map { preferences ->
+        preferences[Keys.AMBIENT_SOUND_MODE] ?: "NONE"
+    }
+
+    suspend fun setAmbientSoundMode(value: String) {
+        context.dataStore.edit { preferences ->
+            preferences[Keys.AMBIENT_SOUND_MODE] = value
         }
     }
 

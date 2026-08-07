@@ -46,6 +46,15 @@ class ProdSettingsRepository @Inject constructor(
 
     override fun getThemeMode(): Flow<String> = dataStore.themeMode
 
-    override suspend fun setThemeMode(mode: String) = dataStore.setThemeMode(mode)
+    override suspend fun setThemeMode(mode: String) {
+        dataStore.setThemeMode(mode)
+    }
 
+    override fun getAmbientSoundMode(): Flow<String> {
+        return dataStore.ambientSoundMode
+    }
+
+    override suspend fun setAmbientSoundMode(mode: String) {
+        dataStore.setAmbientSoundMode(mode)
+    }
 }
