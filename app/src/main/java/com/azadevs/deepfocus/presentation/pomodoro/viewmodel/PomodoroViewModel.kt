@@ -6,11 +6,13 @@ import com.azadevs.deepfocus.domain.model.PomodoroState
 import com.azadevs.deepfocus.domain.model.Task
 import com.azadevs.deepfocus.domain.pomodoro.PomodoroController
 import com.azadevs.deepfocus.domain.usecase.DeepFocusUseCases
+import com.azadevs.deepfocus.domain.model.AmbientSoundMode
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 /**
@@ -31,6 +33,10 @@ class PomodoroViewModel @Inject constructor(
 
     val longBreakDuration: StateFlow<Int> = useCases.getLongBreakDuration()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 15)
+        
+    val ambientSoundMode: StateFlow<AmbientSoundMode> = useCases.getAmbientSoundMode()
+        .map { AmbientSoundMode.fromString(it) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), AmbientSoundMode.NONE)
 
     val state: StateFlow<PomodoroState> = controller.state
 
@@ -41,6 +47,12 @@ class PomodoroViewModel @Inject constructor(
 
     fun selectTask(task: Task?) {
         controller.selectTask(task)
+    }
+
+    fun setAmbientSoundMode(mode: AmbientSoundMode) {
+        viewModelScope.launch {
+            useCases.setAmbientSoundMode(mode.name)
+        }
     }
 
     fun addNewTask(title: String, colorHex: String = "#FF5252") {

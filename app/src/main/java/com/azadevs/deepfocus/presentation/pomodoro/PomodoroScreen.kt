@@ -33,6 +33,7 @@ import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.Stop
+import androidx.compose.material.icons.outlined.Headphones
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -103,9 +104,13 @@ fun PomodoroScreen(
     val longTime by viewModel.longBreakDuration.collectAsStateWithLifecycle()
     val tasks by viewModel.tasks.collectAsStateWithLifecycle()
     val selectedTask by viewModel.selectedTask.collectAsStateWithLifecycle()
+    val ambientSoundMode by viewModel.ambientSoundMode.collectAsStateWithLifecycle()
 
     var showTaskBottomSheet by remember { mutableStateOf(false) }
+    var showAmbientSoundBottomSheet by remember { mutableStateOf(false) }
+    
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val ambientSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     val cycleIndex by remember { derivedStateOf { stateState.value.cycleIndex } }
     val phase by remember { derivedStateOf { stateState.value.phase } }
@@ -174,9 +179,21 @@ fun PomodoroScreen(
         )
     }
 
+    if (showAmbientSoundBottomSheet) {
+        com.azadevs.deepfocus.presentation.pomodoro.component.AmbientSoundBottomSheet(
+            sheetState = ambientSheetState,
+            selectedMode = ambientSoundMode,
+            onModeSelect = { viewModel.setAmbientSoundMode(it); showAmbientSoundBottomSheet = false },
+            onDismissRequest = { showAmbientSoundBottomSheet = false }
+        )
+    }
+
     Scaffold(
         topBar = {
-            PomodoroTopBar(cycleIndex = cycleIndex)
+            PomodoroTopBar(
+                cycleIndex = cycleIndex,
+                onAmbientSoundClick = { showAmbientSoundBottomSheet = true }
+            )
         },
         containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
@@ -244,6 +261,7 @@ fun PomodoroScreen(
 @Composable
 private fun PomodoroTopBar(
     cycleIndex: Int,
+    onAmbientSoundClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     TopAppBar(
@@ -260,6 +278,13 @@ private fun PomodoroTopBar(
             containerColor = Color.Transparent
         ),
         actions = {
+            androidx.compose.material3.IconButton(onClick = onAmbientSoundClick) {
+                Icon(
+                    imageVector = Icons.Outlined.Headphones,
+                    contentDescription = "Ambient Sound",
+                    tint = MaterialTheme.colorScheme.onBackground
+                )
+            }
             Surface(
                 modifier = Modifier.padding(end = 12.dp),
                 shape = RoundedCornerShape(16.dp),
