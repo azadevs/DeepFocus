@@ -9,4 +9,7 @@ interface TimerRepository {
     suspend fun getSavedPhase(): String?
     suspend fun getSavedCycleIndex(): Int?
     suspend fun isRunning(): Boolean
+    suspend fun hasSavedState(): Boolean
+    suspend fun savePausedTime(remainingMillis: Long)
+    suspend fun getPausedTime(): Long?
 }

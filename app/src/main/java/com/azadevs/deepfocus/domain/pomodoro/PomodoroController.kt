@@ -158,7 +158,7 @@ class PomodoroController @Inject constructor(
 
     fun pause() {
         ambientSoundPlayer.pause()
-        timerManager.pause()
+        timerManager.pause(controllerScope)
         _state.value = _state.value.copy(isRunning = false)
     }
 
@@ -184,6 +184,10 @@ class PomodoroController @Inject constructor(
             isRunning = false,
             isRinging = false
         )
+        val intent = Intent(context, FocusForegroundService::class.java).apply {
+            action = FocusForegroundService.ACTION_STOP
+        }
+        context.startService(intent)
     }
 
     private fun observeTimer() {
@@ -387,14 +391,21 @@ class PomodoroController @Inject constructor(
 
     private fun restoreTimerState() {
         controllerScope.launch {
-            if (!timerManager.repo.isRunning()) return@launch
+            if (!timerManager.repo.hasSavedState()) return@launch
 
-            val savedEndTime = timerManager.repo.getSavedEndTime() ?: return@launch
-            val remaining = savedEndTime - System.currentTimeMillis()
+            val isRunning = timerManager.repo.isRunning()
+            val remaining: Long
 
-            if (remaining <= 0L) {
-                timerManager.repo.clear()
-                return@launch
+            if (isRunning) {
+                val savedEndTime = timerManager.repo.getSavedEndTime() ?: return@launch
+                remaining = savedEndTime - System.currentTimeMillis()
+                if (remaining <= 0L) {
+                    timerManager.repo.clear()
+                    return@launch
+                }
+                phaseStartTime = savedEndTime - durationFor(timerManager.repo.getSavedPhase()?.let { PomodoroPhase.valueOf(it) } ?: PomodoroPhase.FOCUS)
+            } else {
+                remaining = timerManager.repo.getPausedTime() ?: return@launch
             }
 
             val phaseName = timerManager.repo.getSavedPhase()
@@ -410,17 +421,18 @@ class PomodoroController @Inject constructor(
                 cycleIndex = cycleIndex,
                 remainingMillis = remaining,
                 phaseDurationMillis = totalDuration,
-                isRunning = true,
+                isRunning = isRunning,
                 isRinging = false
             )
 
-            phaseStartTime = savedEndTime - totalDuration
             timerManager.restoreIfNeeded(controllerScope)
 
-            val intent = Intent(context, FocusForegroundService::class.java).apply {
-                action = FocusForegroundService.ACTION_START
+            if (timerManager.repo.isRunning()) {
+                val intent = Intent(context, FocusForegroundService::class.java).apply {
+                    action = FocusForegroundService.ACTION_START
+                }
+                ContextCompat.startForegroundService(context, intent)
             }
-            ContextCompat.startForegroundService(context, intent)
         }
     }
 }

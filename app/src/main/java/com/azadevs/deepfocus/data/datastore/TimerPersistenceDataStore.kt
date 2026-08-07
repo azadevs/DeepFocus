@@ -20,12 +20,14 @@ class TimerPersistenceDataStore @Inject constructor(
         val IS_RUNNING = booleanPreferencesKey("is_running")
         val PHASE = stringPreferencesKey("phase")
         val CYCLE_INDEX = intPreferencesKey("cycle_index")
+        val PAUSED_TIME = longPreferencesKey("paused_time")
     }
 
     override suspend fun saveEndTime(endTimeMillis: Long) {
         context.timerDataStore.edit {
             it[Keys.END_TIME] = endTimeMillis
             it[Keys.IS_RUNNING] = true
+            it.remove(Keys.PAUSED_TIME)
         }
     }
 
@@ -47,6 +49,7 @@ class TimerPersistenceDataStore @Inject constructor(
             it.remove(Keys.IS_RUNNING)
             it.remove(Keys.PHASE)
             it.remove(Keys.CYCLE_INDEX)
+            it.remove(Keys.PAUSED_TIME)
         }
     }
 
@@ -68,5 +71,23 @@ class TimerPersistenceDataStore @Inject constructor(
     override suspend fun isRunning(): Boolean {
         val prefs = context.timerDataStore.data.first()
         return prefs[Keys.IS_RUNNING] ?: false
+    }
+
+    override suspend fun hasSavedState(): Boolean {
+        val prefs = context.timerDataStore.data.first()
+        return prefs.contains(Keys.END_TIME) || prefs.contains(Keys.PAUSED_TIME)
+    }
+
+    override suspend fun savePausedTime(remainingMillis: Long) {
+        context.timerDataStore.edit {
+            it[Keys.PAUSED_TIME] = remainingMillis
+            it[Keys.IS_RUNNING] = false
+            it.remove(Keys.END_TIME)
+        }
+    }
+
+    override suspend fun getPausedTime(): Long? {
+        val prefs = context.timerDataStore.data.first()
+        return prefs[Keys.PAUSED_TIME]
     }
 }

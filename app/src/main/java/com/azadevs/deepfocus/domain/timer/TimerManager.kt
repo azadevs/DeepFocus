@@ -49,14 +49,20 @@ class TimerManager @Inject constructor(
         )
     }
 
-    fun pause() {
+    fun pause(scope: CoroutineScope) {
         engine.cancel()
         remainingAfterPause = endTime - System.currentTimeMillis()
         _timerState.value = TimerState.Paused(remainingAfterPause)
+        scope.launch(Dispatchers.IO) {
+            repo.savePausedTime(remainingAfterPause)
+        }
     }
 
     fun resume(scope: CoroutineScope) {
         endTime = System.currentTimeMillis() + remainingAfterPause
+        scope.launch(Dispatchers.IO) {
+            repo.saveEndTime(endTime)
+        }
         run(scope)
     }
 
@@ -77,9 +83,21 @@ class TimerManager @Inject constructor(
     }
 
     suspend fun restoreIfNeeded(scope: CoroutineScope) {
-        if (!repo.isRunning()) return
-        val savedEndTime = repo.getSavedEndTime() ?: return
-        endTime = savedEndTime
-        run(scope)
+        if (repo.isRunning()) {
+            val savedEndTime = repo.getSavedEndTime() ?: return
+            endTime = savedEndTime
+            val remaining = endTime - System.currentTimeMillis()
+            if (remaining > 0) {
+                run(scope)
+            } else {
+                finish(scope)
+            }
+        } else {
+            val pausedTime = repo.getPausedTime()
+            if (pausedTime != null && pausedTime > 0) {
+                remainingAfterPause = pausedTime
+                _timerState.value = TimerState.Paused(pausedTime)
+            }
+        }
     }
 }
