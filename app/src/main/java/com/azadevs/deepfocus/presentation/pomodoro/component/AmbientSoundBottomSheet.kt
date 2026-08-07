@@ -16,6 +16,7 @@ import androidx.compose.material.icons.outlined.Cloud
 import androidx.compose.material.icons.outlined.Forest
 import androidx.compose.material.icons.outlined.Headphones
 import androidx.compose.material.icons.outlined.LocalCafe
+import androidx.compose.material.icons.outlined.LocalFireDepartment
 import androidx.compose.material.icons.outlined.WaterDrop
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -104,10 +105,10 @@ fun AmbientSoundBottomSheet(
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
 
             AmbientSoundItem(
-                mode = AmbientSoundMode.WHITE_NOISE,
-                icon = Icons.Outlined.Cloud,
-                selected = selectedMode == AmbientSoundMode.WHITE_NOISE,
-                onClick = { onModeSelect(AmbientSoundMode.WHITE_NOISE) },
+                mode = AmbientSoundMode.FIRE,
+                icon = Icons.Outlined.LocalFireDepartment,
+                selected = selectedMode == AmbientSoundMode.FIRE,
+                onClick = { onModeSelect(AmbientSoundMode.FIRE) },
                 showDivider = false
             )
         }

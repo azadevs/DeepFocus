@@ -50,7 +50,7 @@ class AmbientSoundPlayer(private val context: Context) {
             AmbientSoundMode.RAIN -> R.raw.rain
             AmbientSoundMode.FOREST -> R.raw.forest
             AmbientSoundMode.CAFE -> R.raw.cafe
-            AmbientSoundMode.WHITE_NOISE -> R.raw.white_noise
+            AmbientSoundMode.FIRE -> R.raw.fire
             AmbientSoundMode.NONE -> return
         }
 

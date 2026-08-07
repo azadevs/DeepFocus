@@ -5,11 +5,27 @@ enum class AmbientSoundMode(val title: String) {
     RAIN("Rain"),
     FOREST("Forest"),
     CAFE("Cafe"),
-    WHITE_NOISE("White Noise");
+    FIRE("Fire");
     
     companion object {
         fun fromString(value: String): AmbientSoundMode {
-            return entries.find { it.name == value } ?: NONE
+            return when (value.lowercase()) {
+                "rain" -> RAIN
+                "forest" -> FOREST
+                "cafe" -> CAFE
+                "fire" -> FIRE
+                else -> NONE
+            }
+        }
+    }
+
+    override fun toString(): String {
+        return when (this) {
+            RAIN -> "rain"
+            FOREST -> "forest"
+            CAFE -> "cafe"
+            FIRE -> "fire"
+            NONE -> "none"
         }
     }
 }
