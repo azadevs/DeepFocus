@@ -71,4 +71,5 @@ dependencies {
     implementation(libs.androidx.hilt.lifecycle.viewmodel.compose)
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.core.splashscreen)
+    implementation("androidx.media3:media3-exoplayer:1.2.1")
 }

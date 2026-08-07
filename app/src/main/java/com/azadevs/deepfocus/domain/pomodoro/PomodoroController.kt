@@ -22,7 +22,9 @@ import com.azadevs.deepfocus.domain.model.TimerState
 import com.azadevs.deepfocus.domain.repository.FocusRepository
 import com.azadevs.deepfocus.domain.timer.TimerManager
 import com.azadevs.deepfocus.domain.usecase.DeepFocusUseCases
+import com.azadevs.deepfocus.presentation.service.AmbientSoundPlayer
 import com.azadevs.deepfocus.presentation.service.FocusForegroundService
+import com.azadevs.deepfocus.domain.model.AmbientSoundMode
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -45,7 +47,8 @@ class PomodoroController @Inject constructor(
     @param:ApplicationContext private val context: Context,
     private val timerManager: TimerManager,
     private val focusRepository: FocusRepository,
-    private val useCases: DeepFocusUseCases
+    private val useCases: DeepFocusUseCases,
+    private val ambientSoundPlayer: AmbientSoundPlayer
 ) {
     private var config = PomodoroConfig()
 
@@ -73,11 +76,27 @@ class PomodoroController @Inject constructor(
     private val controllerScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     private val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
     private var audioFocusRequest: AudioFocusRequest? = null
+    
+    private var currentAmbientSoundMode = AmbientSoundMode.NONE
 
     init {
         observeTimer()
         observeSettings()
+        observeAmbientSound()
         restoreTimerState()
+    }
+
+    private fun observeAmbientSound() {
+        controllerScope.launch {
+            useCases.getAmbientSoundMode().collect { modeStr ->
+                currentAmbientSoundMode = AmbientSoundMode.fromString(modeStr)
+                if (_state.value.isRunning && _state.value.phase == PomodoroPhase.FOCUS) {
+                    ambientSoundPlayer.play(currentAmbientSoundMode)
+                } else {
+                    ambientSoundPlayer.stop()
+                }
+            }
+        }
     }
 
     private fun observeSettings() {
@@ -131,9 +150,14 @@ class PomodoroController @Inject constructor(
             putExtra(FocusForegroundService.EXTRA_DURATION, duration)
         }
         ContextCompat.startForegroundService(context, intent)
+        
+        if (currentState.phase == PomodoroPhase.FOCUS) {
+            ambientSoundPlayer.play(currentAmbientSoundMode)
+        }
     }
 
     fun pause() {
+        ambientSoundPlayer.pause()
         timerManager.pause()
         _state.value = _state.value.copy(isRunning = false)
     }
@@ -141,9 +165,14 @@ class PomodoroController @Inject constructor(
     fun resume() {
         timerManager.resume(controllerScope)
         _state.value = _state.value.copy(isRunning = true)
+        
+        if (_state.value.phase == PomodoroPhase.FOCUS) {
+            ambientSoundPlayer.resume()
+        }
     }
 
     fun stop() {
+        ambientSoundPlayer.stop()
         stopAlarm()
         timerManager.stop(controllerScope)
         val focusDuration = durationFor(PomodoroPhase.FOCUS)
@@ -259,6 +288,7 @@ class PomodoroController @Inject constructor(
             phaseDurationMillis = nextDuration,
             isRunning = false
         )
+        ambientSoundPlayer.stop()
     }
 
     private fun playAlarmSound() {
@@ -348,6 +378,7 @@ class PomodoroController @Inject constructor(
     }
 
     fun skip() {
+        ambientSoundPlayer.stop()
         stopAlarm()
         timerManager.stop(controllerScope)
         
