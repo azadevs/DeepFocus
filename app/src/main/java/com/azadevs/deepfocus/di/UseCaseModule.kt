@@ -27,6 +27,8 @@ import com.azadevs.deepfocus.domain.usecase.settings.GetAutoStartBreaksUseCase
 import com.azadevs.deepfocus.domain.usecase.settings.SetAutoStartBreaksUseCase
 import com.azadevs.deepfocus.domain.usecase.settings.GetThemeModeUseCase
 import com.azadevs.deepfocus.domain.usecase.settings.SetThemeModeUseCase
+import com.azadevs.deepfocus.domain.usecase.settings.GetAmbientSoundUseCase
+import com.azadevs.deepfocus.domain.usecase.settings.SetAmbientSoundUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -69,7 +71,9 @@ object UseCaseModule {
         getAutoStartBreaks: GetAutoStartBreaksUseCase,
         setAutoStartBreaks: SetAutoStartBreaksUseCase,
         getThemeMode: GetThemeModeUseCase,
-        setThemeMode: SetThemeModeUseCase
+        setThemeMode: SetThemeModeUseCase,
+        getAmbientSound: GetAmbientSoundUseCase,
+        setAmbientSound: SetAmbientSoundUseCase
     ): DeepFocusUseCases {
         return DeepFocusUseCases(
             upsert,
@@ -97,7 +101,9 @@ object UseCaseModule {
             getAutoStartBreaks,
             setAutoStartBreaks,
             getThemeMode,
-            setThemeMode
+            setThemeMode,
+            getAmbientSound,
+            setAmbientSound
         )
     }
 }

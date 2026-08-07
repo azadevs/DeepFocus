@@ -26,6 +26,8 @@ import com.azadevs.deepfocus.domain.usecase.settings.GetAutoStartBreaksUseCase
 import com.azadevs.deepfocus.domain.usecase.settings.SetAutoStartBreaksUseCase
 import com.azadevs.deepfocus.domain.usecase.settings.GetThemeModeUseCase
 import com.azadevs.deepfocus.domain.usecase.settings.SetThemeModeUseCase
+import com.azadevs.deepfocus.domain.usecase.settings.GetAmbientSoundUseCase
+import com.azadevs.deepfocus.domain.usecase.settings.SetAmbientSoundUseCase
 
 /**
  * Created by : Azamat Kalmurzaev
@@ -57,5 +59,7 @@ data class DeepFocusUseCases(
     val getAutoStartBreaks: GetAutoStartBreaksUseCase,
     val setAutoStartBreaks: SetAutoStartBreaksUseCase,
     val getThemeMode: GetThemeModeUseCase,
-    val setThemeMode: SetThemeModeUseCase
+    val setThemeMode: SetThemeModeUseCase,
+    val getAmbientSoundMode: GetAmbientSoundUseCase,
+    val setAmbientSoundMode: SetAmbientSoundUseCase
 )
