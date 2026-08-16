@@ -7,6 +7,7 @@
   <img src="https://img.shields.io/badge/DI-Dagger%20Hilt-red.svg?logo=android" alt="Hilt">
 </p>
 
+
 DeepFocus is a feature-rich, beautifully designed productivity application built entirely with **Modern Android Development (MAD)** principles. Centered around the Pomodoro technique, it seamlessly blends time management with a rewarding gamification system and insightful analytics to keep users motivated and focused.
 
 ## ✨ Key Features
